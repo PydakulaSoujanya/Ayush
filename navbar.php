@@ -112,6 +112,8 @@
                     <a href="/cashReport">Cash Report</a> -->
                 </div>
             </div>
+
+            
             <div class="navbar-dropdown" onmouseover="toggleDropdown('expenses')" onmouseout="toggleDropdown('expenses')">
                 <span class="navbar-dropdown-title">
                     EXPENSES <span class="dropdown-arrow-icon">▼</span>
