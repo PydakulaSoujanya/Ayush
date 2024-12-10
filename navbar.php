@@ -26,9 +26,9 @@
                 <span class="navbar-dropdown-title">
                     DASHBOARD <span class="dropdown-arrow-icon">▼</span>
                 </span>
-                <div class="navbar-dropdown-content" id="dashboard">
+                <!-- <div class="navbar-dropdown-content" id="dashboard">
                     <a href="view_invoice.php">Invoice</a>
-                </div>
+                </div> -->
             </div>
 
            
@@ -57,7 +57,7 @@
                 </span>
                 <div class="navbar-dropdown-content" id="vendor">
                     <a href="vendors.php">Vendor</a>
-                    <a href="Vendor_Billing_and_Payouts.php">Vendor Billing</a>
+                    <!-- <a href="Vendor_Billing_and_Payouts.php">Vendor Billing</a> -->
                     <!-- <a href="/estimateReport">Estimate Report</a>
                     <a href="/purchaseReport">Purchase Report</a>
                     <a href="/repairsReport">Repairs Report</a>
@@ -88,6 +88,39 @@
                 </span>
                 <div class="navbar-dropdown-content" id="service">
                     <a href="view_servicemaster.php">Services</a>
+                    <!-- <a href="/estimateReport">Estimate Report</a>
+                    <a href="/purchaseReport">Purchase Report</a>
+                    <a href="/repairsReport">Repairs Report</a>
+                    <a href="/urdPurchaseReport">URD Purchase Report</a>
+                    <a href="/stockReport">Stock Report</a>
+                    <a href="/barcodeprinting">Barcode Printing Report</a>
+                    <a href="/cashReport">Cash Report</a> -->
+                </div>
+            </div>
+            <div class="navbar-dropdown" onmouseover="toggleDropdown('sales')" onmouseout="toggleDropdown('sales')">
+                <span class="navbar-dropdown-title">
+                    SALES <span class="dropdown-arrow-icon">▼</span>
+                </span>
+                <div class="navbar-dropdown-content" id="sales">
+                    <a href="invoicegeneration.php">Invoice</a>
+                    <!-- <a href="/estimateReport">Estimate Report</a>
+                    <a href="/purchaseReport">Purchase Report</a>
+                    <a href="/repairsReport">Repairs Report</a>
+                    <a href="/urdPurchaseReport">URD Purchase Report</a>
+                    <a href="/stockReport">Stock Report</a>
+                    <a href="/barcodeprinting">Barcode Printing Report</a>
+                    <a href="/cashReport">Cash Report</a> -->
+                </div>
+            </div>
+            <div class="navbar-dropdown" onmouseover="toggleDropdown('expenses')" onmouseout="toggleDropdown('expenses')">
+                <span class="navbar-dropdown-title">
+                    EXPENSES <span class="dropdown-arrow-icon">▼</span>
+                </span>
+                <div class="navbar-dropdown-content" id="service">
+                    <a href="expenses_claim_form.php">Employee claims</a>
+                    <a href="Vendor_Billing_and_Payouts.php">Vendor Payouts</a>
+                    <a href="">Employee Payouts</a>
+                    <a href="">Refund</a>
                     <!-- <a href="/estimateReport">Estimate Report</a>
                     <a href="/purchaseReport">Purchase Report</a>
                     <a href="/repairsReport">Repairs Report</a>
