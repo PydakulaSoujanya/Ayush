@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <?php
-include 'navbar.php';
+
 include 'config.php'; // Include your database connection
 
 // Check if the 'id' parameter is present in the URL

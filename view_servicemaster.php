@@ -1,7 +1,7 @@
 <?php
 // Connect to the database
 include 'config.php';
-include 'navbar.php';
+
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -89,6 +89,9 @@ if ($result->num_rows > 0) {
   </style>
 </head>
 <body>
+  <?php
+   include 'navbar.php';
+  ?>
   <div class="container mt-7">
     <div class="dataTable_card card">
       <div class="card-header">Service Master Table</div>

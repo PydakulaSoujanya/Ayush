@@ -133,6 +133,9 @@ if (isset($_GET['id'])) {
   </style>
 </head>
 <body>
+  <?php
+include 'navbar.php';
+?>
   <div class="container mt-5">
     <h3 class="mb-4">Update Vendor</h3>
     <form action="update_vendor.php?id=<?php echo $id; ?>" method="POST">

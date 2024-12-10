@@ -6,7 +6,7 @@ ini_set('display_errors', 1); // Display errors on the screen
 ini_set('display_startup_errors', 1); // Display errors during PHP's startup sequence
 
 include 'config.php';
-include 'navbar.php';
+
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -85,6 +85,9 @@ $totalRecords = $countRow['total'];
   </style>
 </head>
 <body>
+  <?php
+include 'navbar.php';
+?>
   <div class="container  mt-7">
     <div class="dataTable_card card">
       <!-- Card Header -->

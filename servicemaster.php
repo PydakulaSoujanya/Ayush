@@ -1,6 +1,4 @@
-<?php
-include 'navbar.php';
-?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,6 +52,9 @@ include 'navbar.php';
   </style>
 </head>
 <body>
+  <?php
+include 'navbar.php';
+?>
   <div class="container mt-7">
     <h3 class="mb-4">Service Master Form</h3>
     <form action="service_masterdb.php" method="POST">

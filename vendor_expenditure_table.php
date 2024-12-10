@@ -1,7 +1,7 @@
 
 
 <?php
-include('navbar.php'); // Include navigation bar if necessary
+// include('navbar.php'); // Include navigation bar if necessary
 include('config.php'); // Include database connection
 
 // Fetch vendor payment data
@@ -55,7 +55,9 @@ $result = mysqli_query($conn, $query);
   </style>
 </head>
 <body>
-
+<?php
+include 'navbar.php';
+?>
   <div class="container mt-7">
     <div class="dataTable_card card">
       <!-- Card Header -->

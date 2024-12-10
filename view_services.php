@@ -1,7 +1,7 @@
 <?php
 // Connect to the database
 include 'config.php';
-include 'navbar.php';
+
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -136,6 +136,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_employee'])) {
   </style>
 </head>
 <body>
+  <?php
+include 'navbar.php';
+?>
   <div class="container  mt-7">
     <div class="dataTable_card card">
       <!-- Card Header -->

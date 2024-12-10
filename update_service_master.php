@@ -1,5 +1,5 @@
 <?php
-include 'navbar.php';
+
 include 'config.php'; // Database connection
 
 // Fetching the service details using the ID from the URL
@@ -75,6 +75,9 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
   </style>
 </head>
 <body>
+  <?php
+include 'navbar.php';
+?>
   <div class="container mt-7">
     <h3 class="mb-4">Update Service Master</h3>
     <form action="update_service_masterdb.php" method="POST">
