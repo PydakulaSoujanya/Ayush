@@ -5,7 +5,6 @@ ini_set('display_errors', 1);
    
 // Include database configuration and navbar
 include 'config.php';
-include 'navbar.php';
 
 
 // Pagination variables
@@ -71,6 +70,10 @@ $conn->close();
   </style>
 </head>
 <body>
+
+<?php
+include 'navbar.php';
+?>
   <div class="container mt-7">
     <div class="dataTable_card card">
       <div class="card-header">Customer Master Table</div>

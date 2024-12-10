@@ -1,5 +1,4 @@
 <?php
-include('navbar.php');
 include('config.php'); // Ensure this includes the database connection logic
 
 // Generate a unique Bill ID
@@ -54,7 +53,10 @@ $vendor_result = mysqli_query($conn, $vendor_query);
   </style>
 </head>
 <body>
+<?php
+include('navbar.php');
 
+?>
 <div class="container mt-7">
   <h3 class="mb-4"> Vendor Billing and Payouts </h3>
   <form action="vendor_payment_db.php" method="POST" enctype="multipart/form-data">

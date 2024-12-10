@@ -31,19 +31,7 @@
                 </div>
             </div>
 
-            <!-- Masters Dropdown -->
-            <div class="navbar-dropdown" onmouseover="toggleDropdown('contact')" onmouseout="toggleDropdown('contact')">
-               <div> <span class="navbar-dropdown-title">
-                    CONTACTS <span class="dropdown-arrow-icon">▼</span>
-                </span></div>
-                <div class="navbar-dropdown-content" id="contact">
-                    <a href="customer_form1_v1.php">Customer </a>
-                    <!-- <a href="/suppliertable">Supplier Master</a>
-                    <a href="/itemmastertable">Product</a>
-                    <a href="/purity">Purity</a>
-                    <a href="/accountstable">Accounts</a> -->
-                </div>
-            </div>
+           
 
             <!-- Transactions Dropdown -->
             <div class="navbar-dropdown" onmouseover="toggleDropdown('customers')" onmouseout="toggleDropdown('customers')">
