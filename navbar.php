@@ -82,7 +82,7 @@
                     <a href="/cashReport">Cash Report</a> -->
                 </div>
             </div>
-            <div class="navbar-dropdown" onmouseover="toggleDropdown('service')" onmouseout="toggleDropdown('services')">
+            <div class="navbar-dropdown" onmouseover="toggleDropdown('service')" onmouseout="toggleDropdown('service')">
                 <span class="navbar-dropdown-title">
                     SERVICES <span class="dropdown-arrow-icon">▼</span>
                 </span>
