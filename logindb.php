@@ -23,11 +23,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<script>alert('Login successful!'); window.location.href = 'manage_employee.php';</script>";
         } else {
             // Incorrect password
-            echo "<script>alert('Invalid password!'); window.location.href = 'login.php';</script>";
+            echo "<script>alert('Invalid password!'); window.location.href = 'index.php';</script>";
         }
     } else {
         // Email not found
-        echo "<script>alert('Email not found!'); window.location.href = 'login.php';</script>";
+        echo "<script>alert('Email not found!'); window.location.href = 'index.php';</script>";
     }
 }
 
