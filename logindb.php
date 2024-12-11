@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Successful login
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_email'] = $user['email'];
-            echo "<script>alert('Login successful!'); window.location.href = 'manage_employee.php';</script>";
+            echo "<script>alert('Login successful!'); window.location.href = 'Employee-Master/manage_employee.php';</script>";
         } else {
             // Incorrect password
             echo "<script>alert('Invalid password!'); window.location.href = 'index.php';</script>";

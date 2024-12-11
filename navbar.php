@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ayush</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
     <header class="navbar-header">
         <div class="navbar-brand">
-            <img src="images/logo.jpg" alt="Ayush App Logo" class="navbar-logo-img" />
+            <img src="../images/logo.jpg" alt="Ayush App Logo" class="navbar-logo-img" />
         </div>
 
         <div class="navbar-hamburger" onclick="toggleMenu()">
@@ -39,7 +39,7 @@
                     CUSTOMERS <span class="dropdown-arrow-icon">▼</span>
                 </span>
                 <div class="navbar-dropdown-content" id="customers">
-                    <a href="customer_table.php">Customers</a>
+                    <a href="../Customer-Master/customer_table.php">Customers</a>
                     <!-- <a href="/estimates">Estimate</a>
                     <a href="/stockEntryTable">Stock Entry</a>
                     <a href="/paymentstable">Payments</a>
@@ -56,7 +56,7 @@
                     VENDORS <span class="dropdown-arrow-icon">▼</span>
                 </span>
                 <div class="navbar-dropdown-content" id="vendor">
-                    <a href="vendors.php">Vendor</a>
+                    <a href="../Vendor-Master/vendors.php">Vendors</a>
                     <!-- <a href="Vendor_Billing_and_Payouts.php">Vendor Billing</a> -->
                     <!-- <a href="/estimateReport">Estimate Report</a>
                     <a href="/purchaseReport">Purchase Report</a>
@@ -72,7 +72,7 @@
                     EMPLOYEES <span class="dropdown-arrow-icon">▼</span>
                 </span>
                 <div class="navbar-dropdown-content" id="employee">
-                    <a href="manage_employee.php">Employee</a>
+                    <a href="../Employee-Master/manage_employee.php">Employee</a>
                     <!-- <a href="/estimateReport">Estimate Report</a>
                     <a href="/purchaseReport">Purchase Report</a>
                     <a href="/repairsReport">Repairs Report</a>
@@ -87,7 +87,7 @@
                     SERVICES <span class="dropdown-arrow-icon">▼</span>
                 </span>
                 <div class="navbar-dropdown-content" id="service">
-                    <a href="view_servicemaster.php">Services</a>
+                    <a href="../Service-Master/view_servicemaster.php">Services</a>
                     <!-- <a href="/estimateReport">Estimate Report</a>
                     <a href="/purchaseReport">Purchase Report</a>
                     <a href="/repairsReport">Repairs Report</a>
@@ -102,7 +102,7 @@
                     SALES <span class="dropdown-arrow-icon">▼</span>
                 </span>
                 <div class="navbar-dropdown-content" id="sales">
-                    <a href="invoicegeneration.php">Invoice</a>
+                    <a href="../Sales/invoicegeneration.php">Invoice</a>
                     <!-- <a href="/estimateReport">Estimate Report</a>
                     <a href="/purchaseReport">Purchase Report</a>
                     <a href="/repairsReport">Repairs Report</a>
@@ -114,24 +114,51 @@
             </div>
 
             
-            <div class="navbar-dropdown" onmouseover="toggleDropdown('expenses')" onmouseout="toggleDropdown('expenses')">
+    <div class="navbar-links">
+        <div class="navbar-dropdown" onmouseover="toggleDropdown('expenses')" onmouseout="toggleDropdown('expenses')">
+            <span class="navbar-dropdown-title" >
+                EXPENSES <span class="dropdown-arrow-icon">▼</span>
+            </span>
+            <div class="navbar-dropdown-content" id="expenses" style="display: none;">
+                <a href="javascript:void(0);" onclick="toggleDropdown('direct-expenses')">Direct Expenses</a>
+                <div class="submenu" id="direct-expenses" style="display: none; margin-left: 15px;">
+                    <a href="">Employee Payouts</a>
+                    <a href="../Expenses/Vendor_Billing_and_Payouts.php">Vendor Payouts</a>
+                </div>
+                <a href="javascript:void(0);" onclick="toggleDropdown('indirect-expenses')">Indirect Expenses</a>
+                <div class="submenu" id="indirect-expenses" style="display: none; margin-left: 15px;">
+                    <a href="../Expenses/expenses_claim_form.php">Employee Claims</a>
+                    <a href="">Utility Expenses</a>
+                </div>
+                <!-- <a href="#">Employee Claims</a>
+                <a href="#">Vendor Payouts</a>
+                <a href="#">Employee Payouts</a> -->
+                <a href="#">Refund</a>
+            </div>
+        </div>
+    </div>
+
+
+
+            
+            <!-- <div class="navbar-dropdown" onmouseover="toggleDropdown('expenses')" onmouseout="toggleDropdown('expenses')">
                 <span class="navbar-dropdown-title">
                     EXPENSES <span class="dropdown-arrow-icon">▼</span>
                 </span>
-                <div class="navbar-dropdown-content" id="service">
-                    <a href="expenses_claim_form.php">Employee claims</a>
-                    <a href="Vendor_Billing_and_Payouts.php">Vendor Payouts</a>
+                <div class="navbar-dropdown-content" id="expenses">
+                    <a href="">Direct Expenses</a>
+    <div class="submenu">
+        <a href="../Expenses/expenses_claim_form.php">Employee claims</a>
+        <a href="../Expenses/Vendor_Billing_and_Payouts.php">Vendor Payouts</a>
+    </div>
+                    <a href="../Expenses/expenses_claim_form.php">Indirect Expenses</a>
+                    <a href="../Expenses/expenses_claim_form.php">Employee claims</a>
+                    <a href="../Expenses/Vendor_Billing_and_Payouts.php">Vendor Payouts</a>
                     <a href="">Employee Payouts</a>
                     <a href="">Refund</a>
-                    <!-- <a href="/estimateReport">Estimate Report</a>
-                    <a href="/purchaseReport">Purchase Report</a>
-                    <a href="/repairsReport">Repairs Report</a>
-                    <a href="/urdPurchaseReport">URD Purchase Report</a>
-                    <a href="/stockReport">Stock Report</a>
-                    <a href="/barcodeprinting">Barcode Printing Report</a>
-                    <a href="/cashReport">Cash Report</a> -->
+                    
                 </div>
-            </div>
+            </div> -->
         </nav>
     </header>
 
