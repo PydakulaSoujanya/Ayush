@@ -123,7 +123,7 @@
                 <a href="javascript:void(0);" onclick="toggleDropdown('direct-expenses')">Direct Expenses</a>
                 <div class="submenu" id="direct-expenses" style="display: none; margin-left: 15px;">
                     <a href="">Employee Payouts</a>
-                    <a href="../Expenses/Vendor_Billing_and_Payouts.php">Vendor Payouts</a>
+                    <a href="../Expenses/vendor_billing_and_payouts.php">Vendor Payouts</a>
                 </div>
                 <a href="javascript:void(0);" onclick="toggleDropdown('indirect-expenses')">Indirect Expenses</a>
                 <div class="submenu" id="indirect-expenses" style="display: none; margin-left: 15px;">
