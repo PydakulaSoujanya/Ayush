@@ -1,5 +1,5 @@
 <?php
-include('config.php');
+include('../config.php');
 
 // Get employee ID from URL and validate it
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
