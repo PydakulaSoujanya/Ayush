@@ -1,5 +1,5 @@
 <?php
-// include('../../navbar.php');
+
 include('../config.php'); // Ensure this includes the database connection logic
 
 // Fetch employee data for the dropdown
@@ -14,8 +14,8 @@ $employee_result = mysqli_query($conn, $employee_query);
   <title>Expenses Claim</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-dywxE7Dbauy0ZdO9IMIAgFbKk8c0Lx0nvW0Uj+ks9qqRhj2uP/zLwsiXccCD9dQrcxJjpHZB5Q72n11KH4cOZg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-  <style>
+   <link rel="stylesheet" href="../assets/css/style.css">
+  <!-- <style>
     .input-field-container {
       position: relative;
       margin-bottom: 15px;
@@ -50,13 +50,13 @@ $employee_result = mysqli_query($conn, $employee_query);
     h3 {
       color: #A26D2B;
     }
-  </style>
+  </style> -->
 </head>
+
+<body>
 <?php
 include('../navbar.php');
 ?>
-<body>
-
 <div class="container mt-7">
   
   <h3 class="mb-4">Employee Expenses Claim</h3>
@@ -128,7 +128,7 @@ include('../navbar.php');
             <option value="" disabled selected>Select Status</option>
             <option value="Pending">Pending</option>
             <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
+            <!-- <option value="Rejected">Rejected</option> -->
             <option value="Paid">Paid</option>
           </select>
         </div>
@@ -136,13 +136,7 @@ include('../navbar.php');
     </div>
 
     <div class="row">
-      <!-- Rejection Reason -->
-      <div class="col-md-4" id="rejection_reason_container" style="display: none;">
-  <div class="input-field-container">
-    <label class="input-label">Rejection Reason</label>
-    <input type="text" class="styled-input" name="rejection_reason" placeholder="Reason for rejection (if any)" />
-  </div>
-</div>
+   
 
 
       <!-- Submitted Date -->
@@ -155,46 +149,66 @@ include('../navbar.php');
 
       <!-- Approved Date -->
       <div class="col-md-4">
-        <div class="input-field-container">
-          <label class="input-label">Approved Date</label>
-          <input type="date" class="styled-input" name="approved_date" />
-        </div>
-      </div>
+    <div class="input-field-container">
+        <label class="input-label">Approved Date</label>
+        <input type="date" class="styled-input" name="approved_date" />
+    </div>
+    </div>
+       <!-- Payment Date -->
+       <div class="col-md-4">
+    <div class="input-field-container">
+        <label class="input-label">Payment Date</label>
+        <input type="date" class="styled-input" name="payment_date" />
+    </div>
+</div>
+  <!-- Payment Mode -->
+<div class="col-md-4">
+  <div class="input-field-container">
+    <label class="input-label">Payment Mode</label>
+    <select class="styled-input" id="payment_mode" name="payment_mode" required>
+      <option value="" disabled selected>Select Payment Mode</option>
+      <option value="UPI">UPI</option>
+      <option value="Cash">Cash</option>
+      <option value="Card">Card</option>
+      <option value="Bank Transfer">Bank Transfer</option>
+    </select>
+  </div>
+</div>
+ <!-- Transaction ID/Number -->
+ <div class="col-md-4 hidden-field" id="transaction_id_container">
+  <div class="input-field-container">
+    <label class="input-label">Transaction ID/Number</label>
+    <input type="text" class="styled-input" name="transaction_id" id="transaction_id" placeholder="Enter Transaction ID/Number" />
+  </div>
+</div>
+<div class="col-md-4 hidden-field" id="card_reference_container">
+  <div class="input-field-container">
+    <label class="input-label">Reference Number</label>
+    <input type="text" class="styled-input" name="card_reference_number" id="card_reference_number" placeholder="Enter Reference Number" />
+  </div>
+</div>
     </div>
 
     <div class="row">
-      <!-- Payment Status -->
-      <div class="col-md-4">
-        <div class="input-field-container">
-          <label class="input-label">Payment Status</label>
-          <select class="styled-input" name="payment_status" required>
-            <option value="" disabled selected>Select Payment Status</option>
-            <option value="Paid">Paid</option>
-            <option value="Pending">Pending Payment</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Payment Date -->
-      <div class="col-md-4">
-        <div class="input-field-container">
-          <label class="input-label">Payment Date</label>
-          <input type="date" class="styled-input" name="payment_date" />
-        </div>
-      </div>
-
-      <!-- Description -->
-  
-    </div>
-    
-
-    <div class="row">
-    <div class="col-md-8">
+      
+<!-- Bank Name for Bank Transfer -->
+<div class="col-md-4 hidden-field" id="bank_details_container">
+  <div class="input-field-container">
+    <label class="input-label">Bank Name</label>
+    <input type="text" class="styled-input" name="bank_name" id="bank_name" placeholder="Enter Bank Name" />
+  </div>
+</div>
+<div class="col-md-8">
         <div class="input-field-container">
           <label class="input-label">Description</label>
           <textarea class="styled-input" name="description" placeholder="Describe the expense" required></textarea>
         </div>
       </div>
+    </div>
+ 
+
+    <div class="row">
+    
       <div class="col-md-12 text-center">
         <button type="submit" class="btn btn-primary" name="submit" value="Submit">Submit</button>
       </div>
@@ -206,18 +220,35 @@ include('../navbar.php');
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
 <script>
   $(document).ready(function () {
-    // Trigger event when status is changed
+    // Hide all date fields initially
+    $('input[name="submitted_date"]').closest('.col-md-4').hide();
+    $('input[name="approved_date"]').closest('.col-md-4').hide();
+    $('input[name="payment_date"]').closest('.col-md-4').hide();
+
+    // Monitor changes to the `status` dropdown
     $('select[name="status"]').on('change', function () {
-      const selectedStatus = $(this).val(); // Get the selected value
-      if (selectedStatus === 'Rejected') {
-        $('#rejection_reason_container').show(); // Show the rejection reason field
-      } else {
-        $('#rejection_reason_container').hide(); // Hide the rejection reason field
-        $('input[name="rejection_reason"]').val(''); // Clear the value
+      const selectedStatus = $(this).val();
+
+      // Hide all date fields by default
+      $('input[name="submitted_date"]').closest('.col-md-4').hide();
+      $('input[name="approved_date"]').closest('.col-md-4').hide();
+      $('input[name="payment_date"]').closest('.col-md-4').hide();
+
+      // Show relevant date field based on the selected status
+      if (selectedStatus === 'Pending') {
+        $('input[name="submitted_date"]').closest('.col-md-4').show();
+      } else if (selectedStatus === 'Approved') {
+        $('input[name="approved_date"]').closest('.col-md-4').show();
+      } else if (selectedStatus === 'Paid') {
+        $('input[name="payment_date"]').closest('.col-md-4').show();
       }
     });
+
+    // Trigger change on page load to handle pre-selected status
+    $('select[name="status"]').trigger('change');
   });
 </script>
+
 <script>
   $(document).ready(function() {
     $('#employee_name').select2({
@@ -252,5 +283,33 @@ include('../navbar.php');
     });
   });
 </script>
+<script>
+  $(document).ready(function () {
+  // Monitor changes to the Payment Mode dropdown
+  $('#payment_mode').on('change', function () {
+    const selectedMode = $(this).val();
+
+    // Hide all conditional fields by default
+    $('.hidden-field').hide();
+    $('#transaction_id').val('');
+    $('#card_reference_number').val('');
+    $('#bank_name').val('');
+
+    // Show relevant fields based on the selected payment mode
+    if (selectedMode === 'UPI') {
+      $('#transaction_id_container').show();
+    } else if (selectedMode === 'Card') {
+      $('#card_reference_container').show();
+    } else if (selectedMode === 'Bank Transfer') {
+      $('#transaction_id_container').show();
+      $('#bank_details_container').show();
+    }
+  });
+
+  // Trigger change on page load to handle pre-selected value
+  $('#payment_mode').trigger('change');
+});
+</script>
+
 </body>
 </html>

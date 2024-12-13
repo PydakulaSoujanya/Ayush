@@ -17,69 +17,8 @@ unset($_SESSION['alert_message'], $_SESSION['alert_type']);
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
-
-
-
-
-
-  <style>
-    .input-field-container {
-      position: relative;
-      margin-bottom: 15px;
-    }
-
-    .input-label {
-      position: absolute;
-      top: -10px;
-      left: 10px;
-      background-color: white;
-      padding: 0 5px;
-      font-size: 14px;
-      font-weight: bold;
-      color: #A26D2B;
-    }
-
-    .styled-input {
-      width: 100%;
-      padding: 10px;
-      font-size: 12px;
-      outline: none;
-      box-sizing: border-box;
-      border: 1px solid #A26D2B;
-      border-radius: 5px;
-    }
-
-    .styled-input:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-    }
-
-    h1, h2, h3, h4 {
-      color: #A26D2B;
-    }
-
-   
-
-.styled-input {
-  padding-right: 40px; /* Make space for the icon inside the field */
-}
- /* Style the icon to look like the button */
- #add-more-documents {
-    font-size: 1.2rem; /* Similar to btn-sm size */
-    cursor: pointer;
-    color: #28a745; /* Same as btn-success green */
-    
-    border-radius: 4px; /* Matching the button's rounded appearance */
-    padding: 4px 6px; /* Match the button's padding */
-    display: inline-block;
-    line-height: 1.5;
-    box-sizing: border-box;
-    transition: all 0.2s ease; /* Smooth hover transition */
-  }
-
- 
-</style>
+<link href="path/to/fontawesome/css/all.css" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
 
   
 </head>
@@ -88,7 +27,7 @@ unset($_SESSION['alert_message'], $_SESSION['alert_type']);
   <div class="container mt-7">
     <h3 class="mb-4">Employee Form</h3>
     <form method="POST" id="employee_registartion" enctype="multipart/form-data" action="empdb.php">
-  <!-- Row 1 -->
+    <!-- Row 1 -->
   <div class="row">
     <div class="col-md-3">
       <div class="input-field-container">
@@ -132,9 +71,9 @@ unset($_SESSION['alert_message'], $_SESSION['alert_type']);
       </div>
     </div>
     <div class="col-md-3">
-  <div class="input-field-container" style="position: relative;">
+  <div class="input-field-container">
     <label class="input-label">Role</label>
-    <select name="role" class="styled-input form-control" required>
+    <select name="role" class="styled-input" required>
       <option value="" disabled selected>Select Role</option>
       <option value="care_taker">Care Taker</option>
       <option value="nanny">Nanny</option>
@@ -154,6 +93,8 @@ unset($_SESSION['alert_message'], $_SESSION['alert_type']);
           <option value="10th">10th</option>
           <option value="intermediate">Intermediate</option>
           <option value="degree">Degree</option>
+          <option value="pg">PG</option>
+
         </select>
       </div>
     </div>
@@ -165,6 +106,8 @@ unset($_SESSION['alert_message'], $_SESSION['alert_type']);
           <option value="0-1">0 to 1 year</option>
           <option value="2-3">2 to 3 years</option>
           <option value="4-5">4 to 5 years</option>
+          <option value="above 5">above 5 years</option>
+
         </select>
       </div>
     </div>
@@ -173,11 +116,12 @@ unset($_SESSION['alert_message'], $_SESSION['alert_type']);
   <!-- Row 3 -->
   <div class="row">
   <div class="col-md-3">
-          <div class="input-field-container">
-            <label class="input-label">Date of Joining</label>
-            <input type="date" name="doj" class="styled-input date-input" required />
-          </div>
-        </div>
+    <div class="input-field-container">
+        <label class="input-label">Date of Joining</label>
+        <input type="date" name="doj" class="styled-input date-input" id="doj" required />
+    </div>
+</div>
+
     <div class="col-md-3">
       <div class="input-field-container">
         <label class="input-label">Aadhar Number</label>
@@ -186,71 +130,38 @@ unset($_SESSION['alert_message'], $_SESSION['alert_type']);
     </div>
     <!-- <div class="row"> -->
   <!-- Police Verification Field -->
-  <div class="col-md-3">
-    <div class="input-field-container">
-      <label class="input-label">Police Verification</label>
-      <select 
-        name="police_verification" 
-        class="styled-input form-control" 
-        id="policeVerificationSelect" 
-        required
-        onchange="toggleDocumentUploadField()">
-        <option value="" disabled selected>Select Status</option>
-        <option value="verified">Verified</option>
-        <option value="pending">Pending</option>
-      </select>
-    </div>
+<div class="col-md-3">
+  <div class="input-field-container">
+    <label class="input-label">Police Verification</label>
+    <select 
+      name="police_verification" 
+      class="styled-input" 
+      id="policeVerificationSelect" 
+      required
+      onchange="toggleDocumentUploadField()">
+      <option value="" disabled selected>Select Status</option>
+      <option value="verified">Verified</option>
+      <option value="pending">Pending</option>
+      <option value="rejected">Rejected</option>
+    </select>
   </div>
+</div>
 
-  <!-- Hidden Document Upload Field -->
-  <div class="col-md-3" id="documentUploadField" style="display: none;">
-    <div class="input-field-container">
-      <label class="input-label">Upload Document</label>
-      <input 
-        type="file" 
-        name="verification_document" 
-        class="styled-input form-control" 
-        accept=".pdf,.jpg,.jpeg,.png" 
-        required />
-    </div>
+<!-- Document Upload Field -->
+<div class="col-md-3" id="documentUploadField" style="display: none;">
+  <div class="input-field-container">
+    <label class="input-label" id="documentLabel">Upload Document</label>
+    <input 
+      type="file" 
+      name="verification_document" 
+      class="styled-input" 
+      accept=".pdf,.doc,.docx,.jpg,.png"
+    />
   </div>
+</div>
+
 <!-- </div> -->
-    <div class="col-md-3">
-      <div class="input-field-container">
-        <label class="input-label">Status</label>
-        <select name="status" class="styled-input" required>
-          <option value="" disabled selected>Select Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-      </div>
-    </div>
-   
-  </div>
-
-  <!-- Row 4 -->
-  <div class="row">
-
-  <div class="col-md-3">
-      <div class="input-field-container">
-        <label class="input-label">Daily Rate-8 hours</label>
-        <input type="number" name="daily_rate8" class="styled-input" placeholder="Enter Daily Rate" required />
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="input-field-container">
-      <label class="input-label">Daily Rate-12 hours</label>
-      <input type="number" name="daily_rate12" class="styled-input" placeholder="Enter Daily Rate" required />
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="input-field-container">
-      <label class="input-label">Daily Rate-24 hours</label>
-      <input type="number" name="daily_rate24" class="styled-input" placeholder="Enter Daily Rate" required />
-      </div>
-    </div>
-    
-    <div class="col-md-3">
+<div class="col-md-3">
   <div class="input-field-container">
     <label class="input-label">Aadhar Upload Document</label>
     <input 
@@ -263,47 +174,91 @@ unset($_SESSION['alert_message'], $_SESSION['alert_type']);
   </div>
 </div>
 
-<div class="col-md-3">
-  <div class="input-field-container">
-    <label class="input-label">Other Document</label>
-    <div id="document-upload-container">
-      <!-- Initial Document Upload Field -->
-      <div class="document-upload-field d-flex align-items-center mb-2">
-        <input 
-          type="file" 
-          name="other_doc[]" 
-          class="styled-input form-control" 
-          accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" 
-          required 
-          title="Upload a document (PDF, JPG, PNG, DOC, DOCX)" />
-         
-        <!-- Add Icon for Remove (Initially Hidden) -->
-        <i class="fas fa-trash-alt text-danger remove-field ms-2" style="display: none; cursor: pointer;" title="Remove"></i>
-        <i 
-      class="fas fa-plus-square text-success me-1" 
-      id="add-more-documents" 
-      style="font-size: 1.5rem; cursor: pointer;" 
-      title="Add More">
-    </i>
-      </div>
+  <!-- Row 4 -->
+<div class="row">
+  <div class="col-md-3">
+    <div class="input-field-container">
+      <label class="input-label">Daily Rate (8 hours)</label>
+      <input type="number" name="daily_rate8" class="styled-input" placeholder="Enter Daily Rate" required />
     </div>
-    <!-- Add More Icon -->
-    
+  </div>
+  <div class="col-md-3">
+    <div class="input-field-container">
+      <label class="input-label">Daily Rate (12 hours)</label>
+      <input type="number" name="daily_rate12" class="styled-input" placeholder="Enter Daily Rate" required />
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="input-field-container">
+      <label class="input-label">Daily Rate (24 hours)</label>
+      <input type="number" name="daily_rate24" class="styled-input" placeholder="Enter Daily Rate" required />
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="input-field-container">
+      <label class="input-label">Reference</label>
+      <select name="reference" id="reference" class="styled-input" required>
+        <option value="" disabled selected>Select Reference</option>
+        <option value="ayush">Ayush</option>
+        <option value="vendors">Vendors</option>
+      </select>
+    </div>
   </div>
 </div>
+
+
+<!-- Hidden Fields for Vendor Name and Contact -->
+<div class="col-md-3" id="vendorFields" style="display: none;">
+  <div class="input-field-container">
+    <div class="d-flex align-items-center">
+      <!-- Vendor Name Field -->
+      <label class="input-label me-2 mb-0">Vendor Name</label>
+      <select name="vendor_name" id="vendor_name" class="styled-input form-control me-2" required>
+        <option value="" disabled selected>Select Vendor</option>
+        <!-- Option items here -->
+      </select>
+      
+      <!-- Plus Icon for adding vendor -->
+      <i 
+        class="fas fa-plus-square text-success" 
+        id="addVendorBtn" 
+        style="font-size: 1.5rem; cursor: pointer;" 
+        title="Add Vendor">
+      </i>
+    </div>
+  </div>
+</div>
+
+
+<div class="col-md-3" id="vendorContactField" style="display: none;">
+  <div class="input-field-container">
+    <label class="input-label">Vendor Contact Number</label>
+    <input type="text" name="vendor_contact" class="styled-input" placeholder="Enter Vendor Contact Number" pattern="[0-9]{10}" />
+  </div>
+</div>
+      
+
+ 
+
+    
 
 
     <div class="col-md-3">
   <div class="input-field-container">
     <label class="input-label">Bank Name</label>
    
-    <select name="bank_name" class="styled-input form-control" required>
+    <select name="bank_name" class="styled-input" required>
       <option value="" disabled selected>Select Bank Name</option>
       <?php include("banks-dropdown.php");?>
     </select>
   </div>
 </div>
-
+<div class="col-md-3">
+      <div class="input-field-container">
+        <label class="input-label">Branch</label>
+        <input type="text" name="branch" class="styled-input" placeholder="Enter Branch Name" required />
+      </div>
+    </div>
 
     <div class="col-md-3">
       <div class="input-field-container">
@@ -317,48 +272,128 @@ unset($_SESSION['alert_message'], $_SESSION['alert_type']);
         <input type="text" name="ifsc_code" class="styled-input" placeholder="Enter IFSC Code" required />
       </div>
     </div>
-    <div class="col-md-3">
+   
+
+    <div class="row">
+    <!-- Card inside col-md-6 -->
+    <div class="col-md-6">
+        <div class="card" style="border: 1px solid #8B4513; border-radius: 8px;">
+            <div class="card-body">
+                <!-- <h5 class="card-title">Address Details</h5> -->
+                <div id="address-container">
+                    <!-- First Address Entry -->
+                    <div class="address-entry" id="address-1">
+                        <div class="row">
+                            <!-- Pincode Field -->
+                            <div class="col-md-6">
+                                <div class="input-field-container">
+                                    <label class="input-label">Pincode</label>
+                                    <input type="text" name="pincode[]" class="styled-input" placeholder="6 digits [0-9] PIN code" required pattern="\d{6}" maxlength="6" />
+                                </div>
+                            </div>
+                            <!-- Flat, House No., Building, Apartment -->
+                            <div class="col-md-6">
+                                <div class="input-field-container">
+                                    <label class="input-label">Flat, House No., Building, Apartment</label>
+                                    <input type="text" name="address_line1[]" class="styled-input" placeholder="Enter Flat, House No., Building, etc." required />
+                                </div>
+                            </div>
+
+                            <!-- Area, Street, Sector, Village -->
+                            <div class="col-md-6">
+                                <div class="input-field-container">
+                                    <label class="input-label">Area, Street, Sector, Village</label>
+                                    <input type="text" name="address_line2[]" class="styled-input" placeholder="Enter Area, Street, Sector, Village" />
+                                </div>
+                            </div>
+
+                            <!-- Landmark -->
+                            <div class="col-md-6">
+                                <div class="input-field-container">
+                                    <label class="input-label">Landmark</label>
+                                    <input type="text" name="landmark[]" class="styled-input" placeholder="E.g. near Apollo Hospital" />
+                                </div>
+                            </div>
+
+                            <!-- Town/City -->
+                            <div class="col-md-6">
+                                <div class="input-field-container">
+                                    <label class="input-label">Town/City</label>
+                                    <input type="text" name="city[]" class="styled-input" placeholder="Enter Town/City" required />
+                                </div>
+                            </div>
+
+                            <!-- State Dropdown -->
+                            <div class="col-md-6">
+                                <?php include('states_dropdown.php'); ?>
+                            </div>
+
+                            <!-- Add and Delete Icons -->
+                            <div class="col-md-12">
+                                <i class="fas fa-plus-square text-success add-more" style="font-size: 1.5rem; cursor: pointer; margin-top: 1px;" title="Add More"></i>
+                                <i class="fas fa-trash-alt text-danger delete-icon" style="font-size: 1.3rem; cursor: pointer; margin-top: 10px;" title="Delete"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
   <div class="input-field-container">
-    <label class="input-label">Reference</label>
-    <div style="display: flex; align-items: center;">
-      <select name="reference" id="reference" class="styled-input" required>
-        <option value="" disabled selected>Select Reference</option>
-        <option value="ayush">Ayush</option>
-        <option value="vendors">Vendors</option>
-      </select>
-      <!-- Placeholder for the "+" icon -->
-      <button id="addVendorBtn" style="display: none; margin-left: 8px;" class="btn btn-success btn-sm" title="Add Vendor">+</button>
+    <label class="input-label">Other Documents</label>
+    <div id="document-card-container" class="mt-3">
+      <!-- Initial Card for Document -->
+      <div class="card document-card mb-3">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between">
+            <!-- Document Name Field -->
+            <div class="me-2  w-100">
+              <label class="input-label">Document Name</label>
+              <input 
+                type="text" 
+                name="other_doc_name[]" 
+                class="styled-input form-control" 
+                placeholder="Enter Document Name" 
+                required 
+                title="Enter the document name" />
+            </div>
+
+            <!-- Document File Field -->
+            <div class="me-2  w-100 ">
+              <label class="input-label">Other Document</label>
+              <input 
+                type="file" 
+                name="other_doc[]" 
+                class="styled-input form-control" 
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" 
+                required 
+                title="Upload a document (PDF, JPG, PNG, DOC, DOCX)" />
+            </div>
+
+            <!-- Add More Icon -->
+            <i 
+              class="fas fa-plus-square text-success me-2 add-more-documents" 
+              style="font-size: 1.5rem; cursor: pointer;" 
+              title="Add More">
+            </i>
+            <!-- Remove Icon (Initially Hidden) -->
+            <i 
+              class="fas fa-trash-alt text-danger remove-field" 
+              style="font-size: 1rem; cursor: pointer; display: none;" 
+              title="Remove">
+            </i>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-
-
-<!-- Hidden Fields for Vendor Name and Contact -->
-<div class="col-md-3" id="vendorFields" style="display: none;">
-  <div class="input-field-container">
-  <!-- <input type="text" name="vendor_id" class="styled-input"  /> -->
-    <label class="input-label">Vendor Name</label>
-    <select name="vendor_name" id="vendor_name" class="styled-input" required>
-            <option value="" disabled selected>Select Vendor</option>
-        </select>
-    <!-- <input type="text" name="vendor_name" class="styled-input" placeholder="Enter Vendor Name" /> -->
-  </div>
-</div>
-<div class="col-md-3" id="vendorContactField" style="display: none;">
-  <div class="input-field-container">
-    <label class="input-label">Vendor Contact Number</label>
-    <input type="text" name="vendor_contact" class="styled-input" placeholder="Enter Vendor Contact Number" pattern="[0-9]{10}" />
-  </div>
 </div>
 
-<!-- Address Field -->
-<div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Address</label>
-    <textarea name="address" class="styled-input" placeholder="Enter Address" rows="3" required></textarea>
-  </div>
-  
-</div>
+
+
+ 
 
 <script>
   document.getElementById('reference').addEventListener('change', function () {
@@ -380,7 +415,7 @@ unset($_SESSION['alert_message'], $_SESSION['alert_type']);
     }
   });
  function fetchVendorData(reference) {
-  fetch("Employee-Master/fetch_vendor_data.php?reference=" + reference)
+  fetch("fetch_vendor_data.php?reference=" + reference)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -437,136 +472,21 @@ vendorNameSelect.addEventListener('change', function () {
       console.error("Error fetching vendor data:", error);
     });
 }
-
-
 </script>
-
-
-  </div>
-
- 
-  <!-- Submit Button -->
-  <div class="row">
+</div>
+<!-- Submit Button -->
+  <div class="row mt-4">
     <div class="col-md-12 text-center">
       <button type="submit" class="btn btn-primary">Submit</button>
     </div>
   </div>
 </form>
 </div>
-<!-- Alert Modal -->
-<!-- Add Vendor Modal -->
-<div class="modal fade" id="addVendorModal" tabindex="-1" aria-labelledby="addVendorModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addVendorModalLabel">Add Vendor Details</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form  method="POST" id="add_vendor" enctype="multipart/form-data">
-          <!-- Vendor Form Fields -->
-          <div class="row">
-            <div class="col-md-6">
-              <div class="input-field-container">
-                <label class="input-label">Vendor Name</label>
-                <input type="text" id="popup_vendor_name" name="vendor_name" class="styled-input" placeholder="Enter Vendor Name" required />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="input-field-container">
-                <label class="input-label">GSTIN</label>
-                <input type="text" id="gstin" name="gstin" class="styled-input" placeholder="Enter GSTIN" />
-              </div>
-            </div>
-          </div>
-          <!-- Additional Fields (Contact, Address, etc.) -->
-          <div class="row">
-           
-            <div class="col-md-6">
-              <div class="input-field-container">
-                <label class="input-label">Phone Number</label>
-                <input type="text" id="phone_number" name="phone_number" class="styled-input" placeholder="Enter Phone Number" />
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="input-field-container">
-                <label class="input-label">Email</label>
-                <input type="email" id="email" name="email" class="styled-input" placeholder="Enter Email" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="input-field-container">
-                <label class="input-label">Vendor Type</label>
-                <select name="vendor_type" id="vendor_type" class="styled-input">
-                  <option value="Individual">Individual</option>
-                  <option value="Company">Company</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <!-- Bank Details -->
-          <h4>Bank Details</h4>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="input-field-container">
-                <label class="input-label">Bank Name</label>
-                <input type="text" id="bank_name" name="bank_name" class="styled-input" placeholder="Enter Bank Name" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="input-field-container">
-                <label class="input-label">Account Number</label>
-                <input type="text" id="account_number" name="account_number" class="styled-input" placeholder="Enter Account Number" />
-              </div>
-            </div>
-             
-            <div class="col-md-6">
-            <div class="input-field-container">
-    <label class="input-label">Address</label>
-    <textarea id="address" name="address" class="styled-input" placeholder="Enter Address"></textarea>
-  </div>
- </div>
-            <div class="col-md-6">
-  <!-- Services Provided -->
-  <div class="input-field-container">
-    <label class="input-label">Services Provided</label>
-    <textarea id="services_provided" name="services_provided" class="styled-input" placeholder="Enter Services Provided"></textarea>
-  </div>
- </div>
-            <div class="col-md-6">
-  <!-- Additional Notes -->
-  <div class="input-field-container">
-    <label class="input-label">Additional Notes</label>
-    <textarea id="additional_notes" name="additional_notes" class="styled-input" placeholder="Enter Additional Notes"></textarea>
-  </div>
- </div>
-            
-            <div class="col-md-6">
-  <!-- IFSC Code -->
-  <div class="input-field-container">
-    <label class="input-label">IFSC Code</label>
-    <input type="text" id="ifsc" name="ifsc" class="styled-input" placeholder="Enter IFSC Code" />
-  </div>
- </div>
-            <div class="col-md-6">
-  <!-- Payment Terms -->
-  <div class="input-field-container">
-    <label class="input-label">Payment Terms</label>
-    <textarea id="payment_terms" name="payment_terms" class="styled-input" placeholder="Enter Payment Terms"></textarea>
-  </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
+
+    <?php include 'vendormodal.php'; ?>
+
+   
+
 
 
 <script>
@@ -606,7 +526,7 @@ console.log(requestData);
 // Or use alert to display it
 //alert(JSON.stringify(requestData, null, 2));  // Pretty prints the object
     // Send the data using fetch
-    fetch('Employee-Master/add_vendor.php', {
+    fetch('add_vendor.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json', // Sending JSON data
@@ -664,48 +584,91 @@ alert('An error occurred: ' + data.message + '\nSQL: ' + data.sql);
   function toggleDocumentUploadField() {
     const policeVerificationSelect = document.getElementById('policeVerificationSelect');
     const documentUploadField = document.getElementById('documentUploadField');
+    const documentLabel = document.getElementById('documentLabel');
     
-    if (policeVerificationSelect.value === 'verified') {
-      documentUploadField.style.display = 'block';
+    // Check the selected value
+    const selectedValue = policeVerificationSelect.value;
+    
+    // Show the upload field and update label based on the selection
+    if (selectedValue === 'verified') {
+        documentUploadField.style.display = 'block';
+        documentLabel.textContent = 'Upload Verified Document';
+    } else if (selectedValue === 'rejected') {
+        documentUploadField.style.display = 'block';
+        documentLabel.textContent = 'Upload Rejected Document';
     } else {
-      documentUploadField.style.display = 'none';
+        documentUploadField.style.display = 'none';
     }
-  }
+}
 
-   // JavaScript to Add More Document Upload Fields
-   document.getElementById('add-more-documents').addEventListener('click', function () {
-    // Create a new document upload field
-    const newField = document.createElement('div');
-    newField.classList.add('document-upload-field', 'd-flex', 'align-items-center', 'mb-2');
-    newField.innerHTML = `
-      <input 
-        type="file" 
-        name="other_doc[]" 
-        class="styled-input form-control" 
-        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" 
-        required 
-        title="Upload a document (PDF, JPG, PNG, DOC, DOCX)" />
-      <i 
-        class="fas fa-trash-alt text-danger remove-field ms-2" 
-        style="cursor: pointer;" 
-        title="Remove">
-      </i>
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Add more document fields
+  document.querySelector('.add-more-documents').addEventListener('click', function () {
+    // Create a new card for document input
+    const newCard = document.createElement('div');
+    newCard.classList.add('card', 'document-card', 'mb-3');
+    newCard.innerHTML = `
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <label class="input-label">Document Name</label>
+            <input 
+              type="text" 
+              name="other_doc_name[]" 
+              class="styled-input form-control" 
+              placeholder="Enter Document Name" 
+              required 
+              title="Enter the document name" />
+          </div>
+          <div class="col-md-6">
+            <label class="input-label">Upload Document</label>
+            <input 
+              type="file" 
+              name="other_doc[]" 
+              class="styled-input form-control" 
+              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" 
+              required 
+              title="Upload a document (PDF, JPG, PNG, DOC, DOCX)" />
+          </div>
+        </div>
+        <div class="text-end mt-2">
+          <i 
+            class="fas fa-trash-alt text-danger remove-field" 
+            style="font-size: 1rem; cursor: pointer;" 
+            title="Remove">
+          </i>
+        </div>
+      </div>
     `;
-    
-    // Add the new field to the container
-    document.getElementById('document-upload-container').appendChild(newField);
+    // Append the new card to the container
+    document.getElementById('document-card-container').appendChild(newCard);
 
-    // Add event listener to the remove icon
-    newField.querySelector('.remove-field').addEventListener('click', function () {
-      newField.remove();
+    // Add event listener for remove button
+    newCard.querySelector('.remove-field').addEventListener('click', function () {
+      newCard.remove();
+    });
+
+    // Show the remove button for all cards
+    document.querySelectorAll('.remove-field').forEach(icon => icon.style.display = 'inline');
+  });
+
+  // Remove existing cards except for the initial ones (maintain stable fields)
+  document.querySelectorAll('.remove-field').forEach(function (icon) {
+    icon.addEventListener('click', function () {
+      const card = icon.closest('.card');
+      // Ensure only newly added cards are removed
+      if (card.classList.contains('document-card')) {
+        card.remove();
+      }
     });
   });
+});
 
-  // Show the remove icon for the initial field when more fields are added
-  document.getElementById('add-more-documents').addEventListener('click', function () {
-    const fields = document.querySelectorAll('.document-upload-field .remove-field');
-    fields.forEach(icon => icon.style.display = 'inline'); // Show all remove icons
-  });
+
+
+
+
     document.getElementById('reference').addEventListener('change', function () {
     const addVendorBtn = document.getElementById('addVendorBtn');
     if (this.value === 'vendors') {
@@ -736,6 +699,49 @@ alert('An error occurred: ' + data.message + '\nSQL: ' + data.sql);
   });
 </script>
 
+<script>
+    // Function to set the Date of Joining field to today's date
+    window.onload = function() {
+        // Get today's date
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = ("0" + (today.getMonth() + 1)).slice(-2); // Adding 1 because months are 0-indexed
+        const day = ("0" + today.getDate()).slice(-2);
+
+        // Set the date input value
+        const dateOfJoiningField = document.getElementById('doj');
+        dateOfJoiningField.value = `${year}-${month}-${day}`;
+    };
+
+
+    // Add more address functionality
+  document.querySelector('.add-more').addEventListener('click', function() {
+    const addressContainer = document.getElementById('address-container');
+    const newAddress = document.querySelector('.address-entry').cloneNode(true);
+    // Show the delete icon from the second entry onwards
+    addressContainer.appendChild(newAddress);
+    updateDeleteIcons();
+  });
+
+  // Delete an address entry
+  function updateDeleteIcons() {
+    const deleteIcons = document.querySelectorAll('.delete-icon');
+    deleteIcons.forEach((icon, index) => {
+      if (index > 0) {
+        icon.style.display = 'inline'; // Show delete icon from the second entry onward
+        icon.addEventListener('click', function() {
+          const addressEntry = icon.closest('.address-entry');
+          addressEntry.remove();
+        });
+      } else {
+        icon.style.display = 'none'; // Hide delete icon in the first entry
+      }
+    });
+  }
+
+  // Initialize delete icons
+  updateDeleteIcons();
+</script>
 
 
 

@@ -50,8 +50,10 @@ $conn->close();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
   <title>Customer Master Table</title>
-  <style>
+  
+  <!-- <style>
     .dataTable_card {
       border: 1px solid #ced4da;
       border-radius: 0.5rem;
@@ -67,7 +69,7 @@ $conn->close();
       cursor: pointer;
       margin-right: 10px;
     }
-  </style>
+  </style> -->
 </head>
 <body>
 
@@ -116,9 +118,9 @@ include '../navbar.php';
                               <td>{$row['patient_age']}</td>
                             <td class='action-icons'>
                                
-  <a href='customer_view.php?id={$row['id']}'><i class='fas fa-eye'></i></a>
-                                <a href='customer-edit.php?id={$row['id']}'><i class='fas fa-edit'></i></a>
-                                <a href='delete_customer.php?id={$row['id']}' onclick='return confirm(\"Are you sure you want to delete?\")'><i class='fas fa-trash'></i></a>
+  <a href='customer_view.php?id={$row['id']}'><i class='btn btn-sm fas fa-eye'></i></a>
+                                <a href='customer-edit.php?id={$row['id']}'><i class='btn btn-sm fas fa-edit'></i></a>
+                                <a href='delete_customer.php?id={$row['id']}' onclick='return confirm(\"Are you sure you want to delete?\")'><i class='btn btn-sm fas fa-trash'></i></a>
                               </td>
                             </tr>";
                       $serial++;

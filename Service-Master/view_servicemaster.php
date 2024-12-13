@@ -46,8 +46,9 @@ if ($result->num_rows > 0) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
   <title>Service Master Table</title>
-  <style>
+  <!-- <style>
     .dataTable_wrapper {
       padding: 20px;
     }
@@ -86,7 +87,7 @@ if ($result->num_rows > 0) {
       cursor: pointer;
       margin-right: 10px;
     }
-  </style>
+  </style> -->
 </head>
 <body>
   <?php
@@ -184,8 +185,8 @@ if ($result->num_rows > 0) {
               
               <td class="action-icons">
                
-                <a href="update_service_master.php?id=${row.id}"><i class="fas fa-edit"></i></a>
-                <a href="delete_servicemaster.php?id=${row.id}" onclick="return confirm('Are you sure you want to delete?')"><i class="fas fa-trash"></i></a>
+                <a href="update_service_master.php?id=${row.id}"><i class="btn btn-sm fas fa-edit"></i></a>
+                <a href="delete_servicemaster.php?id=${row.id}" onclick="return confirm('Are you sure you want to delete?')"><i class="btn btn-sm fas fa-trash"></i></a>
               </td>
             </tr>`
         )

@@ -22,19 +22,33 @@ body {
 }
 
 .container {
-    margin-top: 120px;
+    margin-top: 150px;
     /* Adjust this value to match the navbar height */
 }
 
 .navbar-logo-img {
-    height: 90px !important;
+    
+    height: 50px !important;
     /* Set the desired height */
     width: auto;
     /* Maintain aspect ratio */
-    border-radius: 50%;
+    /* border-radius: 50%; */
     /* Circular logo or adjust to your needs */
     object-fit: cover;
     /* Ensure proper scaling of the image */
+    margin-right:80px;
+}
+
+.navbar-ayushlogo-img{
+    height: 65px !important;
+        /* Set the desired height */
+        width: auto;
+        /* Maintain aspect ratio */
+        /* border-radius: 50%; */
+        /* Circular logo or adjust to your needs */
+        object-fit: cover;
+        padding-right: 50px;
+        margin-left: 80px;
 }
 .navbar-header {
     display: flex;
@@ -211,6 +225,95 @@ body {
 .navbar-hamburger .navbar-bar {
     transition: all 0.3s ease;
 }
+/* ====TABLE STYLES STARTS =====*/
+.dataTable_wrapper {
+    padding: 20px;
+}
+
+.dataTable_search input {
+    max-width: 200px;
+}
+
+.dataTable_headerRow th,
+.dataTable_row td {
+    border: 1px solid #dee2e6;
+}
+
+.dataTable_headerRow {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.dataTable_row:hover {
+    background-color: #f1f1f1;
+}
+
+.dataTable_card {
+    border: 1px solid #ced4da;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dataTable_card .card-header {
+    background-color: #A26D2B;
+    color: white;
+    font-weight: bold;
+}
+
+.action-icons i {
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+/* ====TABLE STYLES ENDS =====*/
+
+/* .action-icons i:hover {
+    color: #007bff;
+} */
+
+/* ====FORM STYLES STARTS =====*/
+
+.input-field-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.input-label {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background-color: white;
+    padding: 0 5px;
+    font-size: 14px;
+    font-weight: bold;
+    /* Makes the label bold */
+    color: #A26D2B;
+}
+
+.styled-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 12px;
+    outline: none;
+    box-sizing: border-box;
+    border: 1px solid #A26D2B;
+    border-radius: 5px;
+    /* Adds rounded corners to input fields */
+}
+
+.styled-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+h1,
+h2,
+h3,
+h4 {
+    color: #A26D2B;
+}
+
+/* ====FORM STYLES ENDS =====*/
 
 /* Responsive styles for mobile and tablet (iPad) */
 @media (max-width: 768px) {

@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Service Master Form</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- <style>
     /* General Styles */
     .input-field-container {
       position: relative;
@@ -49,7 +51,7 @@
         width: 100%; 
       }
     }
-  </style>
+  </style> -->
 </head>
 <body>
   <?php

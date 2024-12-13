@@ -109,8 +109,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
   <title>Edit Employee</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-  <style>
+   <link rel="stylesheet" href="../assets/css/style.css">
+  <!-- <style>
     .input-field-container {
       position: relative;
       margin-bottom: 15px;
@@ -145,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     h1, h2, h3, h4 {
       color: #A26D2B;
     }
-  </style>
+  </style> -->
 </head>
 <body>
 <?php include('../navbar.php'); ?>

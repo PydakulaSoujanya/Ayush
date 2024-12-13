@@ -41,9 +41,9 @@ $totalRecords = $countRow['total'];
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
  
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Include Font Awesome -->
-  
+  <link rel="stylesheet" href="../assets/css/style.css">
   <title>Data Table</title>
-  <style>
+  <!-- <style>
     .dataTable_wrapper {
       padding: 20px;
     }
@@ -82,7 +82,7 @@ $totalRecords = $countRow['total'];
       cursor: pointer;
       margin-right: 10px;
     }
-  </style>
+  </style> -->
 </head>
 <body>
   <?php
@@ -137,12 +137,12 @@ include '../navbar.php';
                         <td>{$row['created_at']}</td>
                         
                         <td class='action-icons'>
-                            <i class='fas fa-eye' style='cursor: pointer;' data-bs-toggle='modal' data-bs-target='#viewModal' onclick='viewDetails(".json_encode($row).")'></i>
+                            <i class='btn btn-sm fas fa-eye' style='cursor: pointer;' data-bs-toggle='modal' data-bs-target='#viewModal' onclick='viewDetails(".json_encode($row).")'></i>
                             <a href='#' data-bs-toggle='modal' data-bs-target='#updateModal' onclick='populateUpdateForm(".json_encode($row).")'>
-    <i class='fas fa-edit'></i>
+    <i class='btn btn-sm fas fa-edit'></i>
 </a>
 
-                            <a href='delete_invoice.php?id={$row['id']}' onclick='return confirm(\"Are you sure you want to delete?\")'><i class='fas fa-trash'></i></a>
+                            <a href='delete_invoice.php?id={$row['id']}' onclick='return confirm(\"Are you sure you want to delete?\")'><i class='btn btn-sm fas fa-trash'></i></a>
                         </td>
                     </tr>";
                 $serial++;

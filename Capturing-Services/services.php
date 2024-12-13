@@ -1,6 +1,6 @@
 <?php
 // Include database connection
-include 'config.php';
+include '../config.php';
 
 // Fetch existing customers
 $customers = [];
@@ -34,139 +34,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Service Request Form</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    .input-field-container {
-      position: relative;
-      margin-bottom: 15px;
-    }
-
-    .input-label {
-      position: absolute;
-      top: -10px;
-      left: 10px;
-      background-color: white;
-      padding: 0 5px;
-      font-size: 14px;
-      font-weight: bold; 
-      color: #A26D2B;
-    }
-
-    .styled-input {
-      width: 100%;
-      padding: 10px;
-      font-size: 12px;
-      outline: none;
-      box-sizing: border-box;
-      border: 1px solid #A26D2B;
-      border-radius: 5px; 
-    }
-
-    .styled-input:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-    }
-
-    h1, h2, h3, h4 {
-      color: #A26D2B;
-    }
-    @media (max-width: 768px) {
-  .form-section {
-    padding: 15px;
-    margin: 10px;
-  }
-
-  .styled-input {
-    font-size: 12px;
-    padding: 8px;
-  }
-
-  .input-label {
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 576px) {
-  .form-section {
-    padding: 10px;
-    margin: 5px;
-  }
-
-  .styled-input {
-    font-size: 12px;
-    padding: 6px;
-  }
-
-  .input-label {
-    font-size: 11px;
-  }
-
-  button {
-    font-size: 14px;
-    padding: 8px 12px;
-  }
-}
-
-/* Form Responsiveness */
-.row {
-  margin: 0 -10px;
-}
-
-.col-md-6, .col-md-12 {
-  padding: 0 10px;
-}
-  </style>
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
   <?php
   include '../navbar.php';
   ?>
-  <div class="container mt-7">
-    <h3 class="mb-4"> Capturing Service Request Form</h3>
+ <div class="container mt-7">
+    <h3 class="mb-4">Capturing Service Request Form</h3>
     <div class="form-section">
-      <form action="services_db.php" method="POST">
-        <div class="row">
-       
-        <div class="col-md-6">
-  <div style="display: flex; align-items: center;">
-    <input
-      id="search-customer"
-      class="styled-input"
-      placeholder="Search by phone"
-      oninput="if (this.value.length >= 3) searchCustomerByPhone(this.value)"
-      style="flex: 1; margin-right: 10px;"
-    />
-    <button
-      type="button"
-      class="btn btn-primary btn-sm"
-      data-toggle="modal"
-      data-target="#addCustomerModal"
-    >
-      +
-    </button>
-  </div>
+        <form action="services_db.php" method="POST">
+            <div class="row">
+            <div class="col-md-6">
+    <div class="input-field-container">
+        <label class="input-label">Customer Name</label>
+        <div style="display: flex; align-items: center;">
+            <input
+                id="customer-name"
+                class="styled-input"
+                name="customer_name"
+                oninput="if (this.value.length >= 3) searchCustomers(this.value)"
+                placeholder="Search by name or phone"
+                style="flex: 1; margin-right: 10px;"
+            />
+            <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                data-toggle="modal"
+                data-target="#addCustomerModal"
+            >
+                +
+            </button>
+        </div>
+        <div class="suggestionItem">
+            <ul id="customerList"></ul>
+        </div>
+    </div>
 </div>
+
 <div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Customer Name</label>
-    <input
-      type="text"
-      id="customer-name"
-      class="styled-input"
-      readonly
-    />
-  </div>
+    <div class="input-field-container">
+        <label class="input-label">Phone Number</label>
+        <input type="text" id="emergency_contact_number" class="styled-input" name="emergency_contact_number" placeholder="Phone Number" readonly />
+    </div>
 </div>
+
 <div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Emergency Contact Number</label>
-    <input
-      type="text"
-      id="emergency-contact-number"
-      class="styled-input"
-      readonly
-    />
-  </div>
+    <div class="input-field-container">
+        <label class="input-label">Patient Name</label>
+        <input type="text" class="styled-input" name="patient_name" id="patient_name" placeholder="Patient Name" readonly />
+    </div>
 </div>
+
+<div class="col-md-6">
+    <div class="input-field-container">
+        <label class="input-label">Patient Relation With Customer</label>
+        <input type="text" class="styled-input" name="relationship" id="relationship" placeholder="Patient Relation With Customer" readonly />
+    </div>
+</div>
+            
           <!-- <div class="col-md-6">
             <div class="input-field-container">
               <label class="input-label">Email</label>
@@ -174,15 +100,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
             </div>
           </div> -->
           <div class="col-md-6">
-            <div class="input-field-container">
-              <label class="input-label">Enquiry Time</label>
-              <input type="time" name="enquiry_time" class="styled-input">
-            </div>
-          </div>
-          <div class="col-md-6">
+  <div class="input-field-container">
+    <label class="input-label">Enquiry Time</label>
+    <input
+      type="time"
+      name="enquiry_time"
+      class="styled-input"
+      id="enquiry-time"
+    />
+  </div>
+</div>
+<div class="col-md-6">
   <div class="input-field-container">
     <label class="input-label">Enquiry Date</label>
-    <input type="date" class="styled-input date-input" name="enquiry_date" id="enquiry-date" />
+    <input
+      type="date"
+      class="styled-input date-input"
+      name="enquiry_date"
+      id="enquiry-date"
+    />
   </div>
 </div>
 <div class="col-md-6">
@@ -245,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
 
        <div class="col-md-6">
          <div class="input-field-container">
-           <label class="input-label">Service Price</label>
+           <label class="input-label">Total Service Price</label>
            <input type="text" class="styled-input" name="service_price" id="service_price" placeholder="Service Price" readonly />
          </div>
        </div>
@@ -473,16 +409,129 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
             </div>
           </div>
 
+          <div class="col-md-3">
+  <div class="input-field-container">
+    <label class="input-label">Pincode</label>
+    <input 
+      type="text" 
+      name="pincode" 
+      class="styled-input" 
+      placeholder="6 digits [0-9] PIN code" 
+      required 
+      pattern="\d{6}" 
+      maxlength="6" />
+  </div>
+</div>
+<div class="col-md-6">
+  <div class="input-field-container">
+    <label class="input-label">Flat, House No., Building, Company, Apartment</label>
+    <input 
+      type="text" 
+      name="address_line1" 
+      class="styled-input" 
+      placeholder="Enter Flat, House No., Building, etc." 
+      required />
+  </div>
+</div>
+<div class="col-md-3">
+  <div class="input-field-container">
+    <label class="input-label">Area, Street, Sector, Village</label>
+    <input 
+      type="text" 
+      name="address_line2" 
+      class="styled-input" 
+      placeholder="Enter Area, Street, Sector, Village" />
+  </div>
+</div>
+
+<!-- Flat, House No., Building, etc. Field -->
+
+
+<!-- Area, Street, Sector, Village Field -->
+
+<!-- Landmark Field -->
+<div class="col-md-3">
+  <div class="input-field-container">
+    <label class="input-label">Landmark</label>
+    <input 
+      type="text" 
+      name="landmark" 
+      class="styled-input" 
+      placeholder="E.g. near Apollo Hospital" />
+  </div>
+</div>
+
+<!-- Town/City Field -->
+<div class="col-md-3">
+  <div class="input-field-container">
+    <label class="input-label">Town/City</label>
+    <input 
+      type="text" 
+      name="city" 
+      class="styled-input" 
+      placeholder="Enter Town/City" 
+      required />
+  </div>
+</div>
+
+<!-- State Field -->
+<div class="col-md-3">
+  <div class="input-field-container">
+    <label class="input-label">State</label>
+    <select 
+      name="state" 
+      class="styled-input" 
+      required>
+      <option value="" disabled selected>Choose a state</option>
+      <option value="Andhra Pradesh">Andhra Pradesh</option>
+      <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+      <option value="Assam">Assam</option>
+      <option value="Bihar">Bihar</option>
+      <option value="Chhattisgarh">Chhattisgarh</option>
+      <option value="Goa">Goa</option>
+      <option value="Gujarat">Gujarat</option>
+      <option value="Haryana">Haryana</option>
+      <option value="Himachal Pradesh">Himachal Pradesh</option>
+      <option value="Jharkhand">Jharkhand</option>
+      <option value="Karnataka">Karnataka</option>
+      <option value="Kerala">Kerala</option>
+      <option value="Madhya Pradesh">Madhya Pradesh</option>
+      <option value="Maharashtra">Maharashtra</option>
+      <option value="Manipur">Manipur</option>
+      <option value="Meghalaya">Meghalaya</option>
+      <option value="Mizoram">Mizoram</option>
+      <option value="Nagaland">Nagaland</option>
+      <option value="Odisha">Odisha</option>
+      <option value="Punjab">Punjab</option>
+      <option value="Rajasthan">Rajasthan</option>
+      <option value="Sikkim">Sikkim</option>
+      <option value="Tamil Nadu">Tamil Nadu</option>
+      <option value="Telangana">Telangana</option>
+      <option value="Tripura">Tripura</option>
+      <option value="Uttar Pradesh">Uttar Pradesh</option>
+      <option value="Uttarakhand">Uttarakhand</option>
+      <option value="West Bengal">West Bengal</option>
+      <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+      <option value="Chandigarh">Chandigarh</option>
+      <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+      <option value="Delhi">Delhi</option>
+      <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+      <option value="Ladakh">Ladakh</option>
+      <option value="Lakshadweep">Lakshadweep</option>
+      <option value="Puducherry">Puducherry</option>
+    </select>
+  </div>
+</div>
           <!-- Seventh Row -->
-          <div class="row">
-            <!-- Address -->
+          <!-- <div class="row">
+      
             <div class="col-md-12">
               <div class="input-field-container">
                 <label class="input-label">Address</label>
                 <textarea class="styled-input" name="address" placeholder="Enter address"></textarea>
               </div>
             </div>
-          </div>
+          </div> -->
 
           <!-- Submit Button -->
           <div class="row">
@@ -498,21 +547,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
   </div>
 </div>
 
-<script>
-  // Show/Hide fields based on patient status selection
-  document.getElementById('patientStatus').addEventListener('change', function () {
-    var patientNameField = document.getElementById('patientNameField');
-    var relationshipField = document.getElementById('relationshipField');
-
-    if (this.value === 'no') {
-      patientNameField.classList.remove('hidden');
-      relationshipField.classList.remove('hidden');
-    } else {
-      patientNameField.classList.add('hidden');
-      relationshipField.classList.add('hidden');
-    }
-  });
-</script>
 
 <style>
   .modal-dialog {
@@ -674,119 +708,192 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-
 document.addEventListener('DOMContentLoaded', function () {
-    const serviceTypeInput = document.getElementById('service_type');
-    const totalDaysInput = document.getElementById('total_days');
-    const servicePriceInput = document.getElementById('service_price');
-    const serviceDurationInput = document.getElementById('service_duration'); // Added for duration
+        const serviceTypeInput = document.getElementById('service_type');
+        const totalDaysInput = document.getElementById('total_days');
+        const servicePriceInput = document.getElementById('service_price');
+        const perDayServicePriceInput = document.getElementById('per_day_service_price');
+        const serviceDurationInput = document.getElementById('service_duration');
 
-    // Event listener for service type and duration selection
-    serviceTypeInput.addEventListener('change', calculateServiceCharge);
-    serviceDurationInput.addEventListener('change', calculateServiceCharge);
+        // Event listeners
+        serviceTypeInput.addEventListener('change', calculateServiceCharge);
+        serviceDurationInput.addEventListener('change', calculateServiceCharge);
+        totalDaysInput.addEventListener('input', calculateServiceCharge);
 
-    // Event listener for total days change
-    totalDaysInput.addEventListener('input', calculateServiceCharge);
+        function calculateServiceCharge() {
+            const serviceType = serviceTypeInput.value;
+            const totalDays = parseInt(totalDaysInput.value, 10);
+            const serviceDuration = parseInt(serviceDurationInput.value, 10);
 
-    // Function to fetch service data and calculate service charge
-    function calculateServiceCharge() {
-        const serviceType = serviceTypeInput.value;
-        const totalDays = parseInt(totalDaysInput.value, 10);
-        const serviceDuration = parseInt(serviceDurationInput.value, 10); // Fetch selected duration
+            if (serviceType && totalDays > 0 && serviceDuration) {
+                fetchServiceDetails(serviceType).then(serviceDetails => {
+                    if (serviceDetails) {
+                        let dailyRate = 0;
 
-        // Check if inputs are valid
-        if (serviceType && totalDays && serviceDuration && !isNaN(totalDays) && totalDays > 0) {
-            console.log("Service Type: ", serviceType);
-            console.log("Total Days: ", totalDays);
-            console.log("Service Duration: ", serviceDuration);
+                        if (serviceDuration === 8) {
+                            dailyRate = parseFloat(serviceDetails.daily_rate_8_hours);
+                        } else if (serviceDuration === 12) {
+                            dailyRate = parseFloat(serviceDetails.daily_rate_12_hours);
+                        } else if (serviceDuration === 24) {
+                            dailyRate = parseFloat(serviceDetails.daily_rate_24_hours);
+                        }
 
-            // Fetch the service type details from the database
-            fetchServiceDetails(serviceType).then(serviceDetails => {
-                if (serviceDetails) {
-                    console.log("Service Details: ", serviceDetails);
-                    let dailyRate = 0;
+                        if (isNaN(dailyRate)) {
+                            servicePriceInput.value = 'Rate not available';
+                            return;
+                        }
 
-                    // Determine the rate based on the selected duration
-                    if (serviceDuration === 8) {
-                        dailyRate = serviceDetails.daily_rate_8_hours;
-                    } else if (serviceDuration === 12) {
-                        dailyRate = serviceDetails.daily_rate_12_hours;
-                    } else if (serviceDuration === 24) {
-                        dailyRate = serviceDetails.daily_rate_24_hours;
+                        const totalServicePrice = dailyRate * totalDays;
+                        servicePriceInput.value = totalServicePrice.toFixed(2);
+                        perDayServicePriceInput.value = dailyRate.toFixed(2);
+                    }
+                }).catch(error => {
+                    console.error("Error fetching service details:", error);
+                    alert("An error occurred while calculating service charge.");
+                });
+            } else {
+                servicePriceInput.value = '';
+                perDayServicePriceInput.value = '';
+            }
+        }
+
+        function fetchServiceDetails(serviceType) {
+            return new Promise((resolve, reject) => {
+                fetch("get_service_details.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `service_type=${encodeURIComponent(serviceType)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        resolve(data.serviceDetails);
                     } else {
-                        console.log("Invalid service duration selected.");
-                        servicePriceInput.value = 'Invalid duration';
-                        return;
+                        reject("Service not found.");
                     }
-
-                    if (!dailyRate) {
-                        console.log("No daily rate found for the selected service type and duration.");
-                        servicePriceInput.value = 'Rate not available';
-                        return;
-                    }
-
-                    // Calculate total service price
-                    const totalServicePrice = dailyRate * totalDays;
-
-                    // Display the calculated service charge
-                    servicePriceInput.value = totalServicePrice.toFixed(2);
-                } else {
-                    servicePriceInput.value = '';
-                    alert("Failed to fetch service details.");
-                }
-            }).catch(error => {
-                console.error("Error fetching service details:", error);
-                alert("An error occurred while calculating service charge.");
+                })
+                .catch(error => reject(error));
             });
-        } else {
-            servicePriceInput.value = '';
         }
-    }
+    });
 
-    // Function to fetch service details from the database
-    function fetchServiceDetails(serviceType) {
-        return new Promise((resolve, reject) => {
-            fetch("get_service_details.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: `service_type=${encodeURIComponent(serviceType)}`
-            })
-            .then(response => response.json())
-            .then(data => {
+    function searchCustomers(search) {
+    const customerList = document.getElementById("customerList");
+    const inputFieldCustomerName = document.getElementById("customer-name");
+    const inputFieldContactNo = document.getElementById("emergency_contact_number");
+    const patientNameField = document.getElementById("patient_name");
+    const patientRelationField = document.getElementById("relationship");
+
+    // Clear previous suggestions and reset fields
+    customerList.innerHTML = "";
+    inputFieldCustomerName.value = "";
+    inputFieldContactNo.value = "";
+    patientNameField.value = "";
+    patientRelationField.value = "";
+
+    if (search.trim() !== "") {
+        fetch(`search_customer.php?search=${search}`)
+            .then((response) => response.json())
+            .then((data) => {
                 if (data.success) {
-                    resolve(data.serviceDetails);
+                    const customers = data.data;
+
+                    // Create list items for suggestions
+                    customers.forEach((customer, index) => {
+                        const listItem = document.createElement("li");
+
+                        // Create the HTML for each customer
+                        listItem.innerHTML = `
+                            <div>
+                                <strong>${customer.customer_name}</strong> - ${customer.emergency_contact_number}
+                                <ul style="margin-top: 5px; padding-left: 20px;">
+                                    <li>
+                                        <input 
+                                            type="checkbox" 
+                                            id="patient_${index}" 
+                                            data-customer-name="${customer.customer_name}" 
+                                            data-contact-number="${customer.emergency_contact_number}" 
+                                            data-patient-name="${customer.patient_name || ""}" 
+                                            data-patient-relation="${customer.relationship || ""}" 
+                                            onchange="selectPatient(this)" 
+                                        />
+                                        <label for="patient_${index}">
+                                            ${customer.patient_name || "Unknown"} (${customer.relationship || "Unknown"})
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>`;
+
+                        customerList.appendChild(listItem);
+                    });
                 } else {
-                    reject("Service not found.");
+                    console.error("Error: " + data.message);
                 }
             })
-            .catch(error => reject(error));
-        });
+            .catch((error) => {
+                console.error("Error fetching customer data:", error);
+            });
     }
-});
-function searchCustomerByPhone(phoneNumber) {
-  if (phoneNumber.trim() !== "") {
-    fetch(`search_customer.php?search=${phoneNumber}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success && data.data.length > 0) {
-          const customer = data.data[0]; // Assuming the first match is taken
-          document.getElementById("customer-name").value = customer.customer_name;
-          document.getElementById("emergency-contact-number").value = customer.emergency_contact_number;
-        } else {
-          // Clear the fields if no results are found
-          document.getElementById("customer-name").value = "";
-          document.getElementById("emergency-contact-number").value = "";
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching customer data:", error);
-        document.getElementById("customer-name").value = "";
-        document.getElementById("emergency-contact-number").value = "";
-      });
-  }
 }
+
+function selectPatient(checkbox) {
+    const inputFieldCustomerName = document.getElementById("customer-name");
+    const inputFieldContactNo = document.getElementById("emergency_contact_number");
+    const patientNameField = document.getElementById("patient_name");
+    const patientRelationField = document.getElementById("relationship");
+    const customerList = document.getElementById("customerList");
+
+    if (checkbox.checked) {
+        // Populate all fields with data from the checkbox
+        inputFieldCustomerName.value = checkbox.dataset.customerName || "Unknown";
+        inputFieldContactNo.value = checkbox.dataset.contactNumber || "Unknown";
+        patientNameField.value = checkbox.dataset.patientName || "Unknown";
+        patientRelationField.value = checkbox.dataset.patientRelation || "Unknown";
+
+        // Hide the suggestion list after selecting
+        customerList.innerHTML = "";
+
+        // Uncheck other checkboxes if one is selected
+        const allCheckboxes = document.querySelectorAll('#customerList input[type="checkbox"]');
+        allCheckboxes.forEach((cb) => {
+            if (cb !== checkbox) {
+                cb.checked = false;
+            }
+        });
+    } else {
+        // Clear all fields if the checkbox is unchecked
+        inputFieldCustomerName.value = "";
+        inputFieldContactNo.value = "";
+        patientNameField.value = "";
+        patientRelationField.value = "";
+    }
+}
+
+
+ // Function to set current date and time
+ function setCurrentDateTime() {
+    const now = new Date();
+
+    // Format time as HH:MM
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const currentTime = `${hours}:${minutes}`;
+
+    // Format date as YYYY-MM-DD
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const date = String(now.getDate()).padStart(2, "0");
+    const currentDate = `${year}-${month}-${date}`;
+
+    // Set the values of the input fields
+    document.getElementById("enquiry-time").value = currentTime;
+    document.getElementById("enquiry-date").value = currentDate;
+  }
+
+  // Set current date and time on page load
+  document.addEventListener("DOMContentLoaded", setCurrentDateTime);
 
   </script>
 

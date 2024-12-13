@@ -11,9 +11,14 @@
 
 <body>
     <header class="navbar-header">
-        <div class="navbar-brand">
+        <!-- <div class="navbar-brand">
             <img src="../images/logo.jpg" alt="Ayush App Logo" class="navbar-logo-img" />
-        </div>
+        </div> -->
+
+        <div class="text-center mb-4 d-flex justify-content-center align-items-center gap-3">
+  <img src="../assets/images/ayush_logo.jpg" alt="Ayush App Logo" class="navbar-ayushlogo-img mt-3" />
+  <!-- <img src="../images/payfiller_logo.jpg" alt="Payfiller App Logo" class="navbar-logo-img mt-3" /> -->
+</div>
 
         <div class="navbar-hamburger" onclick="toggleMenu()">
             <div class="navbar-bar"></div>
@@ -88,6 +93,7 @@
                 </span>
                 <div class="navbar-dropdown-content" id="service">
                     <a href="../Service-Master/view_servicemaster.php">Services</a>
+                    <a href="../Capturing-Services/services.php">Capture Services</a>
                     <!-- <a href="/estimateReport">Estimate Report</a>
                     <a href="/purchaseReport">Purchase Report</a>
                     <a href="/repairsReport">Repairs Report</a>
@@ -137,6 +143,11 @@
             </div>
         </div>
     </div>
+
+    <div class="text-center mb-4 d-flex justify-content-center align-items-center gap-3">
+  <!-- <img src="../images/ayush_logo.jpg" alt="Ayush App Logo" class="navbar-logo-img mt-3" /> -->
+  <img src="../assets/images/payfiller_logo.jpg" alt="Payfiller App Logo" class="navbar-logo-img mt-3" />
+</div>
 
 
 
