@@ -1,5 +1,5 @@
 <?php
-include('config.php'); // Ensure this includes database connection details
+include('../config.php'); // Ensure this includes database connection details
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $employeeId = intval($_POST['id']); // Validate and sanitize the input
