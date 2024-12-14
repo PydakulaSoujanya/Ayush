@@ -10,6 +10,10 @@
 </head>
 
 <body>
+    <div id="page-loader" class="loader" style="display: none;">
+    <div class="spinner"></div>
+</div>
+
     <header class="navbar-header">
         <!-- <div class="navbar-brand">
             <img src="../images/logo.jpg" alt="Ayush App Logo" class="navbar-logo-img" />
@@ -193,6 +197,32 @@
             }
         }
     </script>
+
+    <script>
+    // Show loader on navigation
+    document.addEventListener('DOMContentLoaded', function () {
+        const links = document.querySelectorAll('a[href]');
+        links.forEach(link => {
+            link.addEventListener('click', function (e) {
+                const href = link.getAttribute('href');
+
+                // Ensure the link has an actual destination
+                if (href && href !== 'javascript:void(0);') {
+                    e.preventDefault();
+                    
+                    // Show the loader
+                    document.getElementById('page-loader').style.display = 'flex';
+                    
+                    // Simulate navigation (for demo) or perform actual navigation
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 500); // Adjust delay if needed
+                }
+            });
+        });
+    });
+</script>
+
 </body>
 
 </html>
