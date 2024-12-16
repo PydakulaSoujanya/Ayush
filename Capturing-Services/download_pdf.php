@@ -18,13 +18,13 @@ if (isset($_GET['invoice_id']) || isset($_GET['id'])) {
     $stmt->execute();
     $stmt->store_result();
     $stmt->bind_result($pdf_invoice_path);
-    if ($stmt->fetch()) {
-    echo "PDF Invoice Path: " . $pdf_invoice_path;
-} else {
-    echo "No results found.";
-}
-    // Check if the invoice exists $stmt->num_rows >
-    if (0) {
+//     if ($stmt->fetch()) {
+//     echo "PDF Invoice Path: " . $pdf_invoice_path;
+// } else {
+//     echo "No results found.";
+// }
+    // Check if the invoice exists 
+    if ($stmt->num_rows >0) {
         $stmt->fetch(); // Get the pdf path
 
         // Check if the PDF file exists on the server
