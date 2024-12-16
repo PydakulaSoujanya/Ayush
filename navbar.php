@@ -148,6 +148,14 @@
         </div>
     </div>
 
+    <!-- <a href="logout.php" class="btn btn-danger">Logout</a> -->
+
+    <a href="../logout.php" class="btn btn-secondary">
+    <i class="fas fa-sign-out-alt"></i>
+</a>
+
+
+
     <div class="text-center mb-4 d-flex justify-content-center align-items-center gap-3">
   <!-- <img src="../images/ayush_logo.jpg" alt="Ayush App Logo" class="navbar-logo-img mt-3" /> -->
   <img src="../assets/images/payfiller_logo.jpg" alt="Payfiller App Logo" class="navbar-logo-img mt-3" />
