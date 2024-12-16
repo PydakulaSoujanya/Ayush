@@ -64,6 +64,7 @@ body {
 .navbar-logo-img {
     height: 70px !important;
     /* Set the desired height */
+    margin-left: 10px;
     width: auto;
     /* Maintain aspect ratio */
     /* border-radius: 50%; */
@@ -71,3 +72,26 @@ body {
     object-fit: cover;
     /* Ensure proper scaling of the image */
 }
+
+/* .ayush-logo-img {
+    height: 10px !important;
+   
+    margin-left: 10px;
+    width: auto;
+ 
+    border-radius: 50%;
+   
+    object-fit: cover;
+   
+}
+
+.payfiller-logo-img{
+    height: 70px !important;
+   
+    width: auto;
+   
+    border-radius: 50%;
+  
+    object-fit: cover;
+   
+} */

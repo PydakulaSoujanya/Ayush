@@ -1,13 +1,59 @@
 
-
 <?php
-
 include('../config.php'); // Include database connection
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Fetch vendor payment data
-$query = "SELECT * FROM vendor_payments ORDER BY created_at DESC";
+$query = "
+SELECT 
+    vp.purchase_invoice_number,
+    vp.bill_id,
+    vp.vendor_name,
+    vp.invoice_amount,
+    vp.created_at,
+    COALESCE(SUM(v.paid_amount), 0) AS total_paid_amount,
+    vp.invoice_amount - COALESCE(SUM(v.paid_amount), 0) AS remaining_balance,
+    CASE 
+        WHEN vp.invoice_amount - COALESCE(SUM(v.paid_amount), 0) = 0 THEN 'Paid'
+        WHEN COALESCE(SUM(v.paid_amount), 0) = 0 THEN 'Pending'
+        ELSE 'Partially Paid'
+    END AS payment_status
+FROM 
+    vendor_payments_new vp
+LEFT JOIN 
+    vouchers_new v 
+ON 
+    vp.purchase_invoice_number = v.purchase_invoice_number
+GROUP BY 
+    vp.purchase_invoice_number, vp.bill_id, vp.vendor_name, vp.invoice_amount, vp.created_at
+ORDER BY 
+    vp.created_at DESC";
+
+
 $result = mysqli_query($conn, $query);
+
+if (!$result) {
+    die("Query Failed: " . mysqli_error($conn));
+}
+
+// Fetch the latest voucher number from the vouchers_new table
+$voucherQuery = "SELECT voucher_number FROM vouchers_new ORDER BY id DESC LIMIT 1";
+$voucherResult = mysqli_query($conn, $voucherQuery);
+
+if ($voucherResult && mysqli_num_rows($voucherResult) > 0) {
+    $voucherRow = mysqli_fetch_assoc($voucherResult);
+    $lastVoucherNumber = $voucherRow['voucher_number']; // Example: "VOU01"
+
+    // Extract numeric part and increment
+    $number = intval(substr($lastVoucherNumber, 3)); // Remove "VOU"
+    $nextVoucherNumber = 'VOU' . str_pad($number + 1, 2, '0', STR_PAD_LEFT); // Increment and format
+} else {
+    $nextVoucherNumber = 'VOU01'; // Default if no vouchers exist
+}
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,7 +65,6 @@ $result = mysqli_query($conn, $query);
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <link rel="stylesheet" href="../assets/css/style.css">
   <title>Data Table</title>
-
   <!-- <style>
     .dataTable_wrapper {
       padding: 20px;
@@ -77,81 +122,60 @@ include('../navbar.php');
 
         <!-- Table -->
         <div class="table-responsive">
-    <table class="table table-bordered table-responsive">
-        <thead class="thead-dark">
-        <tr>
-        <th>S.No</th>
-        <th>Bill ID</th>
-        <th>Vendor Name</th>
-        <th>Payment Amount</th>
-        <th>Paid Amount</th>
-        <th>Remaining Balance</th>
-        <th>Payment Status</th>
-        <th>Payment Date</th>
-        <th>Payment Mode & Details</th> <!-- Combined column -->
-        <th>Created At</th>
-        <th>Action</th>
-    </tr>
-        </thead>
-        <tbody>
-        <?php
+        <table class="table table-bordered table-responsive table-striped">
+              <thead class="thead-dark">
+                  <tr>
+                      <th>S.No</th>
+                      <th>Invoice No</th>
+                      <th>Invoice Date</th>
+                      <th>Bill ID</th>
+                      <th>Vendor Name</th>
+                      <th>Invoice Amount</th>
+                      <th>Paid Amount</th>
+                      <th>Remaining Balance</th>
+                      <th>Payment Status</th>
+                      <th>Action</th>
+                  </tr>
+              </thead>
+              <tbody>
+              <?php
 if (mysqli_num_rows($result) > 0) {
-    $serialNumber = 1; // Initialize serial number
-
-    // Keep track of the latest bill IDs we have encountered
-    $latestBillIds = [];
+    $serialNumber = 1;
 
     while ($row = mysqli_fetch_assoc($result)) {
-      $transactionDetails = '';
-  
-      // Combine transaction details based on payment mode
-      if ($row['payment_mode'] === 'UPI') {
-          $transactionDetails = "UPI<br>Transaction ID: {$row['transaction_id']}";
-      } elseif ($row['payment_mode'] === 'Card') {
-          $transactionDetails = "Card<br>Reference No: {$row['card_reference_number']}";
-      } elseif ($row['payment_mode'] === 'Bank Transfer') {
-          $transactionDetails = "Bank Transfer<br>Transaction ID: {$row['transaction_id']}<br>Bank Name: {$row['bank_name']}";
-      } else {
-          $transactionDetails = "{$row['payment_mode']}<br>N/A";
-      }
-  
-      echo "<tr>
-          <td>{$serialNumber}</td>
-          <td>{$row['bill_id']}</td>
-          <td>{$row['vendor_name']}</td>
-          <td>{$row['payment_amount']}</td>
-          <td>{$row['paid_amount']}</td>
-          <td>{$row['remaining_balance']}</td>
-          <td>{$row['payment_status']}</td>
-          <td>{$row['payment_date']}</td>
-          <td>{$transactionDetails}</td>
-          <td>{$row['created_at']}</td>
-          <td>";
-          
-      // Conditionally render action buttons
-      if (!in_array($row['bill_id'], $latestBillIds)) {
-          if ($row['payment_status'] === 'Paid') {
-              $latestBillIds[] = $row['bill_id'];
-          } elseif ($row['payment_status'] === 'Partially Paid' && $row['remaining_balance'] > 0) {
-              echo "<button class='btn btn-primary btn-sm pay-btn' data-payment-id='{$row['id']}' title='Pay Remaining'>
-                      <i class='fas fa-coins'></i>
-                    </button>";
-              $latestBillIds[] = $row['bill_id'];
-          }
-      }
-  
-      echo "</td>
-      </tr>";
-  
-      $serialNumber++; // Increment serial number
-  }
-} else {
-    echo "<tr><td colspan='12' class='text-center'>No records found</td></tr>";
+        $formattedDate = date("d-m-Y", strtotime($row['created_at']));
+        $paidAmount = $row['total_paid_amount']; // From vouchers_new
+        $remainingBalance = $row['remaining_balance']; // From vouchers_new
+        $paymentStatus = $row['payment_status']; // Dynamically determined
+
+        echo "<tr>";
+        echo "<td>{$serialNumber}</td>";
+        echo "<td>{$row['purchase_invoice_number']}</td>";
+        echo "<td>{$formattedDate}</td>";
+        echo "<td>{$row['bill_id']}</td>";
+        echo "<td>{$row['vendor_name']}</td>";
+        echo "<td>{$row['invoice_amount']}</td>";
+        echo "<td>{$paidAmount}</td>";
+        echo "<td>{$remainingBalance}</td>";
+        echo "<td>{$paymentStatus}</td>";
+        echo "<td>
+                <form class='voucher-form'>
+                    <input type='hidden' name='purchase_invoice_number' value='{$row['purchase_invoice_number']}'>
+                    <button type='button' 
+                            class='btn btn-success btn-sm open-voucher-page'
+                            data-invoice-number='{$row['purchase_invoice_number']}'>
+                        <i class='fas fa-file-invoice'></i> Create Voucher
+                    </button>
+                </form>
+              </td>";
+        echo "</tr>";
+
+        $serialNumber++;
+    }
 }
 ?>
-
 </tbody>
-    </table>
+          </table>
 
 
 
@@ -177,95 +201,9 @@ if (mysqli_num_rows($result) > 0) {
       </div>
     </div>
   </div>
-<!-- Modal Structure -->
-<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="paymentModalLabel">Pay Remaining Amount</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="paymentForm">
-            <div class="modal-body">
-    <div class="row">
-        <!-- Bill ID -->
-        <div class="col-md-6 mb-3">
-            <label for="bill_id" class="form-label">Bill ID</label>
-            <input type="text" class="form-control" id="bill_id" name="bill_id" readonly>
-        </div>
-
-        <!-- Vendor Name -->
-        <div class="col-md-6 mb-3">
-            <label for="vendor_name" class="form-label">Vendor Name</label>
-            <input type="text" class="form-control" id="vendor_name" name="vendor_name" readonly>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Paid Amount -->
-        <div class="col-md-6 mb-3">
-            <label for="paid_amount" class="form-label">Paid Amount</label>
-            <input type="text" class="form-control" id="paid_amount" name="paid_amount" readonly>
-        </div>
-
-        <!-- Remaining Balance -->
-        <div class="col-md-6 mb-3">
-            <label for="remaining_balance" class="form-label">Remaining Balance</label>
-            <input type="text" class="form-control" id="remaining_balance" name="remaining_balance" readonly>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Amount to Pay -->
-        <div class="col-md-6 mb-3">
-            <label for="amount_to_pay" class="form-label">Amount to Pay</label>
-            <input type="number" class="form-control" id="amount_to_pay" name="amount_to_pay" required>
-        </div>
-
-        <!-- Payment Mode -->
-        <div class="col-md-6 mb-3">
-            <label for="payment_mode" class="form-label">Payment Mode</label>
-            <select class="form-select" id="payment_mode" name="payment_mode" required>
-            <option value="" disabled selected>Select Payment</option>
-            <option value="UPI">UPI</option>
-                <option value="Cash">Cash</option>
-                <option value="Card">Card</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Transaction ID (for Bank Transfer) -->
-<div class="mb-3" id="transaction_id_container" style="display: none;">
-    <label for="transaction_id" class="form-label">Transaction ID</label>
-    <input type="text" class="form-control" id="transaction_id" name="transaction_id" placeholder="Enter Transaction ID">
-</div>
-
-<!-- Reference Number (for Card) -->
-<div class="mb-3" id="card_reference_container" style="display: none;">
-    <label for="card_reference_number" class="form-label">Reference Number</label>
-    <input type="text" class="form-control" id="card_reference_number" name="card_reference_number" placeholder="Enter Reference Number">
-</div>
-
-<!-- Bank Name (for Bank Transfer) -->
-<div class="mb-3" id="bank_name_container" style="display: none;">
-    <label for="bank_name" class="form-label">Bank Name</label>
-    <input type="text" class="form-control" id="bank_name" name="bank_name" placeholder="Enter Bank Name">
-</div>
 
 
 
-    <div class="row">
-      <div class="col-md-12 text-center">
-        <button type="submit" class="btn btn-primary" name="submit" value="Submit">Submit</button>
-      </div>
-    </div>
-</div>
-
-            </form>
-        </div>
-    </div>
-</div>
   <script>
   document.addEventListener("DOMContentLoaded", function () {
     const tableRows = Array.from(document.querySelectorAll("tbody tr"));
@@ -336,88 +274,7 @@ if (mysqli_num_rows($result) > 0) {
 });
 
   </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const payButtons = document.querySelectorAll(".pay-btn");
-        const paymentModal = new bootstrap.Modal(document.getElementById("paymentModal"));
-
-        payButtons.forEach((button) => {
-            button.addEventListener("click", function () {
-                const paymentId = this.dataset.paymentId; // Fetch the specific payment ID
-
-                // Fetch Payment Details for the specific payment ID
-                fetch(`fetch_bill_details.php?payment_id=${paymentId}`)
-                    .then((response) => response.json())
-                    .then((data) => {
-                        if (data.error) {
-                            alert(data.error);
-                        } else {
-                            // Populate modal with fetched data
-                            document.getElementById("bill_id").value = data.bill_id;
-                            document.getElementById("vendor_name").value = data.vendor_name;
-                            document.getElementById("paid_amount").value = data.paid_amount;
-                            document.getElementById("remaining_balance").value = data.remaining_balance;
-                            document.getElementById("amount_to_pay").value = ""; // Clear previous input
-                        }
-                        paymentModal.show(); // Show the modal
-                    })
-                    .catch((error) => console.error("Error fetching payment details:", error));
-            });
-        });
-
-        // Display fields conditionally based on Payment Mode
-        const paymentMode = document.getElementById("payment_mode");
-        const transactionIdContainer = document.getElementById("transaction_id_container");
-        const cardReferenceContainer = document.getElementById("card_reference_container");
-        const bankNameContainer = document.getElementById("bank_name_container");
-
-        // Initially hide all conditional fields
-        transactionIdContainer.style.display = "none";
-        cardReferenceContainer.style.display = "none";
-        bankNameContainer.style.display = "none";
-
-        paymentMode.addEventListener("change", function () {
-            const selectedMode = this.value;
-
-            // Hide all fields initially
-            transactionIdContainer.style.display = "none";
-            cardReferenceContainer.style.display = "none";
-            bankNameContainer.style.display = "none";
-
-            // Show relevant fields based on the selected payment mode
-            if (selectedMode === "Card") {
-                cardReferenceContainer.style.display = "block";
-            } else if (selectedMode === "Bank Transfer") {
-                transactionIdContainer.style.display = "block";
-                bankNameContainer.style.display = "block";
-            } else if (selectedMode === "UPI") {
-                transactionIdContainer.style.display = "block";
-            }
-        });
-
-        // Handle form submission
-        document.getElementById("paymentForm").addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-
-            fetch("update_payment.php", {
-                method: "POST",
-                body: formData,
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        alert("Payment recorded successfully!");
-                        window.location.reload();
-                    } else {
-                        alert("Error: " + data.error);
-                    }
-                })
-                .catch((error) => console.error("Error:", error));
-        });
-    });
-</script>
+  
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -426,7 +283,17 @@ if (mysqli_num_rows($result) > 0) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     });
+    document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".open-voucher-page").forEach(button => {
+        button.addEventListener("click", function () {
+            const purchaseInvoiceNumber = this.getAttribute("data-invoice-number");
+            // Redirect to the vouchers page with the invoice number as a parameter
+            window.location.href = `view_vouchers.php?purchase_invoice_number=${purchaseInvoiceNumber}`;
+        });
+    });
+});
 </script>
+
 
 </body>
 </html>

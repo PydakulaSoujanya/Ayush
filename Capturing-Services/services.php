@@ -34,222 +34,331 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Service Request Form</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../assets/css/style.css">
+
+   <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .input-field-container {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .input-label {
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      background-color: white;
+      padding: 0 5px;
+      font-size: 14px;
+      font-weight: bold; 
+      color: #A26D2B;
+    }
+
+    .styled-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 12px;
+      outline: none;
+      box-sizing: border-box;
+      border: 1px solid #A26D2B;
+      border-radius: 5px; 
+    }
+
+    .styled-input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    h1, h2, h3, h4 {
+      color: #A26D2B;
+    }
+    @media (max-width: 768px) {
+  .form-section {
+    padding: 15px;
+    margin: 10px;
+  }
+
+  .styled-input {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .input-label {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .form-section {
+    padding: 10px;
+    margin: 5px;
+  }
+
+  .styled-input {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .input-label {
+    font-size: 11px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+}
+
+/* Form Responsiveness */
+.row {
+  margin: 0 -10px;
+}
+
+.col-md-6, .col-md-12 {
+  padding: 0 10px;
+}
+
+.add-button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .add-button:hover {
+    background-color: #0056b3;
+  }
+
+  .bordered-field {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+  }
+
+  .input-field-container {
+    margin-bottom: 15px;
+  }
+
+  .input-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+  </style>
 </head>
 <body>
   <?php
   include '../navbar.php';
   ?>
  <div class="container mt-7">
-    <h3 class="mb-4">Capturing Service Request Form</h3>
-    <div class="form-section">
-        <form action="services_db.php" method="POST">
-            <div class="row">
-            <div class="col-md-6">
-    <div class="input-field-container">
-        <label class="input-label">Customer Name</label>
-        <div style="display: flex; align-items: center;">
-            <input
+  <h3 class="mb-4">Capturing Service Request Form</h3>
+  <div class="form-section">
+    <form action="services_db.php" method="POST">
+      <div class="row">
+        <!-- Customer Name -->
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Customer Name</label>
+            <div style="display: flex; align-items: center;">
+              <input
                 id="customer-name"
                 class="styled-input"
                 name="customer_name"
                 oninput="if (this.value.length >= 3) searchCustomers(this.value)"
                 placeholder="Search by name or phone"
                 style="flex: 1; margin-right: 10px;"
-            />
-            <button
+              />
+              <button
                 type="button"
                 class="btn btn-primary btn-sm"
                 data-toggle="modal"
                 data-target="#addCustomerModal"
-            >
+              >
                 +
-            </button>
-        </div>
-        <div class="suggestionItem">
-            <ul id="customerList"></ul>
-        </div>
-    </div>
-</div>
-
-<div class="col-md-6">
-    <div class="input-field-container">
-        <label class="input-label">Phone Number</label>
-        <input type="text" id="emergency_contact_number" class="styled-input" name="emergency_contact_number" placeholder="Phone Number" readonly />
-    </div>
-</div>
-
-<div class="col-md-6">
-    <div class="input-field-container">
-        <label class="input-label">Patient Name</label>
-        <input type="text" class="styled-input" name="patient_name" id="patient_name" placeholder="Patient Name" readonly />
-    </div>
-</div>
-
-<div class="col-md-6">
-    <div class="input-field-container">
-        <label class="input-label">Patient Relation With Customer</label>
-        <input type="text" class="styled-input" name="relationship" id="relationship" placeholder="Patient Relation With Customer" readonly />
-    </div>
-</div>
-            
-          <!-- <div class="col-md-6">
-            <div class="input-field-container">
-              <label class="input-label">Email</label>
-              <input type="email" class="styled-input" name="email" id="email" placeholder="Enter Email">
+              </button>
             </div>
-          </div> -->
-          <div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Enquiry Time</label>
-    <input
-      type="time"
-      name="enquiry_time"
-      class="styled-input"
-      id="enquiry-time"
-    />
-  </div>
-</div>
-<div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Enquiry Date</label>
-    <input
-      type="date"
-      class="styled-input date-input"
-      name="enquiry_date"
-      id="enquiry-date"
-    />
-  </div>
-</div>
-<div class="col-md-6">
-         <div class="input-field-container">
-           <label class="input-label">Start Date</label>
-           
-           <input type="date" class="styled-input" name="from_date" id="fromDate" />
-         </div>
-       </div>
-       <div class="col-md-6">
-         <div class="input-field-container">
-           <label class="input-label">End Date</label>
-           <input type="date" class="styled-input" name="end_date" id="endDate" />
-         </div>
-       </div>
-       
-       <div class="col-md-6">
-         <div class="input-field-container">
-           <label class="input-label">Total Days</label>
-           <input type="number" class="styled-input" name="total_days" id="total_days" placeholder="Total Days"/>
-         </div>
-       </div>
+            <div class="suggestionItem">
+              <ul id="customerList"></ul>
+            </div>
+          </div>
+        </div>
 
+        <!-- Phone Number -->
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Phone Number</label>
+            <input type="text" id="emergency_contact_number" class="styled-input" name="emergency_contact_number" placeholder="Phone Number" readonly />
+          </div>
+        </div>
+
+        <!-- Patient Name -->
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Patient Name</label>
+            <input type="text" class="styled-input" name="patient_name" id="patient_name" placeholder="Patient Name" readonly />
+          </div>
+        </div>
+
+        <!-- Relationship -->
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Patient Relation With Customer</label>
+            <input type="text" class="styled-input" name="relationship" id="relationship" placeholder="Patient Relation With Customer" readonly />
+          </div>
+        </div>
+
+        <!-- Enquiry Time -->
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Enquiry Time</label>
+            <input type="time" name="enquiry_time" class="styled-input" id="enquiry-time" />
+          </div>
+        </div>
+
+        <!-- Enquiry Date -->
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Enquiry Date</label>
+            <input type="date" class="styled-input" name="enquiry_date" id="enquiry-date" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Fields for Service Details -->
+      <div id="field-container">
+  <div class="row field-set bordered-field">
     <div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Service Duration (in Hours)</label>
-    <select class="styled-input" name="service_duration" id="service_duration">
-      <option value="" disabled selected>Select Service Duration</option>
-      <option value="8">8 Hours</option>
-      <option value="12">12 Hours</option>
-      <option value="24">24 Hours</option>
-    </select>
+      <div class="input-field-container">
+        <label class="input-label">Start Date</label>
+        <input type="date" class="styled-input" name="from_date[]" id="fromDate" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">End Date</label>
+        <input type="date" class="styled-input" name="end_date[]" id="endDate"/>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">Service Type</label>
+        <select class="styled-input" name="service_type[]" id="service_type">
+          <option value="" disabled selected>Select Service Type</option>
+          <option value="care_taker">Care Taker</option>
+          <option value="fully_trained_nurse">Fully Trained Nurse</option>
+          <option value="semi_trained_nurse">Semi Trained Nurse</option>
+          <option value="nannies">Nannies</option>
+        </select>
+      </div>
+    </div>
+  
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">Service Duration (in Hours)</label>
+        <select class="styled-input" name="service_duration[]" id="service_duration">
+          <option value="" disabled selected>Select Service Duration</option>
+          <option value="8">8 Hours</option>
+          <option value="12">12 Hours</option>
+          <option value="24">24 Hours</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">Total Days</label>
+        <input type="number" class="styled-input" name="total_days[]"   id="total_days"  placeholder="Total Days" readonly />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">Per Day Service Price</label>
+        <input type="text" class="styled-input" name="per_day_service_price[]" placeholder="Service Price" id="per_day_service_price" readonly />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">Total Service Price</label>
+        <input type="text" class="styled-input" onkeyup="updateTotalPrice()" name="service_price[]" placeholder="Service Price" id="service_price" readonly />
+        <div class="col-md-12 text-right">
+          <button id="add-field-set" type="button" class="btn btn-primary mt-3">+ Add Services</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-       
-          
-          <div class="col-md-6">
-            <div class="input-field-container">
-              <label class="input-label">Service Type</label>
-              <select class="styled-input" name="service_type" id="service_type">
-    <option value="" disabled selected>Select Service Type</option>
-    <option value="care_taker">Care Taker</option>
-    <option value="fully_trained_nurse">Fully Trained Nurse</option>
-    <option value="semi_trained_nurse">Semi Trained Nurse</option>
-    <option value="nannies">Nannies</option>
-</select>
-
-
-            </div>
-          </div>
-        
-          <div class="col-md-6">
-         <div class="input-field-container">
-           <label class="input-label">Per Day Service Price</label>
-           <input type="text" class="styled-input" name="per_day_service_price" id="per_day_service_price" placeholder="Service Price" readonly />
-         </div>
-       </div>
-      
-
-       <div class="col-md-6">
-         <div class="input-field-container">
-           <label class="input-label">Total Service Price</label>
-           <input type="text" class="styled-input" name="service_price" id="service_price" placeholder="Service Price" readonly />
-         </div>
-       </div>
-     
-          <div class="col-md-6">
-            <div class="input-field-container">
-              <label class="input-label">Enquiry Source</label>
-              <select class="styled-input" name="enquiry_source">
-
-              <!-- <select class="styled-input" name="enquiry_source"> -->
-                <option value="" disabled selected>Select Enquiry Source</option>
-                <option value="phone">Phone Call</option>
-                <option value="email">Email</option>
-                <option value="walkin">Walk-In</option>
-                <option value="website">Website</option>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="input-field-container">
-              <label class="input-label">Priority Level</label>
-              <select class="styled-input" name="priority_level">
-
-              <!-- <select class="styled-input" name="priority_level"> -->
-                <option value="" disabled selected>Select Priority Level</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="input-field-container">
-              <label class="input-label">Status</label>
-              <select class="styled-input" name="status">
-
-              <!-- <select class="styled-input" name="status"> -->
-                <option value="" disabled selected>Select Status</option>
-               
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="booked">Booked</option>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="input-field-container">
-              <label class="input-label">Request Details</label>
-              <input type="text" class="styled-input" name="request_details" placeholder="Enter Request Details">
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="input-field-container">
-              <label class="input-label">Resolution Notes</label>
-              <textarea class="styled-input" rows="1" name="resolution_notes" placeholder="Enter Resolution Notes"></textarea>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="input-field-container">
-              <label class="input-label">Comments</label>
-              <textarea class="styled-input" rows="1" name="comments" placeholder="Enter Comments"></textarea>
-            </div>
+<div class="col-md-6">
+  <label class="input-label">Total Price</label>
+  <input type="text" id="total_price" class="styled-input" readonly placeholder="Total Price" />
+</div>
+      <!-- Additional Inputs -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Enquiry Source</label>
+            <select class="styled-input" name="enquiry_source">
+              <option value="" disabled selected>Select Enquiry Source</option>
+              <option value="phone">Phone Call</option>
+              <option value="email">Email</option>
+              <option value="walkin">Walk-In</option>
+              <option value="website">Website</option>
+            </select>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Submit</button>
-      </form>
-    </div>
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Priority Level</label>
+            <select class="styled-input" name="priority_level">
+              <option value="" disabled selected>Select Priority Level</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Status</label>
+            <select class="styled-input" name="status">
+              <option value="" disabled selected>Select Status</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="booked">Booked</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Request Details</label>
+            <input type="text" class="styled-input" name="request_details" placeholder="Enter Request Details" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Resolution Notes</label>
+            <textarea class="styled-input" rows="1" name="resolution_notes" placeholder="Enter Resolution Notes"></textarea>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Comments</label>
+            <textarea class="styled-input" rows="1" name="comments" placeholder="Enter Comments"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary mt-3">Submit</button>
+    </form>
   </div>
+</div>
+
 
   <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
   <div class="modal-dialog modal-lg"> <!-- Increased modal size to large -->
@@ -409,119 +518,126 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
             </div>
           </div>
 
-          <div class="col-md-3">
-  <div class="input-field-container">
-    <label class="input-label">Pincode</label>
-    <input 
-      type="text" 
-      name="pincode" 
-      class="styled-input" 
-      placeholder="6 digits [0-9] PIN code" 
-      required 
-      pattern="\d{6}" 
-      maxlength="6" />
+      <div class="row">
+  <!-- Pincode Field -->
+  <div class="col-md-4">
+    <div class="input-field-container">
+      <label class="input-label">Pincode</label>
+      <input 
+        type="text" 
+        name="pincode" 
+        class="styled-input" 
+        placeholder="6 digits [0-9] PIN code" 
+        required 
+        pattern="\d{6}" 
+        maxlength="6" />
+    </div>
   </div>
-</div>
-<div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Flat, House No., Building, Company, Apartment</label>
-    <input 
-      type="text" 
-      name="address_line1" 
-      class="styled-input" 
-      placeholder="Enter Flat, House No., Building, etc." 
-      required />
-  </div>
-</div>
-<div class="col-md-3">
-  <div class="input-field-container">
-    <label class="input-label">Area, Street, Sector, Village</label>
-    <input 
-      type="text" 
-      name="address_line2" 
-      class="styled-input" 
-      placeholder="Enter Area, Street, Sector, Village" />
+
+  <!-- Flat, House No., Building, etc. Field -->
+  <div class="col-md-8">
+    <div class="input-field-container">
+      <label class="input-label">Flat, House No., Building, Company, Apartment</label>
+      <input 
+        type="text" 
+        name="address_line1" 
+        class="styled-input" 
+        placeholder="Enter Flat, House No., Building, etc." 
+        required />
+    </div>
   </div>
 </div>
 
-<!-- Flat, House No., Building, etc. Field -->
+<div class="row">
+  <!-- Area, Street, Sector, Village Field -->
+  <div class="col-md-6">
+    <div class="input-field-container">
+      <label class="input-label">Area, Street, Sector, Village</label>
+      <input 
+        type="text" 
+        name="address_line2" 
+        class="styled-input" 
+        placeholder="Enter Area, Street, Sector, Village" />
+    </div>
+  </div>
 
-
-<!-- Area, Street, Sector, Village Field -->
-
-<!-- Landmark Field -->
-<div class="col-md-3">
-  <div class="input-field-container">
-    <label class="input-label">Landmark</label>
-    <input 
-      type="text" 
-      name="landmark" 
-      class="styled-input" 
-      placeholder="E.g. near Apollo Hospital" />
+  <!-- Landmark Field -->
+  <div class="col-md-6">
+    <div class="input-field-container">
+      <label class="input-label">Landmark</label>
+      <input 
+        type="text" 
+        name="landmark" 
+        class="styled-input" 
+        placeholder="E.g. near Apollo Hospital" />
+    </div>
   </div>
 </div>
 
-<!-- Town/City Field -->
-<div class="col-md-3">
-  <div class="input-field-container">
-    <label class="input-label">Town/City</label>
-    <input 
-      type="text" 
-      name="city" 
-      class="styled-input" 
-      placeholder="Enter Town/City" 
-      required />
+<div class="row">
+  <!-- Town/City Field -->
+  <div class="col-md-6">
+    <div class="input-field-container">
+      <label class="input-label">Town/City</label>
+      <input 
+        type="text" 
+        name="city" 
+        class="styled-input" 
+        placeholder="Enter Town/City" 
+        required />
+    </div>
+  </div>
+
+  <!-- State Field -->
+  <div class="col-md-6">
+    <div class="input-field-container">
+      <label class="input-label">State</label>
+      <select 
+        name="state" 
+        class="styled-input" 
+        required>
+        <option value="" disabled selected>Choose a state</option>
+        <option value="Andhra Pradesh">Andhra Pradesh</option>
+        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+        <option value="Assam">Assam</option>
+        <option value="Bihar">Bihar</option>
+        <option value="Chhattisgarh">Chhattisgarh</option>
+        <option value="Goa">Goa</option>
+        <option value="Gujarat">Gujarat</option>
+        <option value="Haryana">Haryana</option>
+        <option value="Himachal Pradesh">Himachal Pradesh</option>
+        <option value="Jharkhand">Jharkhand</option>
+        <option value="Karnataka">Karnataka</option>
+        <option value="Kerala">Kerala</option>
+        <option value="Madhya Pradesh">Madhya Pradesh</option>
+        <option value="Maharashtra">Maharashtra</option>
+        <option value="Manipur">Manipur</option>
+        <option value="Meghalaya">Meghalaya</option>
+        <option value="Mizoram">Mizoram</option>
+        <option value="Nagaland">Nagaland</option>
+        <option value="Odisha">Odisha</option>
+        <option value="Punjab">Punjab</option>
+        <option value="Rajasthan">Rajasthan</option>
+        <option value="Sikkim">Sikkim</option>
+        <option value="Tamil Nadu">Tamil Nadu</option>
+        <option value="Telangana">Telangana</option>
+        <option value="Tripura">Tripura</option>
+        <option value="Uttar Pradesh">Uttar Pradesh</option>
+        <option value="Uttarakhand">Uttarakhand</option>
+        <option value="West Bengal">West Bengal</option>
+        <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+        <option value="Chandigarh">Chandigarh</option>
+        <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+        <option value="Delhi">Delhi</option>
+        <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+        <option value="Ladakh">Ladakh</option>
+        <option value="Lakshadweep">Lakshadweep</option>
+        <option value="Puducherry">Puducherry</option>
+      </select>
+    </div>
   </div>
 </div>
 
-<!-- State Field -->
-<div class="col-md-3">
-  <div class="input-field-container">
-    <label class="input-label">State</label>
-    <select 
-      name="state" 
-      class="styled-input" 
-      required>
-      <option value="" disabled selected>Choose a state</option>
-      <option value="Andhra Pradesh">Andhra Pradesh</option>
-      <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-      <option value="Assam">Assam</option>
-      <option value="Bihar">Bihar</option>
-      <option value="Chhattisgarh">Chhattisgarh</option>
-      <option value="Goa">Goa</option>
-      <option value="Gujarat">Gujarat</option>
-      <option value="Haryana">Haryana</option>
-      <option value="Himachal Pradesh">Himachal Pradesh</option>
-      <option value="Jharkhand">Jharkhand</option>
-      <option value="Karnataka">Karnataka</option>
-      <option value="Kerala">Kerala</option>
-      <option value="Madhya Pradesh">Madhya Pradesh</option>
-      <option value="Maharashtra">Maharashtra</option>
-      <option value="Manipur">Manipur</option>
-      <option value="Meghalaya">Meghalaya</option>
-      <option value="Mizoram">Mizoram</option>
-      <option value="Nagaland">Nagaland</option>
-      <option value="Odisha">Odisha</option>
-      <option value="Punjab">Punjab</option>
-      <option value="Rajasthan">Rajasthan</option>
-      <option value="Sikkim">Sikkim</option>
-      <option value="Tamil Nadu">Tamil Nadu</option>
-      <option value="Telangana">Telangana</option>
-      <option value="Tripura">Tripura</option>
-      <option value="Uttar Pradesh">Uttar Pradesh</option>
-      <option value="Uttarakhand">Uttarakhand</option>
-      <option value="West Bengal">West Bengal</option>
-      <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
-      <option value="Chandigarh">Chandigarh</option>
-      <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
-      <option value="Delhi">Delhi</option>
-      <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-      <option value="Ladakh">Ladakh</option>
-      <option value="Lakshadweep">Lakshadweep</option>
-      <option value="Puducherry">Puducherry</option>
-    </select>
-  </div>
-</div>
           <!-- Seventh Row -->
           <!-- <div class="row">
       
@@ -590,6 +706,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
 </style>
 
 <script>
+ let previousValues = [];
+setInterval(() => {
+  const inputs = document.querySelectorAll("input[name='service_price[]']");
+  let values = Array.from(inputs).map(input => input.value);
+  
+  if (JSON.stringify(values) !== JSON.stringify(previousValues)) {
+    updateTotalPrice();
+    previousValues = values; // Update the reference to prevent repeated updates
+  }
+}, 500); // Check every 500ms
+
+
   // Show/Hide fields based on patient status selection
   document.getElementById('patientStatus').addEventListener('change', function () {
     var patientNameField = document.getElementById('patientNameField');
@@ -670,114 +798,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
 }
 
 
-
-document.addEventListener('DOMContentLoaded', function() {
-  const fromDateInput = document.getElementById('fromDate');
-  const endDateInput = document.getElementById('endDate');
-  const totalDaysInput = document.getElementById('total_days');
-
-  // Event listener for "From Date"
-  fromDateInput.addEventListener('change', calculateTotalDays);
-
-  // Event listener for "End Date"
-  endDateInput.addEventListener('change', calculateTotalDays);
-
-  // Function to calculate total days between "From Date" and "End Date"
-  function calculateTotalDays() {
-    const fromDate = new Date(fromDateInput.value);
-    const endDate = new Date(endDateInput.value);
-
-    // Check if both dates are selected
-    if (fromDate && endDate && !isNaN(fromDate) && !isNaN(endDate)) {
-      // Calculate the difference in time
-      const timeDifference = endDate - fromDate;
-
-      // Calculate the difference in days (divide by milliseconds in a day)
-      const totalDays = timeDifference / (1000 * 3600 * 24) + 1; // +1 to include the end date
-
-      // Check if the end date is later than the from date
-      if (totalDays >= 0) {
-        totalDaysInput.value = totalDays;
-      } else {
-        alert("End date cannot be before the From date.");
-        totalDaysInput.value = '';
-      }
-    } else {
-      totalDaysInput.value = '';
-    }
-  }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-        const serviceTypeInput = document.getElementById('service_type');
-        const totalDaysInput = document.getElementById('total_days');
-        const servicePriceInput = document.getElementById('service_price');
-        const perDayServicePriceInput = document.getElementById('per_day_service_price');
-        const serviceDurationInput = document.getElementById('service_duration');
-
-        // Event listeners
-        serviceTypeInput.addEventListener('change', calculateServiceCharge);
-        serviceDurationInput.addEventListener('change', calculateServiceCharge);
-        totalDaysInput.addEventListener('input', calculateServiceCharge);
-
-        function calculateServiceCharge() {
-            const serviceType = serviceTypeInput.value;
-            const totalDays = parseInt(totalDaysInput.value, 10);
-            const serviceDuration = parseInt(serviceDurationInput.value, 10);
-
-            if (serviceType && totalDays > 0 && serviceDuration) {
-                fetchServiceDetails(serviceType).then(serviceDetails => {
-                    if (serviceDetails) {
-                        let dailyRate = 0;
-
-                        if (serviceDuration === 8) {
-                            dailyRate = parseFloat(serviceDetails.daily_rate_8_hours);
-                        } else if (serviceDuration === 12) {
-                            dailyRate = parseFloat(serviceDetails.daily_rate_12_hours);
-                        } else if (serviceDuration === 24) {
-                            dailyRate = parseFloat(serviceDetails.daily_rate_24_hours);
-                        }
-
-                        if (isNaN(dailyRate)) {
-                            servicePriceInput.value = 'Rate not available';
-                            return;
-                        }
-
-                        const totalServicePrice = dailyRate * totalDays;
-                        servicePriceInput.value = totalServicePrice.toFixed(2);
-                        perDayServicePriceInput.value = dailyRate.toFixed(2);
-                    }
-                }).catch(error => {
-                    console.error("Error fetching service details:", error);
-                    alert("An error occurred while calculating service charge.");
-                });
-            } else {
-                servicePriceInput.value = '';
-                perDayServicePriceInput.value = '';
-            }
-        }
-
-        function fetchServiceDetails(serviceType) {
-            return new Promise((resolve, reject) => {
-                fetch("get_service_details.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: `service_type=${encodeURIComponent(serviceType)}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        resolve(data.serviceDetails);
-                    } else {
-                        reject("Service not found.");
-                    }
-                })
-                .catch(error => reject(error));
-            });
-        }
-    });
 
     function searchCustomers(search) {
     const customerList = document.getElementById("customerList");
@@ -871,6 +891,20 @@ function selectPatient(checkbox) {
     }
 }
 
+function updateTotalPrice() {
+  console.log("inside update price")
+  const inputs = document.querySelectorAll("input[name='service_price[]']");
+  let total = 0;
+
+  inputs.forEach((input) => {
+    const value = parseFloat(input.value) || 0; // Default to 0 if the input is empty or invalid
+    total += value;
+  });
+
+  const totalPriceInput = document.getElementById("total_price");
+  totalPriceInput.value = total.toFixed(2); // Display the total
+}
+updateTotalPrice();
 
  // Function to set current date and time
  function setCurrentDateTime() {
@@ -895,7 +929,205 @@ function selectPatient(checkbox) {
   // Set current date and time on page load
   document.addEventListener("DOMContentLoaded", setCurrentDateTime);
 
-  </script>
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const fieldContainer = document.getElementById("field-container");
+
+    // Set current date and time on page load
+    setCurrentDateTime();
+
+    // Handle the "+" button to add new field sets
+    document.getElementById("add-field-set").addEventListener("click", function () {
+        addFieldSet();
+    });
+
+    // Delegate input events to the container for dynamic field sets
+    fieldContainer.addEventListener("input", handleInputEvent);
+
+    function setCurrentDateTime() {
+        const now = new Date();
+
+        // Format time as HH:MM
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        const currentTime = `${hours}:${minutes}`;
+
+        // Format date as YYYY-MM-DD
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const date = String(now.getDate()).padStart(2, "0");
+        const currentDate = `${year}-${month}-${date}`;
+
+        document.getElementById("enquiry-time").value = currentTime;
+        document.getElementById("enquiry-date").value = currentDate;
+    }
+
+
+    function addFieldSet() {
+        const firstFieldSet = fieldContainer.querySelector(".field-set");
+        const clonedFieldSet = firstFieldSet.cloneNode(true);
+
+        // Clear inputs in the cloned field set
+        const inputs = clonedFieldSet.querySelectorAll("input, select");
+        inputs.forEach((input) => {
+            if (input.type === "text" || input.type === "number" || input.type === "date") {
+                input.value = "";
+            } else if (input.tagName.toLowerCase() === "select") {
+                input.selectedIndex = 0;
+            }
+
+            if (input.id) {
+                input.id = `${input.id}_${Date.now()}`;
+            }
+        });
+
+        // Remove the "+" button from the cloned set
+        const addButton = clonedFieldSet.querySelector("#add-field-set");
+        if (addButton) {
+            addButton.remove();
+        }
+
+        fieldContainer.appendChild(clonedFieldSet);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+  const fieldContainer = document.querySelector(".input-field-container");
+  const addFieldSetButton = document.getElementById("add-field-set");
+  const totalPriceInput = document.getElementById("total_price");
+
+  // Function to add a new input field for service price
+  function addFieldSet() {
+    const newInput = document.createElement("input");
+    newInput.type = "text";
+    newInput.className = "styled-input";
+    newInput.name = "service_price[]";
+    newInput.placeholder = "Service Price";
+
+    // Add event listener to update total when value changes
+    newInput.addEventListener("input", calculateTotalPrice);
+    fieldContainer.insertBefore(newInput, addFieldSetButton.parentElement);
+  }
+
+  // Function to calculate and display the total
+  function calculateTotalPrice() {
+    const inputs = document.querySelectorAll("input[name='service_price[]']");
+    let total = 0;
+
+    inputs.forEach((input) => {
+      const value = parseFloat(input.value) || 0; // Default to 0 if input is empty or invalid
+      total += value;
+    });
+
+    totalPriceInput.value = total.toFixed(2); // Display the total
+  }
+
+  // Add event listener to the "Add Services" button
+  addFieldSetButton.addEventListener("click", addFieldSet);
+
+  // Add initial event listener to the first input field
+  const initialInput = document.querySelector("input[name='service_price[]']");
+  initialInput.addEventListener("input", calculateTotalPrice);
+});
+
+    function handleInputEvent(event) {
+        const target = event.target;
+
+        if (target.closest(".field-set")) {
+            const fieldSet = target.closest(".field-set");
+            const fromDateInput = fieldSet.querySelector('input[name^="from_date"]');
+            const endDateInput = fieldSet.querySelector('input[name^="end_date"]');
+            const totalDaysInput = fieldSet.querySelector('input[name^="total_days"]');
+            const serviceDurationInput = fieldSet.querySelector('select[name^="service_duration"]');
+            const serviceTypeInput = fieldSet.querySelector('select[name^="service_type"]');
+            const perDayServicePriceInput = fieldSet.querySelector('input[name^="per_day_service_price"]');
+            const servicePriceInput = fieldSet.querySelector('input[name^="service_price"]');
+
+            if (fromDateInput && endDateInput && totalDaysInput) {
+                calculateTotalDays(fromDateInput, endDateInput, totalDaysInput);
+            }
+
+            if (serviceDurationInput && serviceTypeInput && perDayServicePriceInput && servicePriceInput && totalDaysInput.value) {
+                calculateServiceCharge(serviceTypeInput, serviceDurationInput, totalDaysInput, perDayServicePriceInput, servicePriceInput);
+            }
+        }
+    }
+
+    function calculateTotalDays(fromDateInput, endDateInput, totalDaysInput) {
+        const fromDate = new Date(fromDateInput.value);
+        const endDate = new Date(endDateInput.value);
+
+        if (fromDate && endDate && !isNaN(fromDate) && !isNaN(endDate)) {
+            const timeDifference = endDate - fromDate;
+            const totalDays = timeDifference / (1000 * 3600 * 24) + 1;
+
+            if (totalDays >= 0) {
+                totalDaysInput.value = totalDays;
+            } else {
+                totalDaysInput.value = "";
+                alert("End date cannot be before the From date.");
+            }
+        } else {
+            totalDaysInput.value = "";
+        }
+    }
+
+    function calculateServiceCharge(serviceTypeInput, serviceDurationInput, totalDaysInput, perDayServicePriceInput, servicePriceInput) {
+        const serviceType = serviceTypeInput.value;
+        const totalDays = parseInt(totalDaysInput.value, 10);
+        const serviceDuration = parseInt(serviceDurationInput.value, 10);
+
+        if (serviceType && totalDays > 0 && serviceDuration) {
+            fetchServiceDetails(serviceType).then(serviceDetails => {
+                if (serviceDetails) {
+                    let dailyRate = 0;
+
+                    if (serviceDuration === 8) {
+                        dailyRate = parseFloat(serviceDetails.daily_rate_8_hours);
+                    } else if (serviceDuration === 12) {
+                        dailyRate = parseFloat(serviceDetails.daily_rate_12_hours);
+                    } else if (serviceDuration === 24) {
+                        dailyRate = parseFloat(serviceDetails.daily_rate_24_hours);
+                    }
+
+                    if (!isNaN(dailyRate)) {
+                        const totalServicePrice = dailyRate * totalDays;
+                        perDayServicePriceInput.value = dailyRate.toFixed(2);
+                        servicePriceInput.value = totalServicePrice.toFixed(2);
+                    } else {
+                        perDayServicePriceInput.value = "";
+                        servicePriceInput.value = "Rate not available";
+                    }
+                }
+            }).catch(error => {
+                console.error("Error fetching service details:", error);
+            });
+        } else {
+            perDayServicePriceInput.value = "";
+            servicePriceInput.value = "";
+        }
+    }
+
+    function fetchServiceDetails(serviceType) {
+        return new Promise((resolve, reject) => {
+            fetch("get_service_details.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `service_type=${encodeURIComponent(serviceType)}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        resolve(data.serviceDetails);
+                    } else {
+                        reject("Service not found.");
+                    }
+                })
+                .catch(error => reject(error));
+        });
+    }
+});
+</script>
 
 </body>
 </html>

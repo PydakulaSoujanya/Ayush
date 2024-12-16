@@ -58,7 +58,7 @@
 include '../navbar.php';
 ?>
   <div class="container mt-7">
-    <h3 class="mb-4">Service Master Form</h3>
+    <h3 class="mb-4">Service Master Details</h3>
     <form action="service_masterdb.php" method="POST">
       <!-- Service Name -->
       <div class="row">

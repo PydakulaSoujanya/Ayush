@@ -1,55 +1,63 @@
 <?php
-// Check if the employee is already assigned to a service request
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_employee'])) {
-  $serviceId = $_POST['service_id'];  // This should be the correct column name
-  $empId = $_POST['emp_id'];
+session_start(); // Start the session to store flash messages
 
-  // Fetch employee name based on emp_id
-  $empNameSql = "SELECT name FROM emp_info WHERE id = '$empId'";
-  $empNameResult = $conn->query($empNameSql);
+include '../config.php'; 
 
-  if ($empNameResult->num_rows > 0) {
-      $empRow = $empNameResult->fetch_assoc();
-      $empName = $empRow['name'];
+// Handle form submission to update status
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $employee_id = $_POST['employee_id'];
+    $employee_name = $_POST['employee_name'] ?? 'Unknown'; // Use fallback value
+    $service_type = $_POST['service_type'];
+    $total_days = $_POST['total_days'];
+    $worked_days = $_POST['worked_days'];
+    $daily_rate = $_POST['daily_rate'];
+    $total_pay = $_POST['total_pay'];
+    $status = $_POST['status'];
 
-      // Check if the employee is already assigned to a service request
-      $checkSql = "SELECT * FROM service_requests WHERE assigned_employee = '$empName'";
-      $checkResult = $conn->query($checkSql);
+    // Validate fields
+    if (empty($employee_id) || empty($employee_name)) {
+        $_SESSION['message'] = "Error: Employee name or ID is missing!";
+        $_SESSION['message_type'] = "danger";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+    }
 
-      if ($checkResult->num_rows > 0) {
-          // If employee is already assigned to a different service request
-          echo "<script>alert('This employee is already assigned to another service!!');
-          window.location.href = 'view_services.php';
-          </script>";
-      } else {
-          // Assign the employee name to the service request
-          $assignSql = "UPDATE service_requests SET assigned_employee = '$empName' WHERE id = '$serviceId'";
-          if ($conn->query($assignSql) === TRUE) {
-            echo "<script>
-                alert('Employee allocated successfully!');
-                window.location.href = 'view_services.php';
-            </script>";
-        } else {
-            echo "<script>
-                alert('Error allocating employee: " . $conn->error . "');
-                window.location.href = 'view_services.php';
-            </script>";
-        }
-        
-      }
-  } else {
-      echo "<script>alert('Employee not found!');</script>";
-  }
+    // Insert or update the employee payout details
+    $stmt = $conn->prepare("\n        INSERT INTO employee_payouts (employee_id, employee_name, service_type, total_days, worked_days, daily_rate, total_pay, status) \n        VALUES (?, ?, ?, ?, ?, ?, ?, ?)\n        ON DUPLICATE KEY UPDATE \n        worked_days = VALUES(worked_days),\n        total_pay = VALUES(total_pay),\n        status = VALUES(status),\n        updated_at = CURRENT_TIMESTAMP\n    ");
+    $stmt->bind_param(
+        "issiiids",
+        $employee_id,
+        $employee_name,
+        $service_type,
+        $total_days,
+        $worked_days,
+        $daily_rate,
+        $total_pay,
+        $status
+    );
+
+    if ($stmt->execute()) {
+        $_SESSION['message'] = "Employee payout details saved successfully!";
+        $_SESSION['message_type'] = "success";
+    } else {
+        $_SESSION['message'] = "Failed to save employee payout details!";
+        $_SESSION['message_type'] = "danger";
+    }
+    $stmt->close();
+
+    // Redirect to clear POST data and show the message
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
- 
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Include Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
   <title>Employee Payouts</title>
   <!-- <style>
@@ -63,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_employee'])) {
 
     .dataTable_headerRow th,
     .dataTable_row td {
-      border: 1px solid #dee2e6; /* Add borders for columns */
+      border: 1px solid #dee2e6;
     }
 
     .dataTable_headerRow {
@@ -76,16 +84,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_employee'])) {
     }
 
     .dataTable_card {
-      border: 1px solid #ced4da; /* Add card border */
+      border: 1px solid #ced4da;
       border-radius: 0.5rem;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .dataTable_card .card-header {
-      background-color:  #A26D2B;
+      background-color: #A26D2B;
       color: white;
       font-weight: bold;
     }
+
     .action-icons i {
       color: black;
       cursor: pointer;
@@ -94,290 +103,136 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_employee'])) {
   </style> -->
 </head>
 <body>
-    <?php 
-// Connect to the database
-include 'config.php';
-include 'navbar.php';
-    ?>
-  <div class="container  mt-7">
-    <div class="dataTable_card card">
-      <!-- Card Header -->
-      <div class="card-header"> Employee Payouts</div>
+  <?php 
+include '../navbar.php';
+  ?>
+    <div class="container mt-7">
+        <div class="dataTable_card card">
+            <div class="card-header">Employee Payouts</div>
+            <div class="card-body">
+                <!-- Display success or error message -->
+                <?php
+// Check if there's a message to show
+if (isset($_SESSION['message'])) {
+    $message = $_SESSION['message'];
+    $messageType = $_SESSION['message_type'];
 
-      <!-- Card Body -->
-      <div class="card-body">
-        <!-- Search Input -->
-        <div class="dataTable_search mb-3 d-flex justify-content-between">
-        <form class="d-flex w-75">
-    <input type="text" class="form-control" id="globalSearch" placeholder="Search..." oninput="performSearch()">
-</form>
+    // Display a JavaScript alert based on the message type
+    echo "<script>
+        alert('$message');
+    </script>";
 
-    <!-- <a href="services.php" class="btn btn-success">+ Capture Service</a> -->
-</div>
-
- <!-- PHP Code for Database Queries -->
- <?php
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        $empSql = "SELECT id, name FROM emp_info";
-        $empResult = $conn->query($empSql);
-
-        $employees = [];
-        if ($empResult->num_rows > 0) {
-            while ($empRow = $empResult->fetch_assoc()) {
-                $employees[] = $empRow;
-            }
-        }
-
-        $pageSize = isset($_GET['pageSize']) ? intval($_GET['pageSize']) : 5;
-        $pageIndex = isset($_GET['pageIndex']) ? intval($_GET['pageIndex']) : 0;
-        $searchTerm = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-
-        $start = $pageIndex * $pageSize;
-
-        $sql = "SELECT * FROM service_requests 
-                WHERE customer_name LIKE '%$searchTerm%' 
-                ORDER BY created_at DESC 
-                LIMIT $start, $pageSize";
-        $result = $conn->query($sql);
-
-        $countSql = "SELECT COUNT(*) as total FROM service_requests 
-                     WHERE customer_name LIKE '%$searchTerm%'";
-        $countResult = $conn->query($countSql);
-        $totalRecords = $countResult->fetch_assoc()['total'];
-        $totalPages = ceil($totalRecords / $pageSize);
-        ?>
-        <!-- Table -->
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr class="dataTable_headerRow">
-                <th>S.no</th>
-                <th>Customer Name</th>
-                <th>Assigned Employee</th>
-                <th>From Date</th>
-                <th>End Date</th>
-                <th>Total Days</th>
-                <th>Service Price</th>
-                
-              </tr>
-            </thead>
-            <tbody>
-            <?php
-if ($result->num_rows > 0) {
-    $serial = $start + 1;
-    while ($row = $result->fetch_assoc()) {
-        $assignedEmployee = !empty($row['assigned_employee']) ? $row['assigned_employee'] : 'Not Assigned';
-
-        echo "<tr class='dataTable_row'>
-                <td>{$serial}</td>
-                <td>{$row['customer_name']}</td>
-                <td>{$row['assigned_employee']}</td>
-                <td>{$row['from_date']}</td>
-                <td>{$row['end_date']}</td>
-                <td>{$row['total_days']}</td>
-                <td>{$row['service_price']}</td>
-                
-              </tr>";
-        $serial++;
-    }
-} else {
-    echo "<tr><td colspan='4'>No data available</td></tr>";
+    // Clear the session message after showing the alert
+    unset($_SESSION['message']);
+    unset($_SESSION['message_type']);
 }
 ?>
-</tbody>
-          </table>
-        </div>
-          <!-- Modal -->
-   <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="viewModalLabel">Service Details</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div id="modalContent">
-            <!-- Details will be populated dynamically -->
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
- <!-- Modal for Viewing Details -->
- <!-- <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="viewModalLabel">Service Details</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-        <table class="table">
-          <tbody>
-         
-          <p><strong>Customer Name:</strong> <span id="customer_name"></span></p>
-          <p><strong>Contact No:</strong> <span id="contact_no"></span></p>
-          <p><strong>Email:</strong> <span id="email"></span></p>
-          <p><strong>Enquiry Date:</strong> <span id="enquiry_date"></span></p>
-          <p><strong>Enquiry Time:</strong> <span id="enquiry_time"></span></p>
-          <p><strong>Service Type:</strong> <span id="service_type"></span></p>
-          <p><strong>Enquiry Source:</strong> <span id="enquiry_source"></span></p>
-          <p><strong>Priority Level:</strong> <span id="priority_level"></span></p>
-          <p><strong>Status:</strong> <span id="status"></span></p>
-          <p><strong>Request Details:</strong> <span id="request_details"></span></p>
-          <p><strong>Resolution Notes:</strong> <span id="resolution_notes"></span></p>
-          <p><strong>Comments:</strong> <span id="comments"></span></p>
-          <p><strong>Created At:</strong> <span id="created_at"></span></p>
-          </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div> -->
 
-        <!-- Pagination Controls -->
-         <!-- Pagination -->
-         <div class="d-flex justify-content-between align-items-center">
-          <div>
-            Showing <?= $start + 1 ?> to <?= min($start + $pageSize, $totalRecords) ?> of <?= $totalRecords ?> records
-          </div>
-          <div>
-            <a href="?pageIndex=<?= max(0, $pageIndex - 1) ?>&pageSize=<?= $pageSize ?>&search=<?= htmlspecialchars($searchTerm) ?>" class="btn btn-primary btn-sm <?= $pageIndex == 0 ? 'disabled' : '' ?>">Previous</a>
-            <a href="?pageIndex=<?= min($totalPages - 1, $pageIndex + 1) ?>&pageSize=<?= $pageSize ?>&search=<?= htmlspecialchars($searchTerm) ?>" class="btn btn-primary btn-sm <?= $pageIndex >= $totalPages - 1 ? 'disabled' : '' ?>">Next</a>
-          </div>
-          <div>
-            <select onchange="window.location.href='?pageIndex=0&pageSize=' + this.value + '&search=<?= htmlspecialchars($searchTerm) ?>'" class="form-select form-select-sm">
-              <option value="5" <?= $pageSize == 5 ? 'selected' : '' ?>>5</option>
-              <option value="10" <?= $pageSize == 10 ? 'selected' : '' ?>>10</option>
-              <option value="20" <?= $pageSize == 20 ? 'selected' : '' ?>>20</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-     function viewDetails(data) {
-      const modalContent = document.getElementById('modalContent');
-      modalContent.innerHTML = `
-        <table class="table table-bordered">
-          <tr><th>Customer Name</th><td>${data.customer_name}</td></tr>
-          <tr><th>Contact Number</th><td>${data.contact_no}</td></tr>
-          <tr><th>Email</th><td>${data.email}</td></tr>
-          <tr><th>Enquiry Date</th><td>${data.enquiry_date}</td></tr>
-          <tr><th>Enquiry Time</th><td>${data.enquiry_time}</td></tr>
-          <tr><th>Service Type</th><td>${data.service_type}</td></tr>
-          <tr><th>Enquiry Source</th><td>${data.enquiry_source}</td></tr>
-          <tr><th>Priority Level</th><td>${data.priority_level}</td></tr>
-           <tr><th>Status</th><td>${data.status}</td></tr>
-            <tr><th>Request Details</th><td>${data.request_details}</td></tr>
-             <tr><th>Resolution Notes</th><td>${data.resolution_notes}</td></tr>
-              <tr><th>Comments</th><td>${data.comments}</td></tr>
-          <tr><th>Created At</th><td>${data.created_at}</td></tr>
-        </table>
-      `;
-    }
+                <form method="POST" id="payoutForm">
+                    <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Employee Name</th>
+            <th>Service Type</th>
+            <th>Total Days</th>
+            <th>Worked Days</th>
+            <th>Daily Rate</th>
+            <th>Total Pay</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $searchTerm = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+
+        $sql = "
+        SELECT 
+            e.id AS employee_id,
+            e.name AS employee_name,
+            a.service_type,
+            a.no_of_hours,
+            a.day_1, a.day_2, a.day_3, a.day_4, a.day_5, a.day_6, a.day_7,
+            a.day_8, a.day_9, a.day_10, a.day_11, a.day_12, a.day_13, a.day_14,
+            a.day_15, a.day_16, a.day_17, a.day_18, a.day_19, a.day_20, a.day_21,
+            a.day_22, a.day_23, a.day_24, a.day_25, a.day_26, a.day_27, a.day_28,
+            a.day_29, a.day_30, a.day_31,
+            CASE 
+                WHEN a.no_of_hours = 8 THEN sm.daily_rate_8_hours
+                WHEN a.no_of_hours = 12 THEN sm.daily_rate_12_hours
+                WHEN a.no_of_hours = 24 THEN sm.daily_rate_24_hours
+                ELSE 0
+            END AS daily_rate,
+            sr.total_days,
+            ep.status
+        FROM allotment a
+        JOIN emp_info e ON a.employee_id = e.id
+        JOIN service_master sm ON a.service_type = sm.service_name
+        JOIN service_requests sr ON sr.assigned_employee = e.name
+        LEFT JOIN employee_payouts ep ON ep.employee_id = e.id
+        WHERE e.name LIKE '%$searchTerm%'
+        ORDER BY e.name ASC;
+    ";
+
+        $result = $conn->query($sql);
+
+        if ($result->num_rows > 0) {
+          $uniqueEmployees = [];
+          while ($row = $result->fetch_assoc()) {
+              // Skip duplicates based on employee ID and service type
+              if (in_array($row['employee_id'] . '-' . $row['service_type'], $uniqueEmployees)) {
+                  continue;
+              }
+              $uniqueEmployees[] = $row['employee_id'] . '-' . $row['service_type'];
       
-    // Sample Data
-    const data = Array.from({ length: 50 }, (_, i) => ({
-      id: i + 1,
-      name: `Person ${i + 1}`,
-      age: Math.floor(Math.random() * 40) + 20,
-      city: `City ${Math.floor(Math.random() * 10) + 1}`,
-    }));
-
-    // Pagination Variables
-    let pageIndex = 0;
-    let pageSize = 5;
-
-    // Elements
-    const tableBody = document.getElementById("tableBody");
-    const pageInfo = document.getElementById("pageInfo");
-    const previousPage = document.getElementById("previousPage");
-    const nextPage = document.getElementById("nextPage");
-    const pageSizeSelect = document.getElementById("pageSize");
-    const globalSearch = document.getElementById("globalSearch");
-
-    // Functions to Render Table
-    function renderTable() {
-      const start = pageIndex * pageSize;
-      const filteredData = data.filter((item) =>
-        item.name.toLowerCase().includes(globalSearch.value.toLowerCase())
-      );
-      const pageData = filteredData.slice(start, start + pageSize);
-
-      tableBody.innerHTML = pageData
-        .map(
-          (row) =>
-            `<tr class="dataTable_row">
-              <td>${row.id}</td>
-              <td>${row.name}</td>
-              <td>${row.age}</td>
-              <td>${row.city}</td>
-            </tr>`
-        )
-        .join("");
-
-      pageInfo.textContent = `${pageIndex + 1} of ${Math.ceil(filteredData.length / pageSize)}`;
-      previousPage.disabled = pageIndex === 0;
-      nextPage.disabled = pageIndex >= Math.ceil(filteredData.length / pageSize) - 1;
-    }
-
-    // Event Listeners
-    previousPage.addEventListener("click", () => {
-      if (pageIndex > 0) {
-        pageIndex--;
-        renderTable();
-      }
-    });
-
-    nextPage.addEventListener("click", () => {
-      pageIndex++;
-      renderTable();
-    });
-
-    pageSizeSelect.addEventListener("change", (e) => {
-      pageSize = Number(e.target.value);
-      pageIndex = 0;
-      renderTable();
-    });
-
-    globalSearch.addEventListener("input", () => {
-      pageIndex = 0;
-      renderTable();
-    });
-
-    // Initial Render
-    renderTable();
-    
-  </script>
-  <script>
-  function performSearch() {
-    const searchTerm = document.getElementById('globalSearch').value;
-
-    // Send AJAX request
-    fetch(`view_services.php?search=${encodeURIComponent(searchTerm)}`)
-      .then(response => response.text())
-      .then(data => {
-        // Update the table with the fetched data
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data, 'text/html');
-        const newTableBody = doc.querySelector('tbody');
-
-        if (newTableBody) {
-          document.querySelector('tbody').innerHTML = newTableBody.innerHTML;
+              // Rest of the row rendering logic
+              $worked_days = 0;
+              for ($i = 1; $i <= 31; $i++) {
+                  $dayKey = "day_$i";
+                  if (isset($row[$dayKey]) && $row[$dayKey] === "yes") {
+                      $worked_days++;
+                  }
+              }
+      
+              $total_price = $worked_days * $row['daily_rate'];
+      
+              echo "<tr>";
+              echo "<td>
+                  <input type='hidden' name='employee_id' value='" . $row['employee_id'] . "'>
+                  <input type='hidden' name='employee_name' value='" . htmlspecialchars($row['employee_name']) . "'>
+                  " . htmlspecialchars($row['employee_name']) . "
+              </td>";
+              echo "<td><input type='hidden' name='service_type' value='" . $row['service_type'] . "'>" . $row['service_type'] . "</td>";
+              echo "<td><input type='hidden' name='total_days' value='" . $row['total_days'] . "'>" . $row['total_days'] . "</td>";
+              echo "<td><input type='hidden' name='worked_days' value='" . $worked_days . "'>" . $worked_days . "</td>";
+              echo "<td><input type='hidden' name='daily_rate' value='" . $row['daily_rate'] . "'>" . $row['daily_rate'] . "</td>";
+              echo "<td><input type='hidden' name='total_pay' value='" . $total_price . "'>" . $total_price . "</td>";
+              echo "<td>
+                      <select name='status' class='form-select'>
+                          <option value='Select' " . ($row['status'] === null ? "selected" : "") . " readonly>Select</option>
+                          <option value='Pending' " . ($row['status'] === 'Pending' ? "selected" : "") . ">Pending</option>
+                          <option value='Paid' " . ($row['status'] === 'Paid' ? "selected" : "") . ">Paid</option>
+                          <option value='Processing' " . ($row['status'] === 'Processing' ? "selected" : "") . ">Processing</option>
+                          <option value='In Review' " . ($row['status'] === 'In Review' ? "selected" : "") . ">In Review</option>
+                      </select>
+                    </td>";
+              echo "<td><button type='submit' class='btn btn-success btn-sm mt-1'>Update</button></td>";
+              echo "</tr>";
+          }
+      } else {
+            echo "<tr><td colspan='8'>No data found</td></tr>";
         }
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }
-</script>
+        ?>
+    </tbody>
+</table>
 
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

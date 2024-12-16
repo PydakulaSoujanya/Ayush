@@ -70,7 +70,7 @@
         const password = document.getElementById('password').value;
 
         // Basic validation for demo purposes
-        if (email === "test@example.com" && password === "password123") {
+        if (email === "sspandrala261126@gmail.com" && password === "soujanya@123") {
             Swal.fire({
                 title: 'Success!',
                 text: 'Login successful!',

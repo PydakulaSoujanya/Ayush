@@ -97,7 +97,7 @@
                 </span>
                 <div class="navbar-dropdown-content" id="service">
                     <a href="../Service-Master/view_servicemaster.php">Services</a>
-                    <a href="../Capturing-Services/services.php">Capture Services</a>
+                    <a href="../Capturing-Services/view_services.php">Capture Services</a>
                     <!-- <a href="/estimateReport">Estimate Report</a>
                     <a href="/purchaseReport">Purchase Report</a>
                     <a href="/repairsReport">Repairs Report</a>
@@ -112,7 +112,7 @@
                     SALES <span class="dropdown-arrow-icon">▼</span>
                 </span>
                 <div class="navbar-dropdown-content" id="sales">
-                    <a href="../Sales/invoicegeneration.php">Invoice</a>
+                    <a href="../Sales/view_invoice.php">Invoice</a>
                     <!-- <a href="/estimateReport">Estimate Report</a>
                     <a href="/purchaseReport">Purchase Report</a>
                     <a href="/repairsReport">Repairs Report</a>
@@ -132,8 +132,8 @@
             <div class="navbar-dropdown-content" id="expenses" style="display: none;">
                 <a href="javascript:void(0);" onclick="toggleDropdown('direct-expenses')">Direct Expenses</a>
                 <div class="submenu" id="direct-expenses" style="display: none; margin-left: 15px;">
-                    <a href="">Employee Payouts</a>
-                    <a href="../Expenses/vendor_billing_and_payouts.php">Vendor Payouts</a>
+                    <a href="../Expenses/employee_payouts_table.php">Employee Payouts</a>
+                    <a href="../Expenses/vendor_expenditure_table.php">Vendor Payouts</a>
                 </div>
                 <a href="javascript:void(0);" onclick="toggleDropdown('indirect-expenses')">Indirect Expenses</a>
                 <div class="submenu" id="indirect-expenses" style="display: none; margin-left: 15px;">
@@ -143,7 +143,7 @@
                 <!-- <a href="#">Employee Claims</a>
                 <a href="#">Vendor Payouts</a>
                 <a href="#">Employee Payouts</a> -->
-                <a href="#">Refund</a>
+                <a href="../Expenses/refunds_table.php">Refund</a>
             </div>
         </div>
     </div>

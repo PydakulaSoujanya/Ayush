@@ -59,14 +59,22 @@ $vendor_result = mysqli_query($conn, $vendor_query);
 include('../navbar.php');
 ?>
 <div class="container mt-7">
-  <h3 class="mb-4"> Vendor Billing and Payouts </h3>
+  <h3 class="mb-4">Add Purchase Invoice</h3>
   <form action="vendor_payment_db.php" method="POST" enctype="multipart/form-data">
     <div class="row">
+      <!-- Purchase Invoice Number (Auto-Generated) -->
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Purchase Invoice Number</label>
+          <input type="text" class="styled-input" name="purchase_invoice_number" value="Auto-generated" readonly />
+        </div>
+      </div>
+
       <!-- Bill ID -->
       <div class="col-md-4">
         <div class="input-field-container">
           <label class="input-label">Bill ID</label>
-          <input type="text" class="styled-input" name="bill_id" value="" />
+          <input type="text" class="styled-input" name="bill_id" placeholder="Enter Bill ID" required />
         </div>
       </div>
 
@@ -77,6 +85,7 @@ include('../navbar.php');
           <select class="styled-input" id="vendor_name" name="vendor_name" style="width: 100%;" required>
             <option value="" disabled selected>Select Vendor</option>
             <?php
+            // Replace with your query to fetch vendors
             while ($row = mysqli_fetch_assoc($vendor_result)) {
               echo "<option value='{$row['vendor_name']}'>{$row['vendor_name']} ({$row['phone_number']})</option>";
             }
@@ -84,103 +93,33 @@ include('../navbar.php');
           </select>
         </div>
       </div>
-
-      <!-- Payment Amount -->
-      <div class="col-md-4">
-        <div class="input-field-container">
-          <label class="input-label">Payment Amount</label>
-          <input type="number" class="styled-input" id="payment_amount" name="payment_amount" placeholder="Enter Payment Amount" required />
-        </div>
-      </div>
     </div>
 
     <div class="row">
-      <!-- Paid Amount -->
+      <!-- Invoice Amount -->
       <div class="col-md-4">
         <div class="input-field-container">
-          <label class="input-label">Paid Amount</label>
-          <input type="number" class="styled-input" id="paid_amount" name="paid_amount" placeholder="Enter Paid Amount" />
+          <label class="input-label">Invoice Amount</label>
+          <input type="number" class="styled-input" id="invoice_amount" name="invoice_amount" placeholder="Enter Invoice Amount" step="0.01" required />
         </div>
       </div>
 
-      <!-- Payment Status -->
+      <!-- Description -->
       <div class="col-md-4">
         <div class="input-field-container">
-          <label class="input-label">Payment Status</label>
-          <select class="styled-input" id="payment_status" name="payment_status" required readonly>
-            <option value="" disabled selected>Select Payment Status</option>
-            <option value="Paid">Paid</option>
-            <option value="Partially Paid">Partially Paid</option>
-            <option value="Pending">Pending</option>
-          </select>
+          <label class="input-label">Description</label>
+          <textarea class="styled-input" name="description" rows="4" placeholder="Enter description"></textarea>
         </div>
       </div>
 
-      <!-- Payment Date -->
+      <!-- Upload Bill -->
       <div class="col-md-4">
         <div class="input-field-container">
-          <label class="input-label">Payment Date</label>
-          <input type="date" class="styled-input" name="payment_date" required />
+          <label class="input-label">Upload Bill</label>
+          <input type="file" class="styled-input" name="bill_file" accept=".jpg,.jpeg,.png,.pdf" required />
         </div>
       </div>
     </div>
-
-    <div class="row">
-      
-
-      <!-- Remaining Balance -->
-      <div class="col-md-4" id="remainingBalanceField" style="display: none;">
-        <div class="input-field-container">
-          <label class="input-label">Remaining Balance</label>
-          <input type="number" class="styled-input" id="remaining_balance" name="remaining_balance" placeholder="Remaining Balance" readonly />
-        </div>
-      </div>
-
-<!-- Payment Mode -->
-      <div class="col-md-4">
-    <div class="input-field-container">
-      <label class="input-label">Payment Mode</label>
-      <select class="styled-input" id="payment_mode" name="payment_mode" required>
-        <option value="" disabled selected>Select Payment Mode</option>
-        <option value="UPI">UPI</option>
-        <option value="Cash">Cash</option>
-        <option value="Card">Card</option>
-        <option value="Bank Transfer">Bank Transfer</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Transaction ID -->
-  <div class="col-md-4 hidden-field" id="transaction_id_container">
-    <div class="input-field-container">
-      <label class="input-label">Transaction ID</label>
-      <input type="text" class="styled-input" name="transaction_id" id="transaction_id" placeholder="Enter Transaction ID" />
-    </div>
-  </div>
-<!-- Reference Number for Card -->
-<div class="col-md-4 hidden-field" id="card_reference_container">
-    <div class="input-field-container">
-      <label class="input-label">Reference Number</label>
-      <input type="text" class="styled-input" name="card_reference_number" id="card_reference_number" placeholder="Enter Reference Number" />
-    </div>
-  </div>
-    </div>
-    <div class="row">
-  
-  
-
-  
-
-  
-
-  <!-- Bank Name for Bank Transfer -->
-  <div class="col-md-4 hidden-field" id="bank_name_container">
-    <div class="input-field-container">
-      <label class="input-label">Bank Name</label>
-      <input type="text" class="styled-input" name="bank_name" id="bank_name" placeholder="Enter Bank Name" />
-    </div>
-  </div>
-</div>
 
     <div class="row">
       <div class="col-md-12 text-center">
@@ -189,6 +128,7 @@ include('../navbar.php');
     </div>
   </form>
 </div>
+
 
 <script>
   document.getElementById("payment_mode").addEventListener("change", function () {

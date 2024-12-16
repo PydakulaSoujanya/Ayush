@@ -59,7 +59,7 @@ if (!isset($_SESSION['user_id'])) {
 <body>
 <?php include('../navbar.php'); ?>
   <div class="container mt-7">
-    <h3 class="mb-4">Vendor Form</h3>
+    <h3 class="mb-4">Vendor Details</h3>
     <form action="vendordb.php" method="POST" enctype="multipart/form-data">
       <div class="row">
         <div class="col-md-6">

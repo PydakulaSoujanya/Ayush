@@ -95,7 +95,7 @@ if ($result->num_rows > 0) {
   ?>
   <div class="container mt-7">
     <div class="dataTable_card card">
-      <div class="card-header">Service Master Table</div>
+      <div class="card-header">Manage Service Master</div>
       <div class="card-body">
         <!-- Search Input -->
         <div class="dataTable_search mb-3 d-flex justify-content-between">

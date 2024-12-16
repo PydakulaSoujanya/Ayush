@@ -1,41 +1,45 @@
 <?php
-require '../config.php'; // Include your database connection
+// Database connection (config.php includes DB connection setup)
+require '../config.php';
 
+// Default response
 $response = [
     'success' => false,
-    'message' => 'Invalid request.',
-    'data' => []
+    'message' => 'Error preparing SQL statement.'
 ];
 
 if (isset($_GET['search'])) {
-    $search = $_GET['search'];
+    // Get the search term
+    $search = mysqli_real_escape_string($conn, $_GET['search']); // Escaping search input to prevent SQL injection
 
-    $sql = "SELECT customer_name, emergency_contact_number FROM customer_master WHERE emergency_contact_number LIKE ?";
-    $stmt = $conn->prepare($sql);
-    $likeSearch = "%$search%";
-    $stmt->bind_param("s", $likeSearch);
+    // SQL query using escaped search term
+    $sql = "SELECT customer_name, emergency_contact_number, patient_name, relationship
+            FROM customer_master
+            WHERE emergency_contact_number LIKE '%$search%' OR customer_name LIKE '%$search%'";
 
-    if ($stmt->execute()) {
-        $result = $stmt->get_result();
-        $customers = [];
-        while ($row = $result->fetch_assoc()) {
-            $customers[] = $row;
+    // Execute the query
+    $queryResult = mysqli_query($conn, $sql);
+
+    if ($queryResult) {
+        $results = [];
+
+        // Fetch all results
+        while ($row = mysqli_fetch_assoc($queryResult)) {
+            $results[] = $row;
         }
 
-        if (count($customers) > 0) {
-            $response['success'] = true;
-            $response['message'] = 'Customers found.';
-            $response['data'] = $customers;
-        } else {
-            $response['message'] = 'No customers found.';
-        }
+        // Return a successful response with the customer data
+        $response = [
+            'success' => true,
+            'message' => 'Data retrieved successfully.',
+            'data' => $results
+        ];
     } else {
-        $response['message'] = 'Database query failed.';
+        $response['message'] = 'Error executing SQL query: ' . mysqli_error($conn);
     }
-
-    $stmt->close();
 }
 
+// Return the response as JSON
 header('Content-Type: application/json');
 echo json_encode($response);
 ?>

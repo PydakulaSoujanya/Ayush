@@ -14,5 +14,11 @@
 <br>
 <br>
 <a href="https://docs.google.com/spreadsheets/d/1RjZGE8876qT5EVnJKwZVHAlV8EeLKqxxv68GZGZU77g/edit?gid=688582710#gid=688582710" target="_blank">Ayush Validations Sheet</a>
-
+<br>
+<br>
+<a href="https://docs.google.com/spreadsheets/d/1ZALRzv322qdg-I4gVe2lozU-Bjd9-qII9AA07EHRcfI/edit?usp=sharing" target="_blank">Ayush db tables</a>
+<br>
+<br>
+<a href="https://docs.google.com/spreadsheets/d/1Ceh98ZWeExgEbe8QX3cV5TLRRdF2S_ANTG-VyjSo7bc/edit?usp=sharing" target="_blank">Accounts DB Optimization</a>
+<br>
 
