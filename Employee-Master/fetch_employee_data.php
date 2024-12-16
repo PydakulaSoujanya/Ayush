@@ -1,10 +1,10 @@
 <?php
-include('../config.php'); // Ensure this includes database connection details
+include('../config.php'); // Include your DB connection file
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-    $employeeId = intval($_POST['id']); // Validate and sanitize the input
+    $employeeId = intval($_POST['id']); // Sanitize input
 
-    // Fetch employee details
+    // Query to fetch employee data from emp_info table
     $query = "SELECT * FROM emp_info WHERE id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $employeeId);
@@ -21,15 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
         $docStmt->execute();
         $docResult = $docStmt->get_result();
 
-        // Collect documents with their file_type as keys
         while ($row = $docResult->fetch_assoc()) {
-            // Store each document under its file_type
             $data[$row['file_type']] = $row['file_path'];
         }
 
-        echo json_encode($data);
+        echo json_encode($data); // Return data as JSON
     } else {
-        echo json_encode(['error' => 'Employee not found.']);
+        echo json_encode(['error' => 'Employee not found.']); // Error if no employee found
     }
 
     // Close statements
@@ -39,6 +37,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     echo json_encode(['error' => 'Invalid request.']);
 }
 
-// Close connection
-$conn->close();
+$conn->close(); // Close the DB connection
 ?>

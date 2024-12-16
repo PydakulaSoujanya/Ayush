@@ -58,7 +58,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         <tr><th>Email</th><td><?= $customerData['email'] ?></td></tr>
         <tr><th>Patient Age</th><td><?= $customerData['patient_age'] ?></td></tr>
         <tr><th>Gender</th><td><?= $customerData['gender'] ?></td></tr>
-        <tr><th>Care Requirements</th><td><?= $customerData['care_requirements'] ?></td></tr>
+        <!-- <tr><th>Care Requirements</th><td><?= $customerData['care_requirements'] ?></td></tr> -->
        
         <tr><th>Mobility Status</th><td><?= $customerData['mobility_status'] ?></td></tr>
         <tr><th>Address</th><td><?= $customerData['address'] ?></td></tr>

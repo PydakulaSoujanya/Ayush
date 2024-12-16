@@ -18,7 +18,77 @@ unset($_SESSION['alert_message'], $_SESSION['alert_type']);
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <link href="path/to/fontawesome/css/all.css" rel="stylesheet">
+
+
 <link rel="stylesheet" href="../assets/css/style.css">
+
+
+  <!-- <style>
+    .input-field-container {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .input-label {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  background-color: white;
+  padding: 0 5px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #A26D2B;
+}
+
+.styled-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 12px;
+  outline: none;
+  box-sizing: border-box;
+  border: 1px solid #A26D2B;
+  border-radius: 5px;
+}
+
+    .styled-input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    h1, h2, h3, h4 {
+      color: #A26D2B;
+    }
+
+   
+
+
+    .document-upload-card {
+      border: 1px solid #A26D2B;
+  border-radius: 8px;
+
+}
+.input-field-container label {
+  font-weight: bold;
+}
+.mt-3 {
+  margin-top: 0.01rem !important;
+}
+
+/* Additional styling for the card */
+.document-card {
+    border: 1px solid #8B4513; /* Brown border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 15px; /* Add padding inside the card */
+}
+
+/* Margin for the input fields */
+.styled-input {
+    margin-bottom: 10px; /* Space between input fields */
+}
+
+
+
+</style> -->
 
   
 </head>

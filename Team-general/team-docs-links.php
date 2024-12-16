@@ -21,4 +21,7 @@
 <br>
 <a href="https://docs.google.com/spreadsheets/d/1Ceh98ZWeExgEbe8QX3cV5TLRRdF2S_ANTG-VyjSo7bc/edit?usp=sharing" target="_blank">Accounts DB Optimization</a>
 <br>
+<br>
+<a href="http://175.29.21.7:8081/" target="_blank">Ayush windows server url</a>
+<br>
 

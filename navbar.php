@@ -81,7 +81,7 @@
                     EMPLOYEES <span class="dropdown-arrow-icon">▼</span>
                 </span>
                 <div class="navbar-dropdown-content" id="employee">
-                    <a href="../Employee-Master/manage_employee.php">Employee</a>
+                    <a href="../Employee-Master/table.php">Employee</a>
                     <!-- <a href="/estimateReport">Estimate Report</a>
                     <a href="/purchaseReport">Purchase Report</a>
                     <a href="/repairsReport">Repairs Report</a>
@@ -198,7 +198,7 @@
         }
     </script>
 
-    <script>
+    <!-- <script>
     // Show loader on navigation
     document.addEventListener('DOMContentLoaded', function () {
         const links = document.querySelectorAll('a[href]');
@@ -221,7 +221,7 @@
             });
         });
     });
-</script>
+</script> -->
 
 </body>
 

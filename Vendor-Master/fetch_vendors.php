@@ -1,46 +1,56 @@
 <?php
-session_start(); // Start session
+include("../config.php");
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    // User is not logged in, redirect to login page
-    header("Location: ../index.php");
+// Get pagination and search parameters
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$size = isset($_GET['size']) ? (int)$_GET['size'] : 10;
+$search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : "";
+
+// Calculate offset
+$offset = ($page - 1) * $size;
+
+// Prepare the SQL query with ordering and search functionality
+$sql = "
+    SELECT * FROM vendors 
+    WHERE vendor_name LIKE ? 
+    ORDER BY created_at DESC, id DESC 
+    LIMIT ? OFFSET ?
+";
+
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo json_encode(['error' => 'Failed to prepare SQL statement.']);
     exit;
 }
 
-// Your protected page content goes here
-?>
-<?php
-include("../config.php");
+$searchParam = "%$search%";
+$stmt->bind_param("sii", $searchParam, $size, $offset);
+$stmt->execute();
+$result = $stmt->get_result();
 
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$size = isset($_GET['size']) ? (int)$_GET['size'] : 5;
-$search = isset($_GET['search']) ? $_GET['search'] : '';
-
-$offset = ($page - 1) * $size;
-
-$searchCondition = $search ? "WHERE vendor_name LIKE '%" . $conn->real_escape_string($search) . "%'" : "";
-
-// Get total rows
-$totalRowsQuery = "SELECT COUNT(*) as count FROM vendors $searchCondition";
-$totalRowsResult = $conn->query($totalRowsQuery);
-$totalRows = $totalRowsResult->fetch_assoc()['count'];
-
-// Get paginated data
-$query = "SELECT * FROM vendors $searchCondition LIMIT $offset, $size";
-$result = $conn->query($query);
-
+// Fetch data
 $rows = [];
 while ($row = $result->fetch_assoc()) {
     $rows[] = $row;
 }
 
-$totalPages = ceil($totalRows / $size);
+// Get total row count for pagination
+$totalCountSql = "SELECT COUNT(*) AS total FROM vendors WHERE vendor_name LIKE ?";
+$totalStmt = $conn->prepare($totalCountSql);
+$totalStmt->bind_param("s", $searchParam);
+$totalStmt->execute();
+$totalResult = $totalStmt->get_result();
+$totalCount = $totalResult->fetch_assoc()['total'];
 
+$totalPages = ceil($totalCount / $size);
+
+// Return JSON response
 echo json_encode([
     'rows' => $rows,
     'totalPages' => $totalPages,
+    'totalCount' => $totalCount,
 ]);
 
+$stmt->close();
 $conn->close();
 ?>

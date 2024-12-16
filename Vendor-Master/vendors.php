@@ -17,59 +17,14 @@ if (!isset($_SESSION['user_id'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <link rel="stylesheet" href="../assets/css/style.css">
-  
   <title>Vendor Table</title>
-  <!-- <style>
-    .dataTable_wrapper {
-      padding: 20px;
-    }
-
-    .dataTable_search input {
-      max-width: 200px;
-    }
-
-    .dataTable_headerRow th,
-    .dataTable_row td {
-      border: 1px solid #dee2e6;
-    }
-
-    .dataTable_headerRow {
-      background-color: #f8f9fa;
-      font-weight: bold;
-    }
-
-    .dataTable_row:hover {
-      background-color: #f1f1f1;
-    }
-
-    .dataTable_card {
-      border: 1px solid #ced4da;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .dataTable_card .card-header {
-      background-color: #A26D2B;
-      color: white;
-      font-weight: bold;
-    }
-
-    .action-icons i {
-      margin: 0 5px;
-      cursor: pointer;
-    }
-
-    .action-icons i:hover {
-      color: #007bff;
-    }
-  </style> -->
+ <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
 <?php include('../navbar.php'); ?>
   <div class="container mt-7">
     <div class="dataTable_card card">
-      <div class="card-header">Manage Vendor</div>
+      <div class="card-header">Vendor Table</div>
       <div class="card-body">
       <div class="dataTable_search mb-3 d-flex justify-content-between align-items-center">
   <input type="text" class="form-control me-2" id="globalSearch" placeholder="Search..." style="max-width: 200px;">
@@ -90,6 +45,7 @@ if (!isset($_SESSION['user_id'])) {
             </thead>
             <tbody id="tableBody">
               <!-- Rows will be dynamically generated -->
+              
             </tbody>
           </table>
         </div>
@@ -142,7 +98,7 @@ if (!isset($_SESSION['user_id'])) {
 
     function fetchVendors() {
       const searchQuery = globalSearch.value || "";
-      fetch(fetch_vendors.php?page=${pageIndex}&size=${pageSize}&search=${searchQuery})
+      fetch(`fetch_vendors.php?page=${pageIndex}&size=${pageSize}&search=${searchQuery}`)
         .then((response) => response.json())
         .then((data) => {
           tableBody.innerHTML = data.rows
@@ -164,18 +120,18 @@ if (!isset($_SESSION['user_id'])) {
             )
             .join("");
 
-          pageInfo.textContent = ${pageIndex} of ${data.totalPages};
+          pageInfo.textContent = `${pageIndex} of ${data.totalPages}`;
           document.getElementById("previousPage").disabled = pageIndex <= 1;
           document.getElementById("nextPage").disabled = pageIndex >= data.totalPages;
         });
     }
 
     function viewVendor(id) {
-      fetch(fetch_vendor_details.php?id=${id})
+      fetch(`fetch_vendor_details.php?id=${id}`)
         .then((response) => response.json())
         .then((data) => {
           const detailsList = Object.entries(data)
-            .map(([key, value]) => <li class="list-group-item"><strong>${key}:</strong> ${value || "N/A"}</li>)
+            .map(([key, value]) => `<li class="list-group-item"><strong>${key}:</strong> ${value || "N/A"}</li>`)
             .join("");
           document.getElementById("vendorDetails").innerHTML = detailsList;
           new bootstrap.Modal(document.getElementById("viewModal")).show();
@@ -183,12 +139,12 @@ if (!isset($_SESSION['user_id'])) {
     }
 
     function editVendor(id) {
-      alert(Edit vendor with ID: ${id});
+      alert(`Edit vendor with ID: ${id}`);
     }
 
     function deleteVendor(id) {
-      if (confirm(Are you sure you want to delete vendor ID: ${id}?)) {
-        alert(Vendor with ID ${id} deleted);
+      if (confirm(`Are you sure you want to delete vendor ID: ${id}?`)) {
+        alert(`Vendor with ID ${id} deleted`);
         // You can add actual deletion logic here
       }
     }
@@ -218,8 +174,8 @@ if (!isset($_SESSION['user_id'])) {
 
     fetchVendors();
     function deleteVendor(id) {
-  if (confirm(Are you sure you want to delete vendor ID: ${id}?)) {
-    fetch(delete_vendor.php?id=${id}, { method: "DELETE" })
+  if (confirm(`Are you sure you want to delete vendor ID: ${id}?`)) {
+    fetch(`delete_vendor.php?id=${id}`, { method: "DELETE" })
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
@@ -237,7 +193,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 function editVendor(id) {
   // Redirect to the update_vendor.php page with the vendor ID
-  window.location.href = update_vendor.php?id=${id};
+  window.location.href = `update_vendor.php?id=${id}`;
 }
 
   </script>

@@ -17,7 +17,8 @@ if (!$result) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-   <link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+
   <title>Data Table</title>
   <!-- <style>
     .dataTable_wrapper {
@@ -107,8 +108,8 @@ if (!$result) {
             </tbody>
           </table>
         </div>
-       <!-- Modal for Employee Details -->
-       <div class="modal fade" id="employeeDetailsModal" tabindex="-1" role="dialog" aria-labelledby="employeeDetailsModalLabel" aria-hidden="true">
+      <!-- Modal for Employee Details -->
+<div class="modal fade" id="employeeDetailsModal" tabindex="-1" role="dialog" aria-labelledby="employeeDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -155,75 +156,86 @@ if (!$result) {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    $(document).on('click', '.view-btn', function(e) {
-        e.preventDefault();
-        const employeeId = $(this).data('id');
 
-        // Fetch employee data using AJAX
-        $.ajax({
-            url: 'fetch_employee_data.php', // Backend script to fetch data
-            type: 'POST',
-            data: { id: employeeId },
-            dataType: 'json',
-            success: function(response) {
-                if (response.error) {
-                    alert(response.error);
-                } else {
-                    let detailsHtml = '';
+function confirmDeletion(id) {
+    if (confirm("Are you sure you want to delete this employee?")) {
+        // Correctly format the URL with quotes around the id value
+        window.location.href = `emp_delete.php?id=${id}`;
+    }
+}
 
-                    // Display general employee fields
-                    for (let key in response) {
-                        if (!key.includes('file')) {
-                            detailsHtml += `
-                                <tr>
-                                    <th>${key.replace(/_/g, ' ').toUpperCase()}</th>
-                                    <td>${response[key]}</td>
-                                </tr>
-                            `;
-                        }
-                    }
+$(document).on('click', '.view-btn', function(e) {
+    e.preventDefault();
+    const employeeId = $(this).data('id'); // Get employee ID from button data attribute
 
-                    // Display documents with download links
-                    const documentTypes = {
-                        'resume': 'Resume',
-                        'offer_letter': 'Offer Letter',
-                        'joining_letter': 'Joining Letter',
-                        'police_verification_form': 'Police Verification Form'
-                    };
+    // Fetch employee data using AJAX
+    $.ajax({
+        url: 'fetch_employee_data.php', // Replace with the backend script to fetch data
+        type: 'POST',
+        data: { id: employeeId },
+        dataType: 'json',
+        success: function(response) {
+            if (response.error) {
+                alert(response.error); // Handle errors if any
+            } else {
+                let detailsHtml = ''; // Store the generated HTML for employee details
 
-                    for (let docType in documentTypes) {
-                        if (response[docType]) {
-                            detailsHtml += `
-                                <tr>
-                                    <th>${documentTypes[docType]}</th>
-                                    <td><a href="uploads/${response[docType]}" target="_blank" download>Download ${documentTypes[docType]}</a></td>
-                                </tr>
-                            `;
-                        }
-                    }
-
-                    // Check for other documents dynamically if needed
-                    const otherDocs = Object.keys(response).filter(key => key.includes('file_'));
-                    otherDocs.forEach(docKey => {
+                // Display general employee fields
+                for (let key in response) {
+                    if (!key.includes('file')) { // Skip file-related fields
                         detailsHtml += `
                             <tr>
-                                <th>${docKey.replace(/_/g, ' ').toUpperCase()}</th>
-                                <td><a href="uploads/${response[docKey]}" target="_blank" download>Download ${docKey.replace(/_/g, ' ')}</a></td>
+                                <th>${key.replace(/_/g, ' ').toUpperCase()}</th>
+                                <td>${response[key]}</td>
                             </tr>
                         `;
-                    });
-
-                    $('#employeeDetails').html(detailsHtml);
-                    $('#employeeDetailsModal').modal('show'); // Show the modal
+                    }
                 }
-            },
-            error: function() {
-                alert('Failed to fetch employee details.');
-            }
-        });
-    });
-</script>
 
+                // Display documents with download links
+                const documentTypes = {
+                    'resume': 'Resume',
+                    'offer_letter': 'Offer Letter',
+                    'joining_letter': 'Joining Letter',
+                    'police_verification_form': 'Police Verification Form'
+                };
+
+                // Loop through document types and append them to the table if available
+                for (let docType in documentTypes) {
+                    if (response[docType]) {
+                        detailsHtml += `
+                            <tr>
+                                <th>${documentTypes[docType]}</th>
+                                <td><a href="uploads/${response[docType]}" target="_blank" download>Download ${documentTypes[docType]}</a></td>
+                            </tr>
+                        `;
+                    }
+                }
+
+                // Check for other dynamic documents (keys that contain 'file_')
+                const otherDocs = Object.keys(response).filter(key => key.includes('file_'));
+                otherDocs.forEach(docKey => {
+                    detailsHtml += `
+                        <tr>
+                            <th>${docKey.replace(/_/g, ' ').toUpperCase()}</th>
+                            <td><a href="uploads/${response[docKey]}" target="_blank" download>Download ${docKey.replace(/_/g, ' ')}</a></td>
+                        </tr>
+                    `;
+                });
+
+                // Populate the modal with employee details
+                $('#employeeDetails').html(detailsHtml);
+
+                // Show the modal
+                $('#employeeDetailsModal').modal('show');
+            }
+        },
+        error: function() {
+            alert('Failed to fetch employee details.'); // Error handling
+        }
+    });
+});
+</script>
 
 
 
