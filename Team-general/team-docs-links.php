@@ -24,4 +24,7 @@
 <br>
 <a href="http://175.29.21.7:8081/" target="_blank">Ayush windows server url</a>
 <br>
+<br>
+<a href="https://docs.google.com/spreadsheets/d/1MIUFuNwmcQaFMnCmSkTNZRVZ1XDTLL-vgycmCcTxrFI/edit?gid=1020265229#gid=1020265229" target="_blank">Ayush daily task sheet</a>
+<br>
 

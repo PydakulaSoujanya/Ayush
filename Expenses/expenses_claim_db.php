@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Handle file upload
     if (!empty($attachment)) {
-        $upload_dir = 'uploads/';
+        $upload_dir = '../uploads/';
         $target_file = $upload_dir . basename($_FILES['attachment']['name']);
         move_uploaded_file($_FILES['attachment']['tmp_name'], $target_file);
     }

@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
    <link rel="stylesheet" href="../assets/css/style.css">
-  <!-- <style>
+  <style>
     .input-field-container {
       position: relative;
       margin-bottom: 15px;
@@ -150,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
     display: block;
     margin-bottom: 5px;
   }
-  </style> -->
+  </style>
 </head>
 <body>
   <?php
@@ -163,39 +163,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
       <div class="row">
         <!-- Customer Name -->
         <div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Search Customer</label>
-    <div style="display: flex; align-items: center;">
-      <input
-        id="customer-name"
-        class="styled-input"
-        name="customer_name"
-        oninput="if (this.value.length >= 2) searchCustomers(this.value)" 
-        placeholder="Search by phone"
-        style="flex: 1; margin-right: 10px;"
-      />
-      <button
-        type="button"
-        class="btn btn-primary btn-sm"
-        data-toggle="modal"
-        data-target="#addCustomerModal"
-      >
-        +
-      </button>
-    </div>
-    <div class="suggestionItem">
-      <ul id="customerList"></ul>
-    </div>
-  </div>
-</div>
+          <div class="input-field-container">
+            <label class="input-label">Customer Name</label>
+            <div style="display: flex; align-items: center;">
+              <input
+                id="customer-name"
+                class="styled-input"
+                name="customer_name"
+                oninput="if (this.value.length >= 3) searchCustomers(this.value)"
+                placeholder="Search by name or phone"
+                style="flex: 1; margin-right: 10px;"
+              />
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                data-toggle="modal"
+                data-target="#addCustomerModal"
+              >
+                +
+              </button>
+            </div>
+            <div class="suggestionItem">
+              <ul id="customerList"></ul>
+            </div>
+          </div>
+        </div>
 
-<!-- Phone Number -->
-<div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Phone Number</label>
-    <input type="text" id="emergency_contact_number" class="styled-input" name="emergency_contact_number" placeholder="Phone Number" readonly />
-  </div>
-</div>
+        <!-- Phone Number -->
+        <div class="col-md-6">
+          <div class="input-field-container">
+            <label class="input-label">Phone Number</label>
+            <input type="text" id="emergency_contact_number" class="styled-input" name="emergency_contact_number" placeholder="Phone Number" readonly />
+          </div>
+        </div>
 
         <!-- Patient Name -->
         <div class="col-md-6">
@@ -292,13 +292,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
     </div>
   </div>
 </div>
-<div class="row">
+
 <div class="col-md-6">
-<div class="input-field-container">
   <label class="input-label">Total Price</label>
   <input type="text" id="total_price" class="styled-input" readonly placeholder="Total Price" />
-</div>
-</div>
 </div>
       <!-- Additional Inputs -->
       <div class="row">
@@ -802,14 +799,16 @@ setInterval(() => {
 
 
 
-function searchCustomers(search) {
+    function searchCustomers(search) {
     const customerList = document.getElementById("customerList");
+    const inputFieldCustomerName = document.getElementById("customer-name");
     const inputFieldContactNo = document.getElementById("emergency_contact_number");
     const patientNameField = document.getElementById("patient_name");
     const patientRelationField = document.getElementById("relationship");
 
-    // Clear previous suggestions but retain input values
+    // Clear previous suggestions and reset fields
     customerList.innerHTML = "";
+    inputFieldCustomerName.value = "";
     inputFieldContactNo.value = "";
     patientNameField.value = "";
     patientRelationField.value = "";

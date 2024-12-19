@@ -148,6 +148,30 @@
         </div>
     </div>
 
+    <div class="navbar-links">
+        <div class="navbar-dropdown" onmouseover="toggleDropdown('reports')" onmouseout="toggleDropdown('reports')">
+            <span class="navbar-dropdown-title" >
+                REPORTS <span class="dropdown-arrow-icon">▼</span>
+            </span>
+            <div class="navbar-dropdown-content" id="reports" style="display: none;">
+                <a href="javascript:void(0);" onclick="toggleDropdown('account-payables')">Account Payables</a>
+                <!-- <div class="submenu" id="direct-expenses" style="display: none; margin-left: 15px;">
+                    <a href="../Expenses/employee_payouts_table.php">Employee Payouts</a>
+                    <a href="../Expenses/vendor_expenditure_table.php">Vendor Payouts</a>
+                </div> -->
+                <a href="../Reports/account_recievables.php" onclick="toggleDropdown('account-recievables')">Account Recievables</a>
+                <!-- <div class="submenu" id="indirect-expenses" style="display: none; margin-left: 15px;">
+                    <a href="../Expenses/expenses_claim_form.php">Employee Claims</a>
+                    <a href="">Utility Expenses</a>
+                </div> -->
+                <!-- <a href="#">Employee Claims</a>
+                <a href="#">Vendor Payouts</a>
+                <a href="#">Employee Payouts</a> -->
+                <!-- <a href="../Expenses/refunds_table.php">Refund</a> -->
+            </div>
+        </div>
+    </div>
+
     <!-- <a href="logout.php" class="btn btn-danger">Logout</a> -->
 
     <a href="../logout.php" class="btn btn-secondary">

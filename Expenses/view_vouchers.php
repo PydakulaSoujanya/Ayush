@@ -189,7 +189,7 @@ include('../navbar.php');
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="voucherModalLabel">Create Voucher</h5>
+          <h5 class="modal-title" id="voucherModalLabel">Generate Voucher</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form id="voucherForm">

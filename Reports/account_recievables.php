@@ -375,9 +375,10 @@ $pdf_path_stmt->close();
 
   
   <div class="container  mt-7">
+    <h3 class="text-center">You have to recieve more Rs. 100000</h3>
     <div class="dataTable_card card">
       <!-- Card Header -->
-      <div class="card-header"> Capturing Services Table</div>
+      <div class="card-header">Account Recievable Details</div>
 
       <!-- Card Body -->
       <div class="card-body">
@@ -398,14 +399,15 @@ $pdf_path_stmt->close();
         <tr class="dataTable_headerRow">
             <th>S.no</th>
             <th>Customer Info</th>
-            <th>Details</th>
-            <th>Total Days & Service Type</th> 
-            <th>Payment Details</th>
-            <th>Total Price</th>
-            <th>Status</th>
             <th>Invoice ID</th>
-            <th>Action</th>
-            <th>Assign Employee</th>
+            <th>Total Price</th>
+            <th>Recieved</th>
+            <th>Balance</th>
+            <th>Due Date</th>
+
+            
+   
+            
         </tr>
     </thead>
     <tbody>
@@ -435,100 +437,37 @@ if ($result1->num_rows > 0) {
         $invoiceRow = $invoiceResult->fetch_assoc();
         $invoiceId = $invoiceRow['invoice_id'];
     }
+    $service_price = $row['service_price']; // Assuming $row['service_price'] is fetched from a database
+    $deduction = 2500;
+    $balance = $service_price - $deduction; // Calculate the difference
         echo "<tr class='dataTable_row'>
                 <td>{$serial}</td>
                 <td>
                   <strong>Name:</strong> " . htmlspecialchars($row['customer_name']) . "<br>
                   <strong>Phone:</strong> " . htmlspecialchars($row['contact_no']) . "
                 </td>
-                <td>
-                  <strong>Start Date:</strong> " . htmlspecialchars($row['from_date']) . "<br>
-                  <strong>End Date:</strong> " . htmlspecialchars($row['end_date']) . "
-                </td>
-                <!-- Merged Total Days and Service Type column -->
-                <td>
-                  <strong>Total Days:</strong> {$row['total_days']}<br>
-                  <strong>Service Type:</strong> {$row['service_type']}
-                </td>
-               <td>
-                  <strong>Status:</strong> Fully paid<br>
-                  <strong>Amount Paid:</strong> 2500
-                </td>
-                <td>{$row['service_price']}</td>
-                
-                <!-- Status Column with dropdown -->
-                <td>
-                    {$row['status']}
-                </td>
-               
-<td onclick=\"window.location.href='view_single_invoice.php?invoice_id=" . $invoiceId . "';\" 
+                <td onclick=\"window.location.href='view_single_invoice.php?invoice_id=" . $invoiceId . "';\" 
     style=\"cursor: pointer; color: blue; text-decoration: underline;\">
    $invoiceId
 </td>
+<td>{$row['service_price']}</td>
+                
+               <td>
+                  
+                  2500
+                </td>
+                
+<td>$balance</td>
+<td>20-12-2024</td>
+                
+                
+                
+                
+               
 
 
-                <td>";
 
-       if (!empty($row['assigned_employee'])) {
-        // Show the assigned employee's name
-        echo "<span class='text-success'>" . htmlspecialchars($row['assigned_employee']) . "</span>";
-    } else {
-        // Query to fetch unassigned employees for the given service duration
-        $query = "
-            SELECT e.id, e.name 
-            FROM emp_info e 
-            WHERE e.role = ? -- Match role with the service_type
-              AND e.id NOT IN (
-                SELECT a.employee_id 
-                FROM allotment a
-                WHERE 
-                    a.service_type = e.role AND -- Ensure the role and service type match
-                    (
-                        (a.start_date <= ? AND a.end_date >= ?) OR -- Overlapping period check
-                        (a.start_date <= ? AND a.end_date >= ?) OR
-                        (a.start_date >= ? AND a.end_date <= ?)
-                    )
-            );";
-
-        // Prepare and bind parameters for the query
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param(
-            "sssssss",
-            $row['service_type'], // Role parameter
-            $row['from_date'], $row['from_date'], // Overlapping condition 1
-            $row['end_date'], $row['end_date'],   // Overlapping condition 2
-            $row['from_date'], $row['end_date']   // Overlapping condition 3
-        );
-
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        // Dropdown for assigning an employee
-        echo "<form method='POST' action='allotmentdb.php'> <!-- Process form in allotmentdb.php -->
-                <select name='emp_id' required>
-                    <option value=''>Select Employee</option>";
-        
-        // Populate the dropdown with employees' IDs and names
-        while ($employee = $result->fetch_assoc()) {
-            echo "<option value='" . $employee['id'] . "'>" . htmlspecialchars($employee['name']) . " (ID: " . $employee['id'] . ")</option>";
-        }
-
-        echo "    </select>
-                <input type='hidden' name='service_id' value='" . $row['id'] . "'>
-                <button type='submit' name='assign_employee' style='border: black; cursor: pointer;' title='Allocate'>
-                    Assign Employee
-                </button>
-              </form>";
-    }
-
-       echo "
-    </td>
-    <td class='action-icons'>
-        <form method='POST' action='' onsubmit='return confirm(\"Are you sure you want to cancel this service?\")'>
-            <input type='hidden' name='service_id' value='" . $row['id'] . "'>
-            <button type='submit' name='cancel_service' class='btn btn-warning btn-sm'>Cancel</button>
-        </form>
-    </td>
+                
 </tr>";
 
         $serial++;

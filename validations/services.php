@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
    <link rel="stylesheet" href="../assets/css/style.css">
-  <!-- <style>
+  <style>
     .input-field-container {
       position: relative;
       margin-bottom: 15px;
@@ -150,7 +150,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
     display: block;
     margin-bottom: 5px;
   }
-  </style> -->
+
+  .error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+  </style>
 </head>
 <body>
   <?php
@@ -163,55 +171,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
       <div class="row">
         <!-- Customer Name -->
         <div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Search Customer</label>
-    <div style="display: flex; align-items: center;">
-      <input
-        id="customer-name"
-        class="styled-input"
-        name="customer_name"
-        oninput="if (this.value.length >= 2) searchCustomers(this.value)" 
-        placeholder="Search by phone"
-        style="flex: 1; margin-right: 10px;"
-      />
-      <button
-        type="button"
-        class="btn btn-primary btn-sm"
-        data-toggle="modal"
-        data-target="#addCustomerModal"
-      >
-        +
-      </button>
-    </div>
-    <div class="suggestionItem">
-      <ul id="customerList"></ul>
-    </div>
-  </div>
-</div>
+          <div class="input-field-container">
+            <label class="input-label">Customer Name</label>
+            <div style="display: flex; align-items: center;">
+              <input
+                id="customer-name"
+                class="styled-input"
+                name="customer_name"
+                oninput="if (this.value.length >= 3) searchCustomers(this.value)"
+                placeholder="Search by name or phone"
+                style="flex: 1; margin-right: 10px;"
+              />
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                data-toggle="modal"
+                data-target="#addCustomerModal"
+              >
+                +
+              </button>
+            </div>
+            <div class="suggestionItem">
+              <ul id="customerList"></ul>
+            </div>
+          </div>
+        </div>
 
-<!-- Phone Number -->
-<div class="col-md-6">
+        <!-- Phone Number -->
+        <div class="col-md-6">
   <div class="input-field-container">
     <label class="input-label">Phone Number</label>
-    <input type="text" id="emergency_contact_number" class="styled-input" name="emergency_contact_number" placeholder="Phone Number" readonly />
+    <input type="text" id="emergency_contact_number" class="styled-input" name="emergency_contact_number" placeholder="Phone Number" />
+    <span id="error-emergency_contact_number" class="error-message" style="display:none; color: red;"></span> <!-- Hidden by default -->
   </div>
 </div>
 
         <!-- Patient Name -->
         <div class="col-md-6">
-          <div class="input-field-container">
-            <label class="input-label">Patient Name</label>
-            <input type="text" class="styled-input" name="patient_name" id="patient_name" placeholder="Patient Name" readonly />
-          </div>
-        </div>
+  <div class="input-field-container">
+    <label class="input-label">Patient Name</label>
+    <input type="text" class="styled-input" name="patient_name" id="patient_name" placeholder="Patient Name" />
+    <span id="error-patient_name" class="error-message" style="display:none; color: red;"></span> <!-- Hidden by default -->
+  </div>
+</div>
 
         <!-- Relationship -->
         <div class="col-md-6">
-          <div class="input-field-container">
-            <label class="input-label">Patient Relation With Customer</label>
-            <input type="text" class="styled-input" name="relationship" id="relationship" placeholder="Patient Relation With Customer" readonly />
-          </div>
-        </div>
+  <div class="input-field-container">
+    <label class="input-label">Patient Relation With Customer</label>
+    <input type="text" class="styled-input" name="relationship" id="relationship" placeholder="Patient Relation With Customer" />
+    <span id="error-relationship" class="error-message" style="display:none; color: red;"></span> <!-- Hidden by default -->
+  </div>
+</div>
 
         <!-- Enquiry Time -->
         <div class="col-md-6">
@@ -233,18 +244,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
       <!-- Dynamic Fields for Service Details -->
       <div id="field-container">
   <div class="row field-set bordered-field">
-    <div class="col-md-6">
-      <div class="input-field-container">
-        <label class="input-label">Start Date</label>
-        <input type="date" class="styled-input" name="from_date[]" id="fromDate" />
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="input-field-container">
-        <label class="input-label">End Date</label>
-        <input type="date" class="styled-input" name="end_date[]" id="endDate"/>
-      </div>
-    </div>
+  <div class="col-md-6">
+  <div class="input-field-container">
+    <label class="input-label">Start Date</label>
+    <input type="date" class="styled-input" name="from_date[]" id="fromDate" />
+    <span id="error-fromDate" class="error-message" style="display:none; color: red;"></span> <!-- Hidden by default -->
+  </div>
+</div>
+<div class="col-md-6">
+  <div class="input-field-container">
+    <label class="input-label">End Date</label>
+    <input type="date" class="styled-input" name="end_date[]" id="endDate" />
+    <span id="error-endDate" class="error-message" style="display:none; color: red;"></span> <!-- Hidden by default -->
+  </div>
+</div>
     <div class="col-md-6">
       <div class="input-field-container">
         <label class="input-label">Service Type</label>
@@ -276,11 +289,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
       </div>
     </div>
     <div class="col-md-6">
-      <div class="input-field-container">
-        <label class="input-label">Per Day Service Price</label>
-        <input type="text" class="styled-input" name="per_day_service_price[]" placeholder="Service Price" id="per_day_service_price" readonly />
-      </div>
-    </div>
+  <div class="input-field-container">
+    <label class="input-label">Per Day Service Price</label>
+    <input type="text" class="styled-input" name="per_day_service_price[]" id="per_day_service_price" placeholder="Service Price" readonly />
+    <span id="error-per_day_service_price" class="error-message" style="display:none; color: red;"></span> <!-- Hidden by default -->
+  </div>
+</div>
     <div class="col-md-6">
       <div class="input-field-container">
         <label class="input-label">Total Service Price</label>
@@ -292,13 +306,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
     </div>
   </div>
 </div>
-<div class="row">
+
 <div class="col-md-6">
-<div class="input-field-container">
   <label class="input-label">Total Price</label>
   <input type="text" id="total_price" class="styled-input" readonly placeholder="Total Price" />
-</div>
-</div>
 </div>
       <!-- Additional Inputs -->
       <div class="row">
@@ -802,14 +813,16 @@ setInterval(() => {
 
 
 
-function searchCustomers(search) {
+    function searchCustomers(search) {
     const customerList = document.getElementById("customerList");
+    const inputFieldCustomerName = document.getElementById("customer-name");
     const inputFieldContactNo = document.getElementById("emergency_contact_number");
     const patientNameField = document.getElementById("patient_name");
     const patientRelationField = document.getElementById("relationship");
 
-    // Clear previous suggestions but retain input values
+    // Clear previous suggestions and reset fields
     customerList.innerHTML = "";
+    inputFieldCustomerName.value = "";
     inputFieldContactNo.value = "";
     patientNameField.value = "";
     patientRelationField.value = "";
@@ -1129,6 +1142,143 @@ updateTotalPrice();
     }
 });
 </script>
+
+
+
+<script>
+  // Validate input through JavaScript
+  document.getElementById('emergency_contact_number').addEventListener('input', function() {
+    var input = this.value;
+    var errorSpan = document.getElementById('error-emergency_contact_number');
+    
+    // Validation logic
+    if (input === '') {
+      errorSpan.textContent = 'Please enter Phone Number';
+      errorSpan.style.display = 'block';
+    } else if (!/^\d{10}$/.test(input)) {
+      errorSpan.textContent = 'Please enter a valid Phone Number';
+      errorSpan.style.display = 'block';
+    } else {
+      errorSpan.style.display = 'none';
+    }
+  });
+
+   // Validate input through JavaScript
+   document.getElementById('patient_name').addEventListener('input', function() {
+    var input = this.value;
+    var errorSpan = document.getElementById('error-patient_name');
+    
+    // Validation logic
+    if (input === '') {
+      errorSpan.textContent = 'Please enter Patient Name';
+      errorSpan.style.display = 'block';
+    } else if (!/^[a-zA-Z\s]+$/.test(input)) {  // Allows only letters and spaces
+      errorSpan.textContent = 'Please enter a valid Patient Name';
+      errorSpan.style.display = 'block';
+    } else {
+      errorSpan.style.display = 'none';
+    }
+  });
+
+   // Validate input through JavaScript
+   document.getElementById('relationship').addEventListener('input', function() {
+    var input = this.value;
+    var errorSpan = document.getElementById('error-relationship');
+    
+    // Validation logic
+    if (input === '') {
+      errorSpan.textContent = 'Please enter Patient Relation With Customer';
+      errorSpan.style.display = 'block';
+    } else if (!/^[a-zA-Z\s]+$/.test(input)) {  // Allows only letters and spaces
+      errorSpan.textContent = 'Contains invalid characters';
+      errorSpan.style.display = 'block';
+    } else {
+      errorSpan.style.display = 'none';
+    }
+  });
+
+    // Validate input through JavaScript
+    document.getElementById('relationship').addEventListener('input', function() {
+    var input = this.value;
+    var errorSpan = document.getElementById('error-relationship');
+    
+    // Validation logic
+    if (input === '') {
+      errorSpan.textContent = 'Please enter Patient Relation With Customer';
+      errorSpan.style.display = 'block';
+    } else if (!/^[a-zA-Z\s]+$/.test(input)) {  // Allows only letters and spaces
+      errorSpan.textContent = 'Contains invalid characters';
+      errorSpan.style.display = 'block';
+    } else {
+      errorSpan.style.display = 'none';
+    }
+  });
+
+  // Validate Start Date input through JavaScript
+  document.getElementById('fromDate').addEventListener('input', function() {
+    var input = this.value;
+    var errorSpan = document.getElementById('error-fromDate');
+    
+    if (input === '') {
+      errorSpan.textContent = 'Please enter Start Date';
+      errorSpan.style.display = 'block';
+    } else {
+      var today = new Date();
+      var inputDate = new Date(input);
+      if (inputDate < today) {
+        errorSpan.textContent = 'Cannot be before enquiry date';
+        errorSpan.style.display = 'block';
+      } else {
+        errorSpan.style.display = 'none';
+      }
+    }
+  });
+
+  // Validate End Date input through JavaScript
+  document.getElementById('endDate').addEventListener('input', function() {
+    var input = this.value;
+    var errorSpan = document.getElementById('error-endDate');
+    
+    if (input === '') {
+      errorSpan.textContent = 'Please enter End Date';
+      errorSpan.style.display = 'block';
+    } else {
+      var startDateInput = document.getElementById('fromDate').value;
+      if (startDateInput !== '') {
+        var startDate = new Date(startDateInput);
+        var endDate = new Date(input);
+        if (endDate < startDate) {
+          errorSpan.textContent = 'Cannot be before start date';
+          errorSpan.style.display = 'block';
+        } else {
+          errorSpan.style.display = 'none';
+        }
+      } else {
+        errorSpan.style.display = 'none';
+      }
+    }
+  });
+
+   // Validate Per Day Service Price input through JavaScript
+  document.getElementById('per_day_service_price').addEventListener('input', function() {
+    var input = this.value;
+    var errorSpan = document.getElementById('error-per_day_service_price');
+    
+    if (input === '') {
+      errorSpan.textContent = 'Per Day Service Price should not be empty';
+      errorSpan.style.display = 'block';
+    } else if (!/^\d+(\.\d{1,2})?$/.test(input)) {
+      errorSpan.textContent = 'Maximum 2 decimal places allowed';
+      errorSpan.style.display = 'block';
+    } else if (parseFloat(input) <= 0) {
+      errorSpan.textContent = 'Per Day Service Price should not be negative or zero';
+      errorSpan.style.display = 'block';
+    } else {
+      errorSpan.style.display = 'none';
+    }
+  });
+</script>
+
 
 </body>
 </html>
