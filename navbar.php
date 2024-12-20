@@ -133,12 +133,12 @@
                 <a href="javascript:void(0);" onclick="toggleDropdown('direct-expenses')">Direct Expenses</a>
                 <div class="submenu" id="direct-expenses" style="display: none; margin-left: 15px;">
                     <a href="../Expenses/employee_payouts_table.php">Employee Payouts</a>
-                    <a href="../Expenses/vendor_expenditure_table.php">Vendor Payouts</a>
+                    <a href="#">Vendor Payouts</a>
                 </div>
                 <a href="javascript:void(0);" onclick="toggleDropdown('indirect-expenses')">Indirect Expenses</a>
                 <div class="submenu" id="indirect-expenses" style="display: none; margin-left: 15px;">
                     <a href="../Expenses/expenses_claim_form.php">Employee Claims</a>
-                    <a href="">Utility Expenses</a>
+                    <a href="../Expenses/vendor_expenditure_table.php">Utility Expenses</a>
                 </div>
                 <!-- <a href="#">Employee Claims</a>
                 <a href="#">Vendor Payouts</a>
@@ -147,6 +147,23 @@
             </div>
         </div>
     </div>
+
+    <div class="navbar-dropdown" onmouseover="toggleDropdown('bank')" onmouseout="toggleDropdown('bank')">
+                <span class="navbar-dropdown-title">
+                    BANK <span class="dropdown-arrow-icon">▼</span>
+                </span>
+                <div class="navbar-dropdown-content" id="bank">
+                    <a href="#">Filing Excel</a>
+                    <a href="javascript:void(0);" onclick="toggleDropdown('reconcilation')">Reconcilation</a>
+
+                    <!-- <a href="#"></a> -->
+                    <div class="submenu" id="reconcilation" style="display: none; margin-left: 15px;">
+                    <a href="">Deposits</a>
+                    <a href="">Withdrawls</a>
+                    <a href="">Upload</a>
+                </div>
+                </div>
+            </div>
 
     <div class="navbar-links">
         <div class="navbar-dropdown" onmouseover="toggleDropdown('reports')" onmouseout="toggleDropdown('reports')">
@@ -174,9 +191,9 @@
 
     <!-- <a href="logout.php" class="btn btn-danger">Logout</a> -->
 
-    <a href="../logout.php" class="btn btn-secondary">
+    <!-- <a href="../logout.php" class="btn btn-secondary">
     <i class="fas fa-sign-out-alt"></i>
-</a>
+</a> -->
 
 
 

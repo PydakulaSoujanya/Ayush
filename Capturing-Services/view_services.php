@@ -325,7 +325,7 @@ $pdf_path_stmt->close();
     <link rel="stylesheet" href="../assets/css/style.css">
 
   <title>Services</title>
-  <style>
+  <!-- <style>
     .dataTable_wrapper {
       padding: 20px;
     }
@@ -364,7 +364,7 @@ $pdf_path_stmt->close();
       cursor: pointer;
       margin-right: 10px;
     }
-  </style>
+  </style> -->
 </head>
 <body>
  <?php

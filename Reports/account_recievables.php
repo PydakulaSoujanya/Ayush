@@ -6,10 +6,10 @@ include '../config.php';
 require_once  '../vendor/autoload.php';
 //require_once __DIR__ . '../vendor/autoload.php';
 
-
-
-    use setasign\fpdf\fpdf;
+  use setasign\fpdf\fpdf;
     use setasign\Fpdi\Fpdi;
+// Initialize total balance
+
     // use setasign\FpdiProtection\FpdiProtection;
     
 // Fetch employees from the emp_info table
@@ -314,6 +314,47 @@ $pdf_path_stmt->close();
 }
 
 ?>
+
+<?php
+$total_balance = 0;
+
+// Fetch service requests
+$sql1 = "SELECT * FROM service_requests";
+$result1 = mysqli_query($conn, $sql1);
+
+if ($result1->num_rows > 0) {
+    $serial = $start + 1; // Assuming $start is defined elsewhere
+
+    while ($row = mysqli_fetch_assoc($result1)) {
+        // Check if assigned employee exists, otherwise set default
+        $assignedEmployee = !empty($row['assigned_employee']) ? $row['assigned_employee'] : 'Not Assigned';
+
+        // Fetch invoice ID for this specific row (service request)
+        $serviceId = $row['id'];
+        $invoiceQuery = "SELECT invoice_id FROM invoice WHERE service_id = ?";
+        $stmt = $conn->prepare($invoiceQuery);
+        $stmt->bind_param("i", $serviceId);  // Assuming `id` and `service_id` are integers
+        $stmt->execute();
+        $invoiceResult = $stmt->get_result();
+
+        // Fetch the invoice ID if it exists
+        $invoiceId = null;
+        if ($invoiceResult->num_rows > 0) {
+            $invoiceRow = $invoiceResult->fetch_assoc();
+            $invoiceId = $invoiceRow['invoice_id'];
+        }
+
+        // Get the service price and calculate the balance
+        $service_price = $row['service_price']; // Assuming $row['service_price'] is fetched from the database
+        $deduction = 2500;
+        $balance = $service_price - $deduction;
+
+        // Add the calculated balance to the total balance
+        $total_balance += $balance;
+        echo $total_balance;
+            }
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -375,7 +416,7 @@ $pdf_path_stmt->close();
 
   
   <div class="container  mt-7">
-    <h3 class="text-center">You have to recieve more Rs. 100000</h3>
+    <h3 class="text-center">You have to receive more Rs. <?php echo number_format($total_balance, 2); ?></h3>
     <div class="dataTable_card card">
       <!-- Card Header -->
       <div class="card-header">Account Recievable Details</div>
@@ -412,6 +453,8 @@ $pdf_path_stmt->close();
     </thead>
     <tbody>
 <?php
+
+$total_balance = 0;
 $sql1 = "SELECT * FROM service_requests 
         ";
         $result1 = mysqli_query($conn, $sql1);
@@ -439,8 +482,11 @@ if ($result1->num_rows > 0) {
     }
     $service_price = $row['service_price']; // Assuming $row['service_price'] is fetched from a database
     $deduction = 2500;
-    $balance = $service_price - $deduction; // Calculate the difference
+    $balance = $service_price - $deduction;
+    $total_balance = $total_balance + $balance;
+    // Calculate the difference
         echo "<tr class='dataTable_row'>
+
                 <td>{$serial}</td>
                 <td>
                   <strong>Name:</strong> " . htmlspecialchars($row['customer_name']) . "<br>
