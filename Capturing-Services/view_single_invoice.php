@@ -157,8 +157,13 @@ if ($totalPaidAmount == 0) {
 ?>
 
  <!-- Button to trigger modal -->
-<button class="btn btn-success" id="paymentBtn" style="margin-left:750px;padding:5px">+ Receipt</button>
-        </div>
+<?php
+// Determine the visibility of the button
+$button_visibility = ($status === 'Paid') ? 'style="display:none;"' : '';
+?>
+
+<!-- Button to trigger modal -->
+<button class="btn btn-success" id="paymentBtn" <?php echo $button_visibility; ?> style="margin-left:750px;padding:5px">+ Receipt</button>        </div>
 
       
     </div>
@@ -371,13 +376,11 @@ document.getElementById('paymentBtn').addEventListener('click', function() {
                     </tr>";
                 $serial++;
             } 
-            else {
-            echo "<tr><td colspan='12'>No data available</td></tr>";
-            
-        } }
+       
+        }
         } else {
             echo "<tr><td colspan='12'>No data available</td></tr>";
-        }
+       }
         ?>
         
 <!--        <td class='action-icons'>-->

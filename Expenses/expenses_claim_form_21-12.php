@@ -15,7 +15,42 @@ $employee_result = mysqli_query($conn, $employee_query);
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-dywxE7Dbauy0ZdO9IMIAgFbKk8c0Lx0nvW0Uj+ks9qqRhj2uP/zLwsiXccCD9dQrcxJjpHZB5Q72n11KH4cOZg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
    <link rel="stylesheet" href="../assets/css/style.css">
-  
+  <!-- <style>
+    .input-field-container {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .input-label {
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      background-color: white;
+      padding: 0 5px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #A26D2B;
+    }
+
+    .styled-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 12px;
+      outline: none;
+      box-sizing: border-box;
+      border: 1px solid #A26D2B;
+      border-radius: 5px;
+    }
+
+    .styled-input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    h3 {
+      color: #A26D2B;
+    }
+  </style> -->
 </head>
 
 <body>
@@ -25,55 +60,39 @@ include('../navbar.php');
 <div class="container mt-7">
   
   <h3 class="mb-4">Employee Expenses Claim</h3>
-  <form action="expenses_db.php" method="POST" enctype="multipart/form-data">
+  <form action="expenses_claim_db.php" method="POST" enctype="multipart/form-data">
     <div class="row">
     
     <!-- Employee Name -->
     <div class="col-md-4">
   <div class="input-field-container">
     <label class="input-label">Select Employee</label>
-   <!-- Dropdown for selecting an employee -->
-<select class="styled-input" id="employee_name_dropdown" name="employee_name_dropdown" style="width: 100%;" onchange="updateEmployeeFields()" required>
+    <select class="styled-input" id="employee_name" name="employee_name" style="width: 100%;" required>
   <option value="" disabled selected>Select Employee</option>
   <?php
   while ($row = mysqli_fetch_assoc($employee_result)) {
-      // Embed both ID and Name in the option's data attributes
-      echo "<option value='{$row['id']}' data-name='{$row['name']}'>{$row['id']} {$row['name']} ({$row['phone']})</option>";
+      echo "<option value='{$row['name']}'>{$row['name']} ({$row['phone']})</option>";
   }
   ?>
 </select>
-
-<!-- Text input field for Employee ID -->
-<input type="text" id="entity_id" name="entity_id" placeholder="Employee ID" style="width: 100%; margin-top: 10px;" readonly required>
-
-<!-- Text input field for Employee Name -->
-<input type="text" id="entity_name" name="entity_name" placeholder="Employee Name" style="width: 100%; margin-top: 10px;" readonly required>
-
-<!-- JavaScript to auto-fill both text inputs -->
-<script>
-function updateEmployeeFields() {
-  // Get the dropdown element
-  const dropdown = document.getElementById("employee_name_dropdown");
-  
-  // Get the selected option
-  const selectedOption = dropdown.options[dropdown.selectedIndex];
-  
-  // Get the employee ID and name from the selected option
-  const employeeId = selectedOption.value; // ID is the option value
-  const employeeName = selectedOption.getAttribute("data-name"); // Name is in a data attribute
-  
-  // Set the values in the respective text input fields
-  document.getElementById("entity_id").value = employeeId;
-  document.getElementById("entity_name").value = employeeName;
-}
-</script>
-
   </div>
 </div>
 
 
 
-      
+      <!-- Expense Category -->
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Expense Category</label>
+          <select class="styled-input" name="expense_category" required>
+            <option value="" disabled selected>Select Category</option>
+            <option value="Travel">Travel</option>
+            <option value="Medical">Medical</option>
+            <option value="Food">Food</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
 
       <!-- Expense Date -->
       <div class="col-md-4">
@@ -93,7 +112,13 @@ function updateEmployeeFields() {
         </div>
       </div>
 
-      
+      <!-- Attachment -->
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Attachment</label>
+          <input type="file" class="styled-input" name="attachment" accept=".pdf,.jpeg,.jpg,.png" />
+        </div>
+      </div>
 
       <!-- Status -->
       <div class="col-md-4">
@@ -103,28 +128,84 @@ function updateEmployeeFields() {
             <option value="" disabled selected>Select Status</option>
             <option value="Pending">Pending</option>
             <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-           
+            <!-- <option value="Rejected">Rejected</option> -->
+            <option value="Paid">Paid</option>
           </select>
         </div>
       </div>
-       
+    </div>
+
+    <div class="row">
+   
+
+
+      <!-- Submitted Date -->
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Submitted Date</label>
+          <input type="date" class="styled-input" name="submitted_date" required />
+        </div>
+      </div>
+
+      <!-- Approved Date -->
+      <div class="col-md-4">
+    <div class="input-field-container">
+        <label class="input-label">Approved Date</label>
+        <input type="date" class="styled-input" name="approved_date" />
+    </div>
+    </div>
+       <!-- Payment Date -->
+       <div class="col-md-4">
+    <div class="input-field-container">
+        <label class="input-label">Payment Date</label>
+        <input type="date" class="styled-input" name="payment_date" />
+    </div>
+</div>
+  <!-- Payment Mode -->
 <div class="col-md-4">
+  <div class="input-field-container">
+    <label class="input-label">Payment Mode</label>
+    <select class="styled-input" id="payment_mode" name="payment_mode" required>
+      <option value="" disabled selected>Select Payment Mode</option>
+      <option value="UPI">UPI</option>
+      <option value="Cash">Cash</option>
+      <option value="Card">Card</option>
+      <option value="Bank Transfer">Bank Transfer</option>
+    </select>
+  </div>
+</div>
+ <!-- Transaction ID/Number -->
+ <div class="col-md-4 hidden-field" id="transaction_id_container">
+  <div class="input-field-container">
+    <label class="input-label">Transaction ID/Number</label>
+    <input type="text" class="styled-input" name="transaction_id" id="transaction_id" placeholder="Enter Transaction ID/Number" />
+  </div>
+</div>
+<div class="col-md-4 hidden-field" id="card_reference_container">
+  <div class="input-field-container">
+    <label class="input-label">Reference Number</label>
+    <input type="text" class="styled-input" name="card_reference_number" id="card_reference_number" placeholder="Enter Reference Number" />
+  </div>
+</div>
+    </div>
+
+    <div class="row">
+      
+<!-- Bank Name for Bank Transfer -->
+<div class="col-md-4 hidden-field" id="bank_details_container">
+  <div class="input-field-container">
+    <label class="input-label">Bank Name</label>
+    <input type="text" class="styled-input" name="bank_name" id="bank_name" placeholder="Enter Bank Name" />
+  </div>
+</div>
+<div class="col-md-8">
         <div class="input-field-container">
           <label class="input-label">Description</label>
           <textarea class="styled-input" name="description" placeholder="Describe the expense" required></textarea>
         </div>
       </div>
     </div>
-
-    <input type="hidden" name="expense_type" value="Employee Expense Claim">
-  
-
  
-
-    </div>
-
-    
 
     <div class="row">
     

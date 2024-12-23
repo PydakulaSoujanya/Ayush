@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_employee'])) {
         // } else
         
         {
-            // Assign the employee name to the service request
+            //  Assign the employee name to the service request
             $assignSql = "UPDATE service_requests SET emp_id='$empId',assigned_employee = '$empName' WHERE id = '$serviceId'";
             if ($conn->query($assignSql) === TRUE) {
                 // Change the status to "Confirmed"
@@ -117,7 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_employee'])) {
     $customer_name = $invoiceDetails['customer_name'];  // Assuming 'customer_name' is in the 'invoice' table
     $mobile_number = $invoiceDetails['mobile_number'];  // Assuming 'mobile_number' is in the 'invoice' table
     $total_amount = $invoiceDetails['total_amount'];    // Assuming 'total_amount' is in the 'invoice' table
-$description="";
+
+    $description="";
     $expense_type = "Employee Payout";
     $payment_status = "Pending";
     $expense_date = date('Y-m-d'); // Current date
@@ -142,7 +143,6 @@ $description="";
     
     </script>";
   }
-
 // Replace the invoice query with serviceId query
 $serviceIdSql = "SELECT * FROM service_requests WHERE id = '$serviceId'";
 
@@ -244,9 +244,7 @@ $ttoaday = (strtotime($servicerow['end_date']) - strtotime($servicerow['from_dat
    $pdf->Cell(25, 10, $servicerow['total_days'], 1, 0, 'C');
     $pdf->Cell(30, 10, $total_amount, 1, 1, 'C');
 
-echo "<script>
-    alert('Customer address is $address and total days are " . $servicerow['total_days'] . "');
-</script>";
+//echo "<script>     alert('Customer address is $address and total days are " . $servicerow['total_days'] . "');</script>";
 
     // Add total
     $pdf->SetFont('Arial', 'B', 10);
@@ -297,7 +295,7 @@ $pdf_path_stmt->bind_param("ss", $pdfFileName, $serviceId);
 if ($pdf_path_stmt->execute()) {
     echo "Invoice path updated successfully.";
     echo "PDF Path: " . $pdfFileName . "<br>";
-// echo "Service ID: " . $serviceId . "<br>";
+echo "Service ID: " . $serviceId . "<br>";
 } else {
     echo "Error updating invoice path: " . $pdf_path_stmt->error;
 }
@@ -349,6 +347,46 @@ $pdf_path_stmt->close();
     <link rel="stylesheet" href="../assets/css/style.css">
 
   <title>Services</title>
+  <style>
+    .dataTable_wrapper {
+      padding: 20px;
+    }
+
+    .dataTable_search input {
+      max-width: 200px;
+    }
+
+    .dataTable_headerRow th,
+    .dataTable_row td {
+      border: 1px solid #dee2e6; /* Add borders for columns */
+    }
+
+    .dataTable_headerRow {
+      background-color: #f8f9fa;
+      font-weight: bold;
+    }
+
+    .dataTable_row:hover {
+      background-color: #f1f1f1;
+    }
+
+    .dataTable_card {
+      border: 1px solid #ced4da; /* Add card border */
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dataTable_card .card-header {
+      background-color:  #A26D2B;
+      color: white;
+      font-weight: bold;
+    }
+    .action-icons i {
+      color: black;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+  </style>
 </head>
 <body>
  <?php
@@ -415,31 +453,9 @@ if ($result1->num_rows > 0) {
 
     // Fetch the invoice ID if it exists
     $invoiceId = null;
-    $totalPaidAmount = 0;
-    $remainingAmount = 0;
-    
-
-
     if ($invoiceResult->num_rows > 0) {
         $invoiceRow = $invoiceResult->fetch_assoc();
         $invoiceId = $invoiceRow['invoice_id'];
-        $paidAmountQuery = "SELECT SUM(paid_amount) AS total_paid FROM invoice WHERE invoice_id = ? AND receipt_id IS NOT NULL";
-            $paidStmt = $conn->prepare($paidAmountQuery);
-            $paidStmt->bind_param("s", $invoiceId);
-            $paidStmt->execute();
-            $paidResult = $paidStmt->get_result();
-            if ($paidRow = $paidResult->fetch_assoc()) {
-                $totalPaidAmount = $paidRow['total_paid'] ?? 0; // Handle null sum
-            }
-
-            $remainingAmount = $row['service_price'] - $totalPaidAmount;
-
-    // Determine the status based on the remaining amount
-    if ($remainingAmount == 0) {
-        $status = 'Fully Paid';
-    } else {
-        $status = 'Partially Paid';
-    }
     }
         echo "<tr class='dataTable_row'>
                 <td>{$serial}</td>
@@ -457,8 +473,8 @@ if ($result1->num_rows > 0) {
                   <strong>Service Type:</strong> {$row['service_type']}
                 </td>
                <td>
-                  <strong>Status:</strong> {$status}<br>
-                  <strong>Amount Paid:</strong> {$totalPaidAmount}
+                  <strong>Status:</strong> Fully paid<br>
+                  <strong>Amount Paid:</strong> 2500
                 </td>
                 <td>{$row['service_price']}</td>
                 

@@ -3,7 +3,7 @@ include '../config.php';
 header('Content-Type: application/json'); // Ensure JSON response
 
 if (isset($_GET['reference']) && $_GET['reference'] === 'vendors') {
-    $sql = "SELECT id, vendor_name, phone_number FROM vendors";
+    $sql = "SELECT id, vendor_name, phone_number, bank_name, branch, account_number, ifsc FROM vendors";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {

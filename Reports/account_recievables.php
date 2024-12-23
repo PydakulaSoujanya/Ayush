@@ -339,14 +339,21 @@ if ($result1->num_rows > 0) {
 
         // Fetch the invoice ID if it exists
         $invoiceId = null;
-        if ($invoiceResult->num_rows > 0) {
-            $invoiceRow = $invoiceResult->fetch_assoc();
-            $invoiceId = $invoiceRow['invoice_id'];
-        }
-
-        // Get the service price and calculate the balance
-        $service_price = $row['service_price']; // Assuming $row['service_price'] is fetched from the database
-        $deduction = 2500;
+        $totalPaidAmount = 0;
+    if ($invoiceResult->num_rows > 0) {
+        $invoiceRow = $invoiceResult->fetch_assoc();
+        $invoiceId = $invoiceRow['invoice_id'];
+        $paidAmountQuery = "SELECT SUM(paid_amount) AS total_paid FROM invoice WHERE invoice_id = ? AND receipt_id IS NOT NULL";
+            $paidStmt = $conn->prepare($paidAmountQuery);
+            $paidStmt->bind_param("s", $invoiceId);
+            $paidStmt->execute();
+            $paidResult = $paidStmt->get_result();
+            if ($paidRow = $paidResult->fetch_assoc()) {
+                $totalPaidAmount = $paidRow['total_paid'] ?? 0; // Handle null sum
+            }
+    }
+    $service_price = $row['service_price']; // Assuming $row['service_price'] is fetched from a database
+    $deduction = $totalPaidAmount;
         $balance = $service_price - $deduction;
 
         // Add the calculated balance to the total balance
@@ -366,46 +373,7 @@ if ($result1->num_rows > 0) {
     <link rel="stylesheet" href="../assets/css/style.css">
 
   <title>Services</title>
-  <style>
-    .dataTable_wrapper {
-      padding: 20px;
-    }
-
-    .dataTable_search input {
-      max-width: 200px;
-    }
-
-    .dataTable_headerRow th,
-    .dataTable_row td {
-      border: 1px solid #dee2e6; /* Add borders for columns */
-    }
-
-    .dataTable_headerRow {
-      background-color: #f8f9fa;
-      font-weight: bold;
-    }
-
-    .dataTable_row:hover {
-      background-color: #f1f1f1;
-    }
-
-    .dataTable_card {
-      border: 1px solid #ced4da; /* Add card border */
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .dataTable_card .card-header {
-      background-color:  #A26D2B;
-      color: white;
-      font-weight: bold;
-    }
-    .action-icons i {
-      color: black;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-  </style>
+  
 </head>
 <body>
  <?php
@@ -429,7 +397,7 @@ if ($result1->num_rows > 0) {
     <input type="text" class="form-control" id="globalSearch" placeholder="Search..." oninput="performSearch()">
 </form>
 
-    <a href="services.php" class="btn btn-success">+ Capture Service</a>
+    <!-- <a href="services.php" class="btn btn-success">+ Capture Service</a> -->
 </div>
 
 
@@ -476,12 +444,21 @@ if ($result1->num_rows > 0) {
 
     // Fetch the invoice ID if it exists
     $invoiceId = null;
+    $totalPaidAmount = 0;
     if ($invoiceResult->num_rows > 0) {
         $invoiceRow = $invoiceResult->fetch_assoc();
         $invoiceId = $invoiceRow['invoice_id'];
+        $paidAmountQuery = "SELECT SUM(paid_amount) AS total_paid FROM invoice WHERE invoice_id = ? AND receipt_id IS NOT NULL";
+            $paidStmt = $conn->prepare($paidAmountQuery);
+            $paidStmt->bind_param("s", $invoiceId);
+            $paidStmt->execute();
+            $paidResult = $paidStmt->get_result();
+            if ($paidRow = $paidResult->fetch_assoc()) {
+                $totalPaidAmount = $paidRow['total_paid'] ?? 0; // Handle null sum
+            }
     }
     $service_price = $row['service_price']; // Assuming $row['service_price'] is fetched from a database
-    $deduction = 2500;
+    $deduction = $totalPaidAmount;
     $balance = $service_price - $deduction;
     $total_balance = $total_balance + $balance;
     // Calculate the difference
@@ -492,7 +469,7 @@ if ($result1->num_rows > 0) {
                   <strong>Name:</strong> " . htmlspecialchars($row['customer_name']) . "<br>
                   <strong>Phone:</strong> " . htmlspecialchars($row['contact_no']) . "
                 </td>
-                <td onclick=\"window.location.href='view_single_invoice.php?invoice_id=" . $invoiceId . "';\" 
+                <td onclick=\"window.location.href='../Capturing-Services/view_single_invoice.php?invoice_id=" . $invoiceId . "';\" 
     style=\"cursor: pointer; color: blue; text-decoration: underline;\">
    $invoiceId
 </td>
@@ -500,7 +477,7 @@ if ($result1->num_rows > 0) {
                 
                <td>
                   
-                  2500
+                  {$totalPaidAmount}
                 </td>
                 
 <td>$balance</td>

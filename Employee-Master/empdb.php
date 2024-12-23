@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Insert into `emp_info`
         $name = $_POST['name'];
         $dob = $_POST['dob'];
-        $gender = $_POST['gender'];
+        $gender = isset($_POST['gender']) && !empty($_POST['gender']) ? $_POST['gender'] : null;
         $phone = $_POST['phone'];
         $email = $_POST['email'];
         $role = $_POST['role'];

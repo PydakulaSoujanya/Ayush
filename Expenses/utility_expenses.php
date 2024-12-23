@@ -2,16 +2,16 @@
 
 include('../config.php'); // Ensure this includes the database connection logic
 
-// Fetch employee data for the dropdown
-$employee_query = "SELECT id, name, phone FROM emp_info";
-$employee_result = mysqli_query($conn, $employee_query);
+
+$vendor_query = "SELECT `id`, `vendor_name`, `phone_number`, `email`, `vendor_type` FROM `vendors`";
+$vendor_result = mysqli_query($conn, $vendor_query);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expenses Claim</title>
+  <title>Utility Expenses Claim</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-dywxE7Dbauy0ZdO9IMIAgFbKk8c0Lx0nvW0Uj+ks9qqRhj2uP/zLwsiXccCD9dQrcxJjpHZB5Q72n11KH4cOZg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
    <link rel="stylesheet" href="../assets/css/style.css">
@@ -24,52 +24,55 @@ include('../navbar.php');
 ?>
 <div class="container mt-7">
   
-  <h3 class="mb-4">Employee Expenses Claim</h3>
+  <h3 class="mb-4">Utility Expenses Claim</h3>
   <form action="expenses_db.php" method="POST" enctype="multipart/form-data">
     <div class="row">
     
-    <!-- Employee Name -->
     <div class="col-md-4">
   <div class="input-field-container">
-    <label class="input-label">Select Employee</label>
-   <!-- Dropdown for selecting an employee -->
-<select class="styled-input" id="employee_name_dropdown" name="employee_name_dropdown" style="width: 100%;" onchange="updateEmployeeFields()" required>
-  <option value="" disabled selected>Select Employee</option>
-  <?php
-  while ($row = mysqli_fetch_assoc($employee_result)) {
-      // Embed both ID and Name in the option's data attributes
-      echo "<option value='{$row['id']}' data-name='{$row['name']}'>{$row['id']} {$row['name']} ({$row['phone']})</option>";
-  }
-  ?>
-</select>
+    <label class="input-label">Select Vendor</label>
+    <!-- Dropdown for selecting a vendor -->
+    <select class="styled-input" id="vendor_name_dropdown" name="vendor_name_dropdown" style="width: 100%;" onchange="updateVendorFields()" required>
+      <option value="" disabled selected>Select Vendor</option>
+      <?php
+      while ($row = mysqli_fetch_assoc($vendor_result)) {
+          // Embed both ID and Name in the option's data attributes
+          echo "<option value='{$row['id']}' data-name='{$row['vendor_name']}' data-phone='{$row['phone_number']}'>{$row['vendor_name']} ({$row['phone_number']})</option>";
+      }
+      ?>
+    </select>
 
-<!-- Text input field for Employee ID -->
-<input type="text" id="entity_id" name="entity_id" placeholder="Employee ID" style="width: 100%; margin-top: 10px;" readonly required>
+    <!-- Text input field for Vendor ID -->
+    <input type="text" id="entity_id" name="entity_id" placeholder="Vendor ID" style="width: 100%; margin-top: 10px;" hidden required>
 
-<!-- Text input field for Employee Name -->
-<input type="text" id="entity_name" name="entity_name" placeholder="Employee Name" style="width: 100%; margin-top: 10px;" readonly required>
+    <!-- Text input field for Vendor Name -->
+    <input type="text" id="entity_name" name="entity_name" placeholder="Vendor Name" style="width: 100%; margin-top: 10px;" hidden required>
+
+    
+  </div>
+</div>
 
 <!-- JavaScript to auto-fill both text inputs -->
 <script>
-function updateEmployeeFields() {
+function updateVendorFields() {
   // Get the dropdown element
-  const dropdown = document.getElementById("employee_name_dropdown");
+  const dropdown = document.getElementById("vendor_name_dropdown");
   
   // Get the selected option
   const selectedOption = dropdown.options[dropdown.selectedIndex];
   
-  // Get the employee ID and name from the selected option
-  const employeeId = selectedOption.value; // ID is the option value
-  const employeeName = selectedOption.getAttribute("data-name"); // Name is in a data attribute
+  // Get the vendor ID, name, and phone from the selected option
+  const vendorId = selectedOption.value; // ID is the option value
+  const vendorName = selectedOption.getAttribute("data-name"); // Name is in a data attribute
+ 
   
   // Set the values in the respective text input fields
-  document.getElementById("entity_id").value = employeeId;
-  document.getElementById("entity_name").value = employeeName;
+  document.getElementById("entity_id").value = vendorId;
+  document.getElementById("entity_name").value = vendorName;
+ 
 }
 </script>
-
-  </div>
-</div>
+  
 
 
 
@@ -85,11 +88,11 @@ function updateEmployeeFields() {
     </div>
 
     <div class="row">
-      <!-- Amount Claimed -->
+      <!-- Amount to be Paid -->
       <div class="col-md-4">
         <div class="input-field-container">
-          <label class="input-label">Amount Claimed</label>
-          <input type="number" class="styled-input" name="amount_claimed" placeholder="Enter Amount Claimed" required />
+          <label class="input-label">Amount to be Paid</label>
+          <input type="number" class="styled-input" name="amount_to_be_paid" placeholder="Enter Amount to be Paid" required />
         </div>
       </div>
 

@@ -103,66 +103,85 @@ include('../navbar.php');
  <div class="container mt-7">
     <div class="dataTable_card card">
       <div class="card-header">Vouchers</div>
-      <div class="card-body">
-      <div class="dataTable_search mb-3 d-flex align-items-center">
-    <input type="text" class="form-control me-2" id="globalSearch" placeholder="Search...">
-    <a type="button" class="btn btn-success ms-auto" data-bs-toggle="modal" data-bs-target="#voucherModal">
-        Add Voucher
-    </a>
-</div>
+<div class="card-body">
+    <div class="dataTable_search mb-3 d-flex align-items-center">
+        <input type="text" class="form-control me-2" id="globalSearch" placeholder="Search...">
+        <?php
+        // Initialize the variable to avoid undefined warnings
+        $is_paid = false;
 
+        // Fetch vouchers for the given invoice
+        $query = "SELECT * FROM vouchers_new WHERE purchase_invoice_number = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $purchase_invoice_number);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        <h3>Vouchers for Invoice Number: <?= htmlspecialchars($purchase_invoice_number) ?></h3>
-        <div class="row mb-3" style="text-align: center;">
-    <div class="col-md-4">
-        <p><strong>Total Amount:</strong> <?= number_format($totalAmount) ?></p>
-    </div>
-    <div class="col-md-4">
-        <p><strong>Paid Amount:</strong> <?= number_format($paidAmount) ?></p>
-    </div>
-    <div class="col-md-4">
-        <p><strong>Due Amount:</strong> <?= number_format($dueAmount) ?></p>
-    </div>
-</div>
+        // Check payment statuses
+        while ($row = $result->fetch_assoc()) {
+            if ($row['payment_status'] === 'Paid') {
+                $is_paid = true;
+            }
+        }
 
-              <!-- Table -->
-              <div class="table-responsive">
-        <table class="table table-bordered table-responsive table-striped"  id="vouchersTable">
-              <thead class="thead-dark">
-            <tr>
-              <th>Voucher Number</th>
-              <th>Voucher Date</th>
-              <th>Paid Amount</th>
-              <th>Remaining Balance</th>
-              <th>Payment Status</th>
-              <th>Payment Mode</th>
-              <th>Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-            // Fetch vouchers for the given invoice
-            $query = "SELECT * FROM vouchers_new WHERE purchase_invoice_number = ?";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("s", $purchase_invoice_number);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            while ($row = $result->fetch_assoc()):
-            ?>
-              <tr>
-                <td><?= $row['voucher_number'] ?></td>
-                <td><?= date("d-m-Y", strtotime($row['voucher_date'])) ?></td>
-                <td><?= number_format($row['paid_amount'], 2) ?></td>
-                <td><?= number_format($row['remaining_balance'], 2) ?></td>
-                <td><?= $row['payment_status'] ?></td>
-                <td><?= $row['payment_mode'] ?></td>
-                <td><?= date("d-m-Y H:i:s", strtotime($row['created_at'])) ?></td>
-              </tr>
-            <?php endwhile; ?>
-          </tbody>
-        </table>
+        // Determine visibility of the "+ Voucher" button
+        $button_visibility = $is_paid ? 'style="display:none;"' : '';
+        ?>
+
+        <!-- "+ Voucher" Button -->
+        <a type="button" class="btn btn-success ms-auto" data-bs-toggle="modal" data-bs-target="#voucherModal" <?= $button_visibility; ?>>
+            + Voucher
+        </a>
+    </div>
+
+    <h3>Vouchers for Invoice Number: <?= htmlspecialchars($purchase_invoice_number) ?></h3>
+    <div class="row mb-3" style="text-align: center;">
+        <div class="col-md-4">
+            <p><strong>Total Amount:</strong> <?= number_format($totalAmount) ?></p>
         </div>
-        
+        <div class="col-md-4">
+            <p><strong>Paid Amount:</strong> <?= number_format($paidAmount) ?></p>
+        </div>
+        <div class="col-md-4">
+            <p><strong>Due Amount:</strong> <?= number_format($dueAmount) ?></p>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-responsive table-striped" id="vouchersTable">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Voucher Number</th>
+                    <th>Voucher Date</th>
+                    <th>Paid Amount</th>
+                    <th>Remaining Balance</th>
+                    <th>Payment Status</th>
+                    <th>Payment Mode</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // Reset the result pointer to display the rows
+                $result->data_seek(0);
+                while ($row = $result->fetch_assoc()):
+                ?>
+                    <tr>
+                        <td><?= $row['voucher_number'] ?></td>
+                        <td><?= date("d-m-Y", strtotime($row['voucher_date'])) ?></td>
+                        <td><?= number_format($row['paid_amount'], 2) ?></td>
+                        <td><?= number_format($row['remaining_balance'], 2) ?></td>
+                        <td><?= $row['payment_status'] ?></td>
+                        <td><?= $row['payment_mode'] ?></td>
+                        <td><?= date("d-m-Y H:i:s", strtotime($row['created_at'])) ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+
+
         <!-- Pagination Controls -->
         <div class="d-flex align-items-center justify-content-between mt-3">
           <div>
