@@ -17,7 +17,33 @@ $employee_result = mysqli_query($conn, $employee_query);
    <link rel="stylesheet" href="../assets/css/style.css">
   
 </head>
+<style>
+  .suggestions-box {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
+.suggestion-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background: #f1f1f1;
+  cursor: pointer;
+}
+</style>
 <body>
 <?php
 include('../navbar.php');
@@ -29,19 +55,18 @@ include('../navbar.php');
     <div class="row">
     
     <!-- Employee Name -->
-    <div class="col-md-4">
+    <!-- Employee Search -->
+<div class="col-md-4">
   <div class="input-field-container">
-    <label class="input-label">Select Employee</label>
-   <!-- Dropdown for selecting an employee -->
-<select class="styled-input" id="employee_name_dropdown" name="employee_name_dropdown" style="width: 100%;" onchange="updateEmployeeFields()" required>
-  <option value="" disabled selected>Select Employee</option>
-  <?php
-  while ($row = mysqli_fetch_assoc($employee_result)) {
-      // Embed both ID and Name in the option's data attributes
-      echo "<option value='{$row['id']}' data-name='{$row['name']}'>{$row['id']} {$row['name']} ({$row['phone']})</option>";
-  }
-  ?>
-</select>
+    <label class="input-label">Search Employee</label>
+    <input type="text" id="employee_search" name="employee_search" class="styled-input" placeholder="Search by Name or Mobile Number" onkeyup="searchEmployee(this.value)" autocomplete="off" required>
+    <div id="employee_suggestions" class="suggestions-box" style="display: none;"></div>
+
+    <!-- Hidden fields for selected employee details -->
+    <!-- <input type="text" id="entity_id" name="entity_id" placeholder="Employee ID" readonly required>
+    <input type="text" id="entity_name" name="entity_name" placeholder="Employee Name" readonly required>
+  </div>
+</div> -->
 
 <!-- Text input field for Employee ID -->
 <input type="text" id="entity_id" name="entity_id" placeholder="Employee ID" style="width: 100%; margin-top: 10px;" readonly required>
@@ -228,6 +253,60 @@ function updateEmployeeFields() {
   // Trigger change on page load to handle pre-selected value
   $('#payment_mode').trigger('change');
 });
+
+
+function searchEmployee(searchTerm) {
+    const searchField = document.getElementById('employee_search');
+    const suggestionsBox = document.getElementById('employee_suggestions');
+    const entityIdField = document.getElementById('entity_id');
+    const entityNameField = document.getElementById('entity_name');
+
+    // Clear previous suggestions
+    suggestionsBox.innerHTML = '';
+    suggestionsBox.style.display = 'none';
+
+    // Reset hidden fields
+    entityIdField.value = '';
+    entityNameField.value = '';
+
+    if (searchTerm.trim() === '') return;
+
+    fetch(`fetch_employee.php?search=${searchTerm}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          const employees = data.data;
+
+          if (employees.length > 0) {
+            employees.forEach((employee) => {
+              const suggestionItem = document.createElement('div');
+              suggestionItem.className = 'suggestion-item';
+              suggestionItem.textContent = `${employee.name} (${employee.phone})`;
+              suggestionItem.style.cursor = 'pointer';
+
+              suggestionItem.onclick = function () {
+                entityIdField.value = employee.id;
+                entityNameField.value = employee.name;
+                searchField.value = `${employee.name} (${employee.phone})`;
+                suggestionsBox.innerHTML = '';
+                suggestionsBox.style.display = 'none';
+              };
+
+              suggestionsBox.appendChild(suggestionItem);
+            });
+            suggestionsBox.style.display = 'block';
+          } else {
+            suggestionsBox.innerHTML = '<div class="suggestion-item">No employees found</div>';
+            suggestionsBox.style.display = 'block';
+          }
+        } else {
+          console.error('Error fetching employees:', data.message);
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
 </script>
 
 </body>

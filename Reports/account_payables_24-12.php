@@ -1,10 +1,6 @@
 <?php
 session_start(); // Start the session to store flash messages
 
-// ini_set('display_errors', 1); // Display errors on the screen
-// ini_set('display_startup_errors', 1); // Display startup errors
-// error_reporting(E_ALL); // Report all PHP 
-
 include '../config.php'; 
 
 // Handle form submission to update status
@@ -69,67 +65,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
   <?php 
 include '../navbar.php';
-$searchTerm = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-
-$sql = "
-SELECT 
-    i.invoice_id AS InvoiceID, 
-    e.entity_name AS Employee_Name, 
-    e.entity_id AS Employee_ID, 
-    sr.service_type AS Service_Type, 
-    sr.total_days AS Total_Days, 
-    sr.per_day_service_price AS Daily_Rate, 
-    e.status AS Expense_Status,
-    sr.service_price AS Total_Pay
-FROM 
-    service_requests sr
-LEFT JOIN 
-    expenses e ON sr.emp_id = e.entity_id  -- Joining with expenses based on employee ID
-LEFT JOIN 
-    invoice i ON sr.id = i.service_id  -- Joining with invoice based on service ID
-WHERE 
-    (i.invoice_id LIKE '%$searchTerm%' OR e.entity_name LIKE '%$searchTerm%' OR sr.service_type LIKE '%$searchTerm%')
-";
-
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    $uniqueEmployees = [];
-    $serial_no = 0;
-    $total_amount_to_pay=0;
-    while ($row = $result->fetch_assoc()) {
-        $serial_no++;
-
-        // Skip duplicates based on employee ID and service type
-        if (in_array($row['Employee_ID'] . '-' . $row['Service_Type'], $uniqueEmployees)) {
-            continue;
-        }
-        $uniqueEmployees[] = $row['Employee_ID'] . '-' . $row['Service_Type'];
-
-        // Calculate worked days (if needed)
-        // For now, assuming worked days = total days (you can modify this logic as required)
-        $worked_days = $row['Total_Days'];
-
-        // Calculate total price (worked days * daily rate)
-        $total_price = $worked_days * $row['Daily_Rate'];
-        $total_amount_to_pay +=$total_price;
-
-
-    }
-    
-} 
-
   ?>
-  
     <div class="container mt-7">
-   <?php echo "<div>
-        <h3 class='text-center'>Total amount to pay is: Rs. " . number_format($total_amount_to_pay, 2) . "</h3>
-      </div>"; ?>
+
+        <h3 class="text-center">You have to Pay more Rs. 15,024</h3>
+
         <div class="dataTable_card card">
-            <div class="card-header">
-            Account Payables
-                <!-- Employee Payouts -->
-            </div>
+            <div class="card-header">Employee Payouts</div>
             <div class="card-body">
                 <!-- Display success or error message -->
                 <?php
@@ -195,7 +137,6 @@ if (isset($_SESSION['message'])) {
     if ($result->num_rows > 0) {
         $uniqueEmployees = [];
         $serial_no = 0;
-        $total_amount_to_pay=0;
         while ($row = $result->fetch_assoc()) {
             $serial_no++;
 
@@ -211,7 +152,6 @@ if (isset($_SESSION['message'])) {
 
             // Calculate total price (worked days * daily rate)
             $total_price = $worked_days * $row['Daily_Rate'];
-            $total_amount_to_pay +=$total_price;
 
             echo "<tr>";
             echo "<td>$serial_no</td>";
@@ -237,17 +177,14 @@ if (isset($_SESSION['message'])) {
                   </td>";
             echo "<td><button type='submit' class='btn btn-success btn-sm mt-1'>Update</button></td>";
             echo "</tr>";
-
         }
     } else {
         echo "<tr><td colspan='10'>No data found</td></tr>";
     }
-    
     ?>
 </tbody>
 
 </table>
-
 
                     </div>
                 </form>

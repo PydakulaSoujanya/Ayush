@@ -273,7 +273,7 @@ document.getElementById('paymentBtn').addEventListener('click', function() {
         var data = {
             invoice_id: invoiceId,
             amount_paid: parseFloat(amountToPay),
-            receipt_id: 'RCPT' + Date.now(), // Generate a unique receipt ID
+            
           
         };
 
