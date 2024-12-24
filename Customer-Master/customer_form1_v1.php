@@ -6,7 +6,7 @@
   <title>Customer Details Form</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <style>
+  <!-- <style>
     .input-field-container {
       position: relative;
       margin-bottom: 15px;
@@ -45,7 +45,7 @@
     h3 {
       color: #A26D2B;
     }
-  </style>
+  </style> -->
 </head>
 <body>
 

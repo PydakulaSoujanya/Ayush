@@ -1,12 +1,56 @@
 <?php
 // Database connection
-include "../config.php";
+$servername = "localhost";
+$username = "root"; // Default XAMPP username
+$password = ""; // Default XAMPP password
+$dbname = "ayush_db";
 
-// Fetch customers
-$customers = $conn->query("SELECT customer_name FROM customer_master");
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
-// Fetch invoices (duplicating entries)
-$invoices = $conn->query("SELECT invoice_id FROM invoice UNION SELECT invoice_id FROM invoice");
+// Handle AJAX request for modal data
+if (isset($_GET['tran_id'])) {
+    $tran_id = $_GET['tran_id'];
+
+    // Fetch deposit amount from deposits table
+    $sql = "SELECT deposit_amt FROM deposits WHERE tran_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $tran_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $depositData = $result->fetch_assoc();
+
+    // Fetch receipt ID, invoice ID, and customer ID from the invoice table
+    $sql = "SELECT receipt_id, invoice_id, customer_id FROM invoice WHERE paid_amount = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("d", $depositData['deposit_amt']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $invoiceData = $result->fetch_assoc();
+
+    // Fetch customer name from the customer_master table
+    $customerName = null;
+    if (!empty($invoiceData['customer_id'])) {
+        $sql = "SELECT customer_name FROM customer_master WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $invoiceData['customer_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $customerData = $result->fetch_assoc();
+        $customerName = $customerData['customer_name'] ?? null;
+    }
+
+    // Return JSON response
+    echo json_encode([
+        'amount' => $depositData['deposit_amt'],
+        'receipt_id' => $invoiceData['receipt_id'] ?? null,
+        'invoice_id' => $invoiceData['invoice_id'] ?? null,
+        'customer_name' => $customerName,
+    ]);
+    exit;
+}
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
         // Update the status in the deposits table
         $updateStmt = $conn->prepare("UPDATE deposits SET status = 'Matched' WHERE tran_id = ?");
-        $updateStmt->bind_param("s", $tran_id); // Use tran_id to update the status
+        $updateStmt->bind_param("s", $tran_id);
         $updateStmt->execute();
         $updateStmt->close();
 
@@ -43,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deposits Data</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
 <div class="container mt-5">
@@ -58,7 +101,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <th>Transaction Posted Date</th>
                 <th>Remarks</th>
                 <th>Deposit Amount</th>
-                <th>Balance</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -71,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
+                    echo "<tr data-row-id='" . htmlspecialchars($row['id']) . "'>";
                     echo "<td>" . htmlspecialchars($row['id']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['tran_id']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['value_date']) . "</td>";
@@ -79,8 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     echo "<td>" . htmlspecialchars($row['transaction_posted_date']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['transaction_remarks']) . "</td>";
                     echo "<td>" . htmlspecialchars(number_format($row['deposit_amt'], 2)) . "</td>";
-                    echo "<td>" . htmlspecialchars(number_format($row['balance'], 2)) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                    echo "<td class='status-cell'>" . htmlspecialchars($row['status']) . "</td>";
                     echo "<td>";
                     if (htmlspecialchars($row['status']) === 'Matched') {
                         echo "<button class='btn btn-secondary btn-sm' disabled>Matched</button>";
@@ -91,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     echo "</tr>";
                 }
             } else {
-                echo "<tr><td colspan='10' class='text-center'>No data available</td></tr>";
+                echo "<tr><td colspan='9' class='text-center'>No data available</td></tr>";
             }
             ?>
         </tbody>
@@ -111,39 +152,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="hidden" id="tranIdInput" name="tran_id" value="">
                     <div class="row">
                         <div class="col-md-6">
-                            <label for="customerSelect" class="form-label">Select Customer</label>
-                            <select id="customerSelect" name="customer" class="form-select" required>
-                                <?php
-                                if ($customers->num_rows > 0) {
-                                    while ($row = $customers->fetch_assoc()) {
-                                        echo "<option value='" . htmlspecialchars($row['customer_name']) . "'>" . htmlspecialchars($row['customer_name']) . "</option>";
-                                    }
-                                } else {
-                                    echo "<option value=''>No customers available</option>";
-                                }
-                                ?>
-                            </select>
+                            <label for="customerNameInput" class="form-label">Customer Name</label>
+                            <input type="text" id="customerNameInput" name="customer" class="form-control" readonly required>
                         </div>
                         <div class="col-md-6">
-                            <label for="invoiceSelect" class="form-label">Select Invoice Number</label>
+                            <label for="invoiceSelect" class="form-label">Invoice</label>
                             <select id="invoiceSelect" name="invoice" class="form-select" required>
-                                <?php
-                                if ($invoices->num_rows > 0) {
-                                    while ($row = $invoices->fetch_assoc()) {
-                                        echo "<option value='" . htmlspecialchars($row['invoice_id']) . "'>" . htmlspecialchars($row['invoice_id']) . "</option>";
-                                    }
-                                } else {
-                                    echo "<option value=''>No invoices available</option>";
-                                }
-                                ?>
+                                <option value="">Loading...</option>
                             </select>
                         </div>
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-6">
-                            <label for="receiptSelect" class="form-label">Select Receipt</label>
+                            <label for="receiptSelect" class="form-label">Receipt</label>
                             <select id="receiptSelect" name="receipt" class="form-select" required>
-                                <option value="">Select an invoice first</option>
+                                <option value="">Loading...</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -161,45 +184,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
-// Fetch related receipts dynamically
-$('#invoiceSelect').on('change', function () {
-    const invoiceId = $(this).val();
-    $.ajax({
-        url: 'fetch_receipts.php', // A separate PHP file for fetching receipts
-        type: 'POST',
-        data: { invoice_id: invoiceId },
-        success: function (data) {
-            $('#receiptSelect').html(data);
-        },
-        error: function () {
-            alert('Failed to fetch receipts. Please try again.');
-        }
-    });
-});
+    document.addEventListener('DOMContentLoaded', () => {
+        const matchButtons = document.querySelectorAll('.match-btn');
+        const tranIdInput = document.getElementById('tranIdInput');
+        const customerNameInput = document.getElementById('customerNameInput');
+        const amountInput = document.getElementById('amountInput');
+        const invoiceSelect = document.getElementById('invoiceSelect');
+        const receiptSelect = document.getElementById('receiptSelect');
 
-// Fetch paid amount dynamically
-$('#receiptSelect').on('change', function () {
-    const receiptId = $(this).val();
-    $.ajax({
-        url: 'fetch_paid_amount.php', // New PHP file to fetch paid amount
-        type: 'POST',
-        data: { receipt_id: receiptId },
-        success: function (data) {
-            const result = JSON.parse(data);
-            $('#amountInput').val(result.paid_amount); // Set the paid amount in the input field
-        },
-        error: function () {
-            alert('Failed to fetch paid amount. Please try again.');
-        }
-    });
-});
+        matchButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tranId = button.getAttribute('data-tran-id');
+                tranIdInput.value = tranId;
 
-// Set tran_id when the modal opens
-$('.match-btn').on('click', function () {
-    const tranId = $(this).data('tran-id');
-    $('#tranIdInput').val(tranId);
-});
+                // Fetch data for the modal
+                fetch(`deposit.php?tran_id=${tranId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        customerNameInput.value = data.customer_name || '';
+                        amountInput.value = data.amount || '';
+
+                        // Populate the invoice dropdown
+                        invoiceSelect.innerHTML = '';
+                        if (data.invoice_id) {
+                            const invoiceOption = document.createElement('option');
+                            invoiceOption.value = data.invoice_id;
+                            invoiceOption.textContent = data.invoice_id;
+                            invoiceSelect.appendChild(invoiceOption);
+                        } else {
+                            const invoiceOption = document.createElement('option');
+                            invoiceOption.value = '';
+                            invoiceOption.textContent = 'No Invoice Found';
+                            invoiceSelect.appendChild(invoiceOption);
+                        }
+
+                        // Populate the receipt dropdown
+                        receiptSelect.innerHTML = '';
+                        if (data.receipt_id) {
+                            const receiptOption = document.createElement('option');
+                            receiptOption.value = data.receipt_id;
+                            receiptOption.textContent = data.receipt_id;
+                            receiptSelect.appendChild(receiptOption);
+                        } else {
+                            const receiptOption = document.createElement('option');
+                            receiptOption.value = '';
+                            receiptOption.textContent = 'No Receipt Found';
+                            receiptSelect.appendChild(receiptOption);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching modal data:', error);
+                    });
+            });
+        });
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+

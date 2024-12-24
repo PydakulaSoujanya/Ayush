@@ -12,8 +12,45 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        
-    </style>
+    .input-field-container {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .input-label {
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      background-color: white;
+      padding: 0 5px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #A26D2B;
+    }
+
+    .styled-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 12px;
+      outline: none;
+      box-sizing: border-box;
+      border: 1px solid #A26D2B;
+      border-radius: 5px;
+    }
+
+    .styled-input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    h3 {
+      color: #A26D2B;
+    }
+  </style>
 </head>
 <body>
 
@@ -30,15 +67,23 @@
     </div>
 
     <form id="login-form" method="post" action="logindb.php">
-        <div class="mb-3">
-            <label for="email" class="form-label">Email address</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
-        </div>
+       
 
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+        <div class="col-md-12">
+        <div class="input-field-container">
+          <label for="email" class="input-label">Email address</label>
+          <input type="email" class="styled-input" id="email" name="email" placeholder="Enter your email" required />
         </div>
+      </div>
+
+      <div class="col-md-12">
+        <div class="input-field-container">
+          <label for="password" class="input-label">Password</label>
+          <input type="text" class="styled-input" id="password" name="password" placeholder="Enter your password" required />
+        </div>
+      </div>
+
+      
 
         <!-- <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="rememberMe" name="remember_me">

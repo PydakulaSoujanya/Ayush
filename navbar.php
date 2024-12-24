@@ -137,7 +137,7 @@
                 </div>
                 <a href="javascript:void(0);" onclick="toggleDropdown('indirect-expenses')">Indirect Expenses</a>
                 <div class="submenu" id="indirect-expenses" style="display: none; margin-left: 15px;">
-                    <a href="../Expenses/expenses_claim_form.php">Employee Claims</a>
+                    <a href="../Expenses/employee_expenditure_table.php">Employee Claims</a>
                     <a href="../Expenses/emp_advance.php">Employee Advance Payments</a>
                     <a href="../Expenses/utility_expenses.php">Utility Expenses</a>
                 </div>
