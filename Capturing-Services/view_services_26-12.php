@@ -3,7 +3,8 @@
 include '../config.php';
 // ini_set('display_errors', 1);
 // error_reporting(E_ALL);
-// require_once 'vendor/autoload.php';
+require_once  '../vendor/autoload.php';
+//require_once __DIR__ . '../vendor/autoload.php';
 
 
 
@@ -34,7 +35,7 @@ $start = $pageIndex * $pageSize;
 // SQL Query for Paginated and Filtered Results
 $sql = "SELECT * FROM service_requests 
         WHERE customer_name LIKE '%$searchTerm%' 
-        ORDER BY created_at DESC 
+        ORDER BY id DESC 
         LIMIT $start, $pageSize";
 $result = $conn->query($sql);
 
@@ -81,12 +82,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_employee'])) {
         $checkSql = "SELECT * FROM service_requests WHERE assigned_employee = '$empName'";
         $checkResult = $conn->query($checkSql);
 
-        if ($checkResult->num_rows > 0) {
+        // if ($checkResult->num_rows > 0) {
             // If employee is already assigned to a different service request
-            echo "<script>alert('This employee is already assigned to another service!!');
-            window.location.href = 'view_services.php';
-            </script>";
-        } else {
+            // echo "<script>alert('This employee is already assigned to another service!!');
+            // window.location.href = 'view_services.php';
+            // </script>";
+        // } else
+        
+        {
             // Assign the employee name to the service request
             $assignSql = "UPDATE service_requests SET emp_id='$empId',assigned_employee = '$empName' WHERE id = '$serviceId'";
             if ($conn->query($assignSql) === TRUE) {
@@ -114,7 +117,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_employee'])) {
     $customer_name = $invoiceDetails['customer_name'];  // Assuming 'customer_name' is in the 'invoice' table
     $mobile_number = $invoiceDetails['mobile_number'];  // Assuming 'mobile_number' is in the 'invoice' table
     $total_amount = $invoiceDetails['total_amount'];    // Assuming 'total_amount' is in the 'invoice' table
+$description="";
+    $expense_type = "Employee Payout";
+    $payment_status = "Pending";
+    $expense_date = date('Y-m-d'); // Current date
+    $additional_details = ""; // Use file name as additional details if uploaded
+    $payment_status="Pending";
+    $status="Pending";
 
+    $expenseStmt = $conn->prepare("
+    INSERT INTO Expenses (expense_type, entity_id, entity_name, status, payment_status, description, amount, date_incurred, additional_details, created_at, updated_at) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+");
+
+    $expenseStmt->bind_param(
+      "sssssdsss", 
+      $expense_type, $empId, $empName, $status, $payment_status, $description, $total_amount, $expense_date, $additional_details
+  );
+  
+    if ($expenseStmt->execute()) {
+     // echo "<script>alert('Expense claim submitted successfully!');        </script>";
+  } else {
+      echo "<script>alert('Error: " . $expenseStmt->error . "'); 
+    
+    </script>";
+  }
 
 // Replace the invoice query with serviceId query
 $serviceIdSql = "SELECT * FROM service_requests WHERE id = '$serviceId'";
@@ -140,7 +167,7 @@ if ($serviceIdResult && mysqli_num_rows($serviceIdResult) > 0) {
     $pdf->SetFont('Arial', '', 12);
     
     // Add the logo
-    $pdf->Image('images/logo.jpg', 10, 10, 30); // Adjust the path to your logo image
+    $pdf->Image('../assets/images/logo.jpg', 10, 10, 30); // Adjust the path to your logo image
     $pdf->SetFont('Arial', 'B', 16);
     $pdf->Cell(190, 10, 'Aayush Home Health Solutions', 0, 1, 'C');
     
@@ -172,10 +199,18 @@ $pdf->Cell(95, 5, "Invoice No.: " . $invoiceDetails['invoice_id'], 0, 1, 'R');
     $pdf->SetFont('Arial', 'B', 12);
     $pdf->Cell(190, 10, 'INVOICE TO:', 0, 1);
     
+    $customersql = "SELECT `address` FROM `customer_master` WHERE `id` = ?";
+$customerstmt = $conn->prepare($customersql);
+$customerstmt->bind_param("i", $servicerow['customer_id']);
+$customerstmt->execute();
+$result = $customerstmt->get_result();
+$address = $result->fetch_assoc()['address'];
+
+    
     $pdf->SetFont('Arial', '', 10);
     $pdf->Cell(95, 5, "Name: $customer_name", 0, 1);
-    $pdf->Cell(95, 5, "Address: ,", 0, 1); // Add customer address if available
-    $pdf->Cell(95, 5, "Phone: +91 $mobile_number", 0, 1);
+    $pdf->Cell(95, 5, "Address: $address,", 0, 1); // Add customer address if available
+    $pdf->Cell(95, 5, "Phone: +91 " .$servicerow['$contact_no'], 0, 1);
     $pdf->Ln(10);
     
     // Add table header
@@ -205,14 +240,18 @@ $ttoaday = (strtotime($servicerow['end_date']) - strtotime($servicerow['from_dat
 
 
 
-    $pdf->Cell(25, 10, '900', 1, 0, 'C');
-   $pdf->Cell(25, 10, $ttoaday, 1, 0, 'C');
-    $pdf->Cell(30, 10, "$total_amount", 1, 1, 'C');
+    $pdf->Cell(25, 10, $servicerow['per_day_service_price'], 1, 0, 'C');
+   $pdf->Cell(25, 10, $servicerow['total_days'], 1, 0, 'C');
+    $pdf->Cell(30, 10, $total_amount, 1, 1, 'C');
+
+echo "<script>
+    alert('Customer address is $address and total days are " . $servicerow['total_days'] . "');
+</script>";
 
     // Add total
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->Cell(160, 10, 'TOTAL =', 1, 0, 'R', true);
-    $pdf->Cell(30, 10, "$total_amount", 1, 1, 'C', true);
+    $pdf->Cell(30, 10, $total_amount, 1, 1, 'C', true);
 
     // Add comments
     $pdf->Ln(10);
@@ -233,7 +272,7 @@ $ttoaday = (strtotime($servicerow['end_date']) - strtotime($servicerow['from_dat
     $pdf->Cell(160, 10, 'DUE =', 1, 0, 'R', true);
     $pdf->Cell(30, 10, "$total_amount", 1, 1, 'C', true);
 
-$pdf->Output('F', $pdfFileName);  // Save the PDF to the "invoices" folder
+// $pdf->Output('F', $pdfFileName);  // Save the PDF to the "invoices" folder
 $invoicesFolder = 'invoices';
 
 
@@ -258,7 +297,7 @@ $pdf_path_stmt->bind_param("ss", $pdfFileName, $serviceId);
 if ($pdf_path_stmt->execute()) {
     echo "Invoice path updated successfully.";
     echo "PDF Path: " . $pdfFileName . "<br>";
-echo "Service ID: " . $serviceId . "<br>";
+// echo "Service ID: " . $serviceId . "<br>";
 } else {
     echo "Error updating invoice path: " . $pdf_path_stmt->error;
 }
@@ -307,48 +346,9 @@ $pdf_path_stmt->close();
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
  
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Include Font Awesome -->
-  <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+
   <title>Services</title>
-  <!-- <style>
-    .dataTable_wrapper {
-      padding: 20px;
-    }
-
-    .dataTable_search input {
-      max-width: 200px;
-    }
-
-    .dataTable_headerRow th,
-    .dataTable_row td {
-      border: 1px solid #dee2e6; /* Add borders for columns */
-    }
-
-    .dataTable_headerRow {
-      background-color: #f8f9fa;
-      font-weight: bold;
-    }
-
-    .dataTable_row:hover {
-      background-color: #f1f1f1;
-    }
-
-    .dataTable_card {
-      border: 1px solid #ced4da; /* Add card border */
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .dataTable_card .card-header {
-      background-color:  #A26D2B;
-      color: white;
-      font-weight: bold;
-    }
-    .action-icons i {
-      color: black;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-  </style> -->
 </head>
 <body>
  <?php
@@ -356,14 +356,6 @@ $pdf_path_stmt->close();
   ?>   
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Include Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-<!-- Include jQuery (required by Select2) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Include Select2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
   
   <div class="container  mt-7">
@@ -423,9 +415,31 @@ if ($result1->num_rows > 0) {
 
     // Fetch the invoice ID if it exists
     $invoiceId = null;
+    $totalPaidAmount = 0;
+    $remainingAmount = 0;
+    
+
+
     if ($invoiceResult->num_rows > 0) {
         $invoiceRow = $invoiceResult->fetch_assoc();
         $invoiceId = $invoiceRow['invoice_id'];
+        $paidAmountQuery = "SELECT SUM(paid_amount) AS total_paid FROM invoice WHERE invoice_id = ? AND receipt_id IS NOT NULL";
+            $paidStmt = $conn->prepare($paidAmountQuery);
+            $paidStmt->bind_param("s", $invoiceId);
+            $paidStmt->execute();
+            $paidResult = $paidStmt->get_result();
+            if ($paidRow = $paidResult->fetch_assoc()) {
+                $totalPaidAmount = $paidRow['total_paid'] ?? 0; // Handle null sum
+            }
+
+            $remainingAmount = $row['service_price'] - $totalPaidAmount;
+
+    // Determine the status based on the remaining amount
+    if ($remainingAmount == 0) {
+        $status = 'Fully Paid';
+    } else {
+        $status = 'Partially Paid';
+    }
     }
         echo "<tr class='dataTable_row'>
                 <td>{$serial}</td>
@@ -443,8 +457,8 @@ if ($result1->num_rows > 0) {
                   <strong>Service Type:</strong> {$row['service_type']}
                 </td>
                <td>
-                  <strong>Status:</strong> Fully paid<br>
-                  <strong>Amount Paid:</strong> 2500
+                  <strong>Status:</strong> {$status}<br>
+                  <strong>Amount Paid:</strong> {$totalPaidAmount}
                 </td>
                 <td>{$row['service_price']}</td>
                 
@@ -484,6 +498,18 @@ if ($result1->num_rows > 0) {
             )
     );";
 
+// <form method='POST' action='update_servicestatus.php'>
+//                         <select name='status' required>
+//                             <option value='Pending' " . ($row['status'] === 'Pending' ? 'selected' : '') . ">Pending</option>
+//                             <option value='Confirmed' " . ($row['status'] === 'Confirmed' ? 'selected' : '') . ">Confirmed</option>
+//                             <option value='Booked' " . ($row['status'] === 'Booked' ? 'selected' : '') . ">Booked</option>
+//                         </select>
+//                         <input type='hidden' name='service_id' value='{$row['id']}'>
+//                         <button type='submit' name='update_status' style='border: none; background: none; cursor: pointer;' title='Update Status'>
+//                             <i class='fas fa-save text-primary'></i>
+//                         </button>
+//                     </form>
+        ;
     $stmt = $conn->prepare($query);
     $stmt->bind_param(
     "sssssss",
@@ -501,21 +527,22 @@ if ($result1->num_rows > 0) {
 
     // Dropdown for assigning an employee
     echo "<form method='POST' action=''>
-    <select name='emp_id' class='select2-employee' style='width: 100%;' required>
-        <option value=''>Select Employee</option>";
-        
-while ($employee = $result->fetch_assoc()) {
-    // Display the full employee name
-    echo "<option value='" . htmlspecialchars($employee['id']) . "'>" . htmlspecialchars($employee['name']) . "</option>";
+            <select name='emp_id' required>
+                <option value=''>Select Employee</option>";
+    
+    // Populate the dropdown with unassigned employees
+    while ($employee = $result->fetch_assoc()) {
+        echo "<option value='" . $employee['id'] . "'>" . htmlspecialchars($employee['name']) . "</option>";
+    }
+
+    echo "    </select>
+            <input type='hidden' name='service_id' value='{$row['id']}'>
+            <button type='submit' name='assign_employee' style='border: black; cursor: pointer;' title='Allocate'>
+                Assign Employee
+            </button>
+          </form>";
 }
 
-echo "  </select>
-    <input type='hidden' name='service_id' value='" . htmlspecialchars($row['id']) . "'>
-    <button type='submit' name='assign_employee' style='border: black; cursor: pointer;' title='Allocate'>
-        Assign Employee
-    </button>
-  </form>";
-      }
        echo "
     </td>
     <td class='action-icons'>
@@ -820,33 +847,6 @@ echo "  </select>
       })
       .catch(error => console.error('Error fetching data:', error));
   }
-
-    $(document).ready(function() {
-        // Initialize Select2 for the dropdown
-        $('.select2-employee').select2({
-            placeholder: 'Search and Select Employee', // Placeholder text
-            allowClear: true,                          // Allow clearing the selection
-            width: 'resolve',                          // Adjust dropdown width
-            matcher: function(params, data) {
-                // Custom matcher for universal search
-                if ($.trim(params.term) === '') {
-                    return data;
-                }
-
-                if (typeof data.text === 'undefined') {
-                    return null;
-                }
-
-                // Match items that contain the search term, case-insensitive
-                if (data.text.toLowerCase().includes(params.term.toLowerCase())) {
-                    return data;
-                }
-
-                return null;
-            }
-        });
-    });
- 
 </script>
 
 </body>

@@ -7,7 +7,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $customerId = intval($_GET['id']);  // Sanitize the input to prevent SQL injection
 
     // Prepare the DELETE query
-    $sql = "DELETE FROM customer_master_new WHERE id = ?";
+    $sql = "DELETE FROM customer_master WHERE id = ?";
     
     if ($stmt = $conn->prepare($sql)) {
         $stmt->bind_param("i", $customerId);

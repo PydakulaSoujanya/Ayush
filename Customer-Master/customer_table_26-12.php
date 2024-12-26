@@ -3,13 +3,15 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Include database configuration and navbar
-include '../config.php';
-include '../navbar.php';
+include 'config.php';
+include 'navbar.php';
 
 // Pagination variables
 $pageSize = isset($_GET['pageSize']) ? intval($_GET['pageSize']) : 5;
 $pageIndex = isset($_GET['pageIndex']) ? intval($_GET['pageIndex']) : 0;
 $searchTerm = isset($_GET['search']) ? $_GET['search'] : '';
+
+
 
 $start = $pageIndex * $pageSize;
 
@@ -49,10 +51,8 @@ $conn->close();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style.css">
-  
   <title>Customer Master Table</title>
-  <!-- <style>
+  <style>
     .dataTable_card {
       border: 1px solid #ced4da;
       border-radius: 0.5rem;
@@ -68,7 +68,8 @@ $conn->close();
       cursor: pointer;
       margin-right: 10px;
     }
-  </style> -->
+   
+  </style>
 </head>
 <body>
   <div class="container mt-7">
@@ -80,7 +81,7 @@ $conn->close();
             <input type="text" name="search" class="form-control me-2" placeholder="Search..." value="<?php echo htmlspecialchars($searchTerm); ?>">
             <button type="submit" class="btn btn-primary">Search</button>
           </form>
-          <a href="customer_form1_v1.php" class="btn btn-success">+ Add Customer</a>
+          <a href="customer_form1.php" class="btn btn-success">+ Add Customer</a>
         </div>
         <div class="table-responsive">
           <table class="table table-striped">
@@ -108,11 +109,9 @@ $conn->close();
                               <td>{$row['email']}</td>
                               <td>{$row['gender']}</td>
                               <td>{$row['blood_group']}</td>
-                            
-
                               <td>{$row['patient_age']}</td>
                               <td class='action-icons'>
-                                <a href='#' onclick='viewDetails({$row['id']})'><i class='fas fa-eye'></i></a>
+                                <a href='customer_view.php?id={$row['id']}'><i class='fas fa-eye'></i></a>
                                 <a href='customer_edit.php?id={$row['id']}'><i class='fas fa-edit'></i></a>
                                 <a href='delete_customer.php?id={$row['id']}' onclick='return confirm(\"Are you sure you want to delete?\")'><i class='fas fa-trash'></i></a>
                               </td>
@@ -145,48 +144,7 @@ $conn->close();
       </div>
     </div>
   </div>
-
-  <!-- Modal -->
-  <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Customer Details</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="modalContent">
-          <!-- Content will be loaded dynamically -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
-    function viewDetails(id) {
-      const modalContent = document.getElementById('modalContent');
-      modalContent.innerHTML = "<p>Loading...</p>";
-
-      fetch(`customer_view_modal.php?id=${id}`)
-          .then(response => {
-              if (!response.ok) {
-                  throw new Error(`HTTP error! status: ${response.status}`);
-              }
-              return response.text();
-          })
-          .then(data => {
-              modalContent.innerHTML = data;
-              const viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
-              viewModal.show();
-          })
-          .catch(error => {
-              console.error('Error:', error);
-              modalContent.innerHTML = "<p>Failed to load details.</p>";
-          });
-    }
-
     function changePage(direction) {
       const urlParams = new URLSearchParams(window.location.search);
       let pageIndex = parseInt(urlParams.get('pageIndex') || 0);
@@ -194,7 +152,6 @@ $conn->close();
       urlParams.set('pageIndex', pageIndex);
       window.location.search = urlParams.toString();
     }
-
     function updatePageSize(size) {
       const urlParams = new URLSearchParams(window.location.search);
       urlParams.set('pageSize', size);
@@ -202,5 +159,6 @@ $conn->close();
       window.location.search = urlParams.toString();
     }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

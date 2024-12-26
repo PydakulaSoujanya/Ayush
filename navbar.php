@@ -104,6 +104,49 @@
                     <a href="../Expenses/refunds_table.php">Refund</a>
                 </div>
             </div>
+            <div class="navbar-links">
+        <div class="navbar-dropdown" onmouseover="toggleDropdown('bank')" onmouseout="toggleDropdown('bank')">
+            <span class="navbar-dropdown-title" >
+                BANK <span class="dropdown-arrow-icon">▼</span>
+            </span>
+            <div class="navbar-dropdown-content" id="bank" style="display: none;">
+                <a href="../Bank/bank_fliling_upload.php" onclick="toggleDropdown('filing-excel')">Filing Excel</a>
+                
+                <a href="javascript:void(0);" onclick="toggleDropdown('reconcilation')">Reconcilation</a>
+                <div class="submenu" id="reconcilation" style="display: none; margin-left: 15px;">
+                    <a href="#">Deposits</a>
+                    <a href="#">Withdrawls</a>
+                    <a href="#">Upload</a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="navbar-links">
+        <div class="navbar-dropdown" onmouseover="toggleDropdown('reports')" onmouseout="toggleDropdown('reports')">
+            <span class="navbar-dropdown-title" >
+                REPORTS <span class="dropdown-arrow-icon">▼</span>
+            </span>
+            <div class="navbar-dropdown-content" id="reports" style="display: none;">
+                <a href="../Reports/account_payables.php" onclick="toggleDropdown('account-payables')">Account Payables</a>
+                <!-- <div class="submenu" id="direct-expenses" style="display: none; margin-left: 15px;">
+                    <a href="../Expenses/employee_payouts_table.php">Employee Payouts</a>
+                    <a href="../Expenses/vendor_expenditure_table.php">Vendor Payouts</a>
+                </div> -->
+                <a href="../Reports/account_recievables.php" onclick="toggleDropdown('account-recievables')">Account Recievables</a>
+                <!-- <div class="submenu" id="indirect-expenses" style="display: none; margin-left: 15px;">
+                    <a href="../Expenses/expenses_claim_form.php">Employee Claims</a>
+                    <a href="">Utility Expenses</a>
+                </div> -->
+                <!-- <a href="#">Employee Claims</a>
+                <a href="#">Vendor Payouts</a>
+                <a href="#">Employee Payouts</a> -->
+                <!-- <a href="../Expenses/refunds_table.php">Refund</a> -->
+            </div>
+        </div>
+    </div>
         </nav>
 
         <div class="text-center mb-4 d-flex justify-content-center align-items-center gap-3">
