@@ -107,7 +107,7 @@
             <div class="navbar-links">
         <div class="navbar-dropdown" onmouseover="toggleDropdown('bank')" onmouseout="toggleDropdown('bank')">
             <span class="navbar-dropdown-title" >
-                BANK <span class="dropdown-arrow-icon">▼</span>
+                BANK <span class="dropdown-arrow-icon"><i class="fas fa-chevron-down"></i></span>
             </span>
             <div class="navbar-dropdown-content" id="bank" style="display: none;">
                 <a href="../Bank/bank_fliling_upload.php" onclick="toggleDropdown('filing-excel')">Filing Excel</a>
@@ -127,7 +127,7 @@
     <div class="navbar-links">
         <div class="navbar-dropdown" onmouseover="toggleDropdown('reports')" onmouseout="toggleDropdown('reports')">
             <span class="navbar-dropdown-title" >
-                REPORTS <span class="dropdown-arrow-icon">▼</span>
+                REPORTS <span class="dropdown-arrow-icon"><i class="fas fa-chevron-down"></i></span>
             </span>
             <div class="navbar-dropdown-content" id="reports" style="display: none;">
                 <a href="../Reports/account_payables.php" onclick="toggleDropdown('account-payables')">Account Payables</a>
