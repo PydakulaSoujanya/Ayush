@@ -162,8 +162,8 @@ if (isset($_SESSION['message'])) {
             <th>Worked Days</th>
             <th>Daily Rate</th>
             <th>Total Pay</th>
-            <th>Status</th>
-            <th>Action</th>
+            <!-- <th>Status</th>
+            <th>Action</th> -->
         </tr>
     </thead>
     <tbody>
@@ -226,16 +226,16 @@ if (isset($_SESSION['message'])) {
             echo "<td><input type='hidden' name='worked_days' value='" . $worked_days . "'>" . $worked_days . "</td>";
             echo "<td><input type='hidden' name='daily_rate' value='" . $row['Daily_Rate'] . "'>" . $row['Daily_Rate'] . "</td>";
             echo "<td><input type='hidden' name='total_pay' value='" . $total_price . "'>" . $total_price . "</td>";
-            echo "<td>
-                    <select name='status' class='form-select'>
-                        <option value='Select' " . ($row['Expense_Status'] === null ? "selected" : "") . " readonly>Select</option>
-                        <option value='Pending' " . ($row['Expense_Status'] === 'Pending' ? "selected" : "") . ">Pending</option>
-                        <option value='Paid' " . ($row['Expense_Status'] === 'Paid' ? "selected" : "") . ">Paid</option>
-                        <option value='Processing' " . ($row['Expense_Status'] === 'Processing' ? "selected" : "") . ">Processing</option>
-                        <option value='In Review' " . ($row['Expense_Status'] === 'In Review' ? "selected" : "") . ">In Review</option>
-                    </select>
-                  </td>";
-            echo "<td><button type='submit' class='btn btn-success btn-sm mt-1'>Update</button></td>";
+            // echo "<td>
+            //         <select name='status' class='form-select'>
+            //             <option value='Select' " . ($row['Expense_Status'] === null ? "selected" : "") . " readonly>Select</option>
+            //             <option value='Pending' " . ($row['Expense_Status'] === 'Pending' ? "selected" : "") . ">Pending</option>
+            //             <option value='Paid' " . ($row['Expense_Status'] === 'Paid' ? "selected" : "") . ">Paid</option>
+            //             <option value='Processing' " . ($row['Expense_Status'] === 'Processing' ? "selected" : "") . ">Processing</option>
+            //             <option value='In Review' " . ($row['Expense_Status'] === 'In Review' ? "selected" : "") . ">In Review</option>
+            //         </select>
+            //       </td>";
+            // echo "<td><button type='submit' class='btn btn-success btn-sm mt-1'>Update</button></td>";
             echo "</tr>";
 
         }

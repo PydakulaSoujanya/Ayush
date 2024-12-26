@@ -82,15 +82,15 @@ include('../navbar.php');
       <div class="col-md-4">
         <div class="input-field-container">
           <label class="input-label">Vendor Name</label>
-          <select class="styled-input" id="vendor_id" name="vendor_id" style="width: 100%;" required>
-  <option value="" disabled selected>Select Vendor</option>
-  <?php
-  while ($row = mysqli_fetch_assoc($vendor_result)) {
-    echo "<option value='{$row['id']}'>{$row['vendor_name']} ({$row['phone_number']})</option>";
-  }
-  ?>
-</select>
-
+          <select class="styled-input" id="vendor_name" name="vendor_name" style="width: 100%;" required>
+            <option value="" disabled selected>Select Vendor</option>
+            <?php
+            // Replace with your query to fetch vendors
+            while ($row = mysqli_fetch_assoc($vendor_result)) {
+              echo "<option value='{$row['vendor_name']}'>{$row['vendor_name']} ({$row['phone_number']})</option>";
+            }
+            ?>
+          </select>
         </div>
       </div>
     </div>

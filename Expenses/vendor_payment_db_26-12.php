@@ -3,18 +3,12 @@ include('../config.php'); // Include database connection
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $billId = mysqli_real_escape_string($conn, $_POST['bill_id']);
-    $vendorId = mysqli_real_escape_string($conn, $_POST['vendor_id']); // Capture vendor_id
+    $vendorName = mysqli_real_escape_string($conn, $_POST['vendor_name']);
     $invoiceAmount = mysqli_real_escape_string($conn, $_POST['invoice_amount']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
 
-    // Fetch vendor_name based on vendor_id
-    $vendorNameQuery = "SELECT vendor_name FROM vendors WHERE id = '$vendorId'";
-    $vendorNameResult = mysqli_query($conn, $vendorNameQuery);
-    $vendorNameRow = mysqli_fetch_assoc($vendorNameResult);
-    $vendorName = $vendorNameRow['vendor_name'];
-
     // Handle file upload
-    $uploadDir = 'vendor_bills/';
+    $uploadDir = 'vendor_bills/'; // Directory where files will be stored
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0777, true);
     }
@@ -30,16 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $row = mysqli_fetch_assoc($result);
 
         if ($row['last_invoice']) {
+            // Extract the numeric part and increment it
             $lastNumber = intval(substr($row['last_invoice'], 2));
             $nextNumber = $lastNumber + 1;
         } else {
+            // Start with 1 if no records exist
             $nextNumber = 1;
         }
         $purchaseInvoiceNumber = 'PI' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-        // Insert into database with both vendor_id and vendor_name
-        $query = "INSERT INTO vendor_payments_new (purchase_invoice_number, bill_id, vendor_id, vendor_name, invoice_amount, description, bill_file_path, created_at) 
-                  VALUES ('$purchaseInvoiceNumber', '$billId', '$vendorId', '$vendorName', '$invoiceAmount', '$description', '$targetFilePath', NOW())";
+        // Insert into database
+        $query = "INSERT INTO vendor_payments_new (purchase_invoice_number, bill_id, vendor_name, invoice_amount, description, bill_file_path, created_at) 
+                  VALUES ('$purchaseInvoiceNumber', '$billId', '$vendorName', '$invoiceAmount', '$description', '$targetFilePath', NOW())";
 
         if (mysqli_query($conn, $query)) {
             echo "<script>alert('Vendor payment record submitted successfully!'); window.location.href='vendor_expenditure_table.php';</script>";

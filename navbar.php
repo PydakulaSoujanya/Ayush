@@ -32,6 +32,9 @@
                 <span class="navbar-dropdown-title">
                     DASHBOARD <span class="dropdown-arrow-icon"><i class="fas fa-chevron-down"></i></span>
                 </span>
+                <div class="navbar-dropdown-content" id="customers">
+                    <a href="../dashboard.php">Dashboard</a>
+                </div>
             </div>
 
             <!-- Customers Dropdown -->

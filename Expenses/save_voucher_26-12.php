@@ -13,13 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $voucherDate = $_POST['voucher_date'] ?? '';
     $purchaseInvoiceNumber = $_POST['purchase_invoice_number'] ?? '';
     $paidAmount = floatval($_POST['paid_amount'] ?? 0);
-    $paymentMode = $_POST['payment_mode'] ?? '';
-    $paidBy = $_POST['paid_by'] ?? '';
-    $transactionId = $_POST['transaction_id'] ?? null;
-    $referenceNumber = $_POST['reference_number'] ?? null;
     $remainingBalance = floatval($_POST['remaining_balance'] ?? 0);
     $paymentStatus = trim($_POST['payment_status'] ?? '');
-    $vendorId = $_POST['vendor_id'] ?? '';
+    $paymentMode = $_POST['payment_mode'] ?? '';
 
     // Validate payment_status
     $validStatuses = ['Pending', 'Partially Paid', 'Paid'];
@@ -38,25 +34,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Insert the voucher into the database
     $query = "INSERT INTO vouchers_new 
-              (voucher_number, voucher_date, purchase_invoice_number, paid_amount, payment_mode, paid_by, transaction_id, reference_number, remaining_balance, payment_status, created_at, vendor_id) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)";
+              (voucher_number, voucher_date, purchase_invoice_number, paid_amount, remaining_balance, payment_status, payment_mode, created_at) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
 
     $stmt = $conn->prepare($query);
 
     if ($stmt) {
         $stmt->bind_param(
-            "sssdsssssss",
+            "sssdsss",
             $voucherNumber,
             $voucherDate,
             $purchaseInvoiceNumber,
             $paidAmount,
-            $paymentMode,
-            $paidBy,
-            $transactionId,
-            $referenceNumber,
             $remainingBalance,
             $paymentStatus,
-            $vendorId
+            $paymentMode
         );
 
         if ($stmt->execute()) {
