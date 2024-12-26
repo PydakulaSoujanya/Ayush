@@ -49,26 +49,11 @@ $conn->close();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="../assets/css/style.css"> -->
   <link rel="stylesheet" href="../assets/css/style.css">
   
   <title>Customer Master Table</title>
-  <!-- <style>
-    .dataTable_card {
-      border: 1px solid #ced4da;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    .dataTable_card .card-header {
-      background-color: #A26D2B;
-      color: white;
-      font-weight: bold;
-    }
-    .action-icons i {
-      color: black;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-  </style> -->
+
 </head>
 <body>
   <div class="container mt-7">

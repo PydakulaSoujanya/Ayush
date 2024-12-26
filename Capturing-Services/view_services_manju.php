@@ -506,17 +506,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_employee'])) {
     <select name='emp_id' class='select2-employee' style='width: 100%;' required>
         <option value=''>Select Employee</option>";
 
-                    while ($employee = $result->fetch_assoc()) {
-                      // Display the full employee name
-                      echo "<option value='" . htmlspecialchars($employee['id']) . "'>" . htmlspecialchars($employee['name']) . "</option>";
-                    }
+while ($employee = $result->fetch_assoc()) {
+    // Display the full employee name
+    echo "<option value='" . htmlspecialchars($employee['id']) . "'>" . htmlspecialchars($employee['name']) . "</option>";
+}
 
-                    echo "  </select>
+echo "  </select>
     <input type='hidden' name='service_id' value='" . htmlspecialchars($row['id']) . "'>
     <button type='submit' name='assign_employee' style='border: black; cursor: pointer;' title='Allocate'>
         Assign Employee
     </button>
-  </form>";
+</form>";
                   }
                   echo "
     </td>
@@ -823,31 +823,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_employee'])) {
         .catch(error => console.error('Error fetching data:', error));
     }
 
-    $(document).ready(function() {
-      // Initialize Select2 for the dropdown
-      $('.select2-employee').select2({
-        placeholder: 'Search and Select Employee', // Placeholder text
-        allowClear: true, // Allow clearing the selection
-        width: 'resolve', // Adjust dropdown width
-        matcher: function(params, data) {
-          // Custom matcher for universal search
-          if ($.trim(params.term) === '') {
-            return data;
-          }
+//     $(document).ready(function() {
+//   // Initialize Select2 for the dropdown
+//   $('.select2-employee').select2({
+//     placeholder: 'Search and Select Employee', // Placeholder text
+//     width: 'resolve', // Adjust dropdown width
+//     matcher: function(params, data) {
+//       // Custom matcher for universal search
+//       if ($.trim(params.term) === '') {
+//         return data;
+//       }
 
-          if (typeof data.text === 'undefined') {
-            return null;
-          }
+//       if (typeof data.text === 'undefined') {
+//         return null;
+//       }
 
-          // Match items that contain the search term, case-insensitive
-          if (data.text.toLowerCase().includes(params.term.toLowerCase())) {
-            return data;
-          }
+//       // Match items that contain the search term, case-insensitive
+//       if (data.text.toLowerCase().includes(params.term.toLowerCase())) {
+//         return data;
+//       }
 
-          return null;
-        }
-      });
-    });
+//       return null;
+//     }
+//   });
+// });
+
+$(document).ready(function() {
+  // Initialize Select2 for the dropdown
+  $('.select2-employee').select2({
+    placeholder: 'Select Employee', // Placeholder text
+    width: 'resolve', // Adjust dropdown width
+    minimumResultsForSearch: Infinity // Disable the search box
+  });
+});
+
   </script>
 
 </body>
