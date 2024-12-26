@@ -27,4 +27,6 @@
 <br>
 <a href="https://docs.google.com/spreadsheets/d/1MIUFuNwmcQaFMnCmSkTNZRVZ1XDTLL-vgycmCcTxrFI/edit?gid=1020265229#gid=1020265229" target="_blank">Ayush daily task sheet</a>
 <br>
-
+<br>
+<a href="https://docs.google.com/spreadsheets/d/1tfztc53IzJPEzflTn_zzZA1SqrpoJ0Ef3FTjQrQUUo0/edit?gid=1451523630#gid=1451523630" target="_blank">Ayush Stored procedures</a>
+<br>
