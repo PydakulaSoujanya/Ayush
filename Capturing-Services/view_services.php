@@ -5,7 +5,7 @@ include '../config.php';
 // error_reporting(E_ALL);
 // require_once 'vendor/autoload.php';
 
-
+require_once  '../vendor/autoload.php';
 
 use setasign\fpdf\fpdf;
 use setasign\Fpdi\Fpdi;
