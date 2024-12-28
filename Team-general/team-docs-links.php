@@ -22,7 +22,7 @@
 <a href="https://docs.google.com/spreadsheets/d/1Ceh98ZWeExgEbe8QX3cV5TLRRdF2S_ANTG-VyjSo7bc/edit?usp=sharing" target="_blank">Accounts DB Optimization</a>
 <br>
 <br>
-<a href="http://175.29.21.7:8081/" target="_blank">Ayush windows server url</a>
+<a href="http://175.29.21.7:8081/ayush" target="_blank">Ayush windows server url</a>
 <br>
 <br>
 <a href="https://docs.google.com/spreadsheets/d/1MIUFuNwmcQaFMnCmSkTNZRVZ1XDTLL-vgycmCcTxrFI/edit?gid=1020265229#gid=1020265229" target="_blank">Ayush daily task sheet</a>

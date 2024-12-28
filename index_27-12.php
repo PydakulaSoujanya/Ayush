@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-
     <title>Login</title>
 
     <!-- Bootstrap CSS -->
@@ -52,26 +50,6 @@
     h3 {
       color: #A26D2B;
     }
-    .styled-input {
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
-}
-
-.input-label {
-  margin-bottom: 5px;
-  display: block;
-  font-weight: bold;
-}
-
-.toggle-password {
-  font-size: 18px;
-  color: #999;
-}
-.toggle-password:hover {
-  color: #333;
-}
-
   </style>
 </head>
 <body>
@@ -99,27 +77,11 @@
       </div>
 
       <div class="col-md-12">
-  <div class="input-field-container" style="position: relative;">
-    <label for="password" class="input-label">Password</label>
-    <input 
-      type="password" 
-      class="styled-input" 
-      id="password" 
-      name="password" 
-      placeholder="Enter your password" 
-      required 
-      style="padding-right: 40px;"
-    />
-    <span 
-      class="toggle-password" 
-      onclick="togglePasswordVisibility()" 
-      style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"
-    >
-      <i class="fa fa-eye" id="password-icon"></i>
-    </span>
-  </div>
-</div>
-
+        <div class="input-field-container">
+          <label for="password" class="input-label">Password</label>
+          <input type="text" class="styled-input" id="password" name="password" placeholder="Enter your password" required />
+        </div>
+      </div>
 
       
 
@@ -144,22 +106,5 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
 
-<script>
-  function togglePasswordVisibility() {
-  const passwordField = document.getElementById('password');
-  const icon = document.getElementById('password-icon');
-  
-  if (passwordField.type === 'password') {
-    passwordField.type = 'text';
-    icon.classList.remove('fa-eye');
-    icon.classList.add('fa-eye-slash');
-  } else {
-    passwordField.type = 'password';
-    icon.classList.remove('fa-eye-slash');
-    icon.classList.add('fa-eye');
-  }
-}
-
-</script>
 </body>
 </html>

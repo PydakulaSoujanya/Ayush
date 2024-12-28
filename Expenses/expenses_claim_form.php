@@ -169,7 +169,7 @@ function updateEmployeeFields() {
     $('input[name="approved_date"]').closest('.col-md-4').hide();
     $('input[name="payment_date"]').closest('.col-md-4').hide();
 
-    // Monitor changes to the `status` dropdown
+    // Monitor changes to the status dropdown
     $('select[name="status"]').on('change', function () {
       const selectedStatus = $(this).val();
 
@@ -201,7 +201,7 @@ function updateEmployeeFields() {
     });
   });
 </script>
-<script>
+<!-- <script>
   $(document).ready(function () {
     $('#employee_name').select2({
       placeholder: "Select Employee",
@@ -226,7 +226,7 @@ function updateEmployeeFields() {
       },
     });
   });
-</script>
+</script> -->
 <script>
   $(document).ready(function () {
   // Monitor changes to the Payment Mode dropdown
@@ -256,57 +256,59 @@ function updateEmployeeFields() {
 
 
 function searchEmployee(searchTerm) {
-    const searchField = document.getElementById('employee_search');
-    const suggestionsBox = document.getElementById('employee_suggestions');
-    const entityIdField = document.getElementById('entity_id');
-    const entityNameField = document.getElementById('entity_name');
+  const suggestionsBox = document.getElementById('employee_suggestions');
+  const entityIdField = document.getElementById('entity_id');
+  const entityNameField = document.getElementById('entity_name');
 
-    // Clear previous suggestions
-    suggestionsBox.innerHTML = '';
-    suggestionsBox.style.display = 'none';
+  // Clear previous suggestions
+  suggestionsBox.innerHTML = '';
+  suggestionsBox.style.display = 'none';
 
-    // Reset hidden fields
-    entityIdField.value = '';
-    entityNameField.value = '';
+  // Reset hidden fields
+  entityIdField.value = '';
+  entityNameField.value = '';
 
-    if (searchTerm.trim() === '') return;
+  if (searchTerm.trim() === '') return; // Exit if the search term is empty
 
-    fetch(`fetch_employee.php?search=${searchTerm}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          const employees = data.data;
+  // Fetch matching employees from the backend
+  fetch(fetch_employee.php?search=${searchTerm})
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        const employees = data.data;
 
-          if (employees.length > 0) {
-            employees.forEach((employee) => {
-              const suggestionItem = document.createElement('div');
-              suggestionItem.className = 'suggestion-item';
-              suggestionItem.textContent = `${employee.name} (${employee.phone})`;
-              suggestionItem.style.cursor = 'pointer';
+        if (employees.length > 0) {
+          employees.forEach((employee) => {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.className = 'suggestion-item';
+            suggestionItem.textContent = ${employee.name} (${employee.phone});
+            suggestionItem.style.cursor = 'pointer';
 
-              suggestionItem.onclick = function () {
-                entityIdField.value = employee.id;
-                entityNameField.value = employee.name;
-                searchField.value = `${employee.name} (${employee.phone})`;
-                suggestionsBox.innerHTML = '';
-                suggestionsBox.style.display = 'none';
-              };
+            // On click, populate the hidden fields and clear suggestions
+            suggestionItem.onclick = function () {
+              entityIdField.value = employee.id;
+              entityNameField.value = employee.name;
+              suggestionsBox.innerHTML = '';
+              suggestionsBox.style.display = 'none';
+            };
 
-              suggestionsBox.appendChild(suggestionItem);
-            });
-            suggestionsBox.style.display = 'block';
-          } else {
-            suggestionsBox.innerHTML = '<div class="suggestion-item">No employees found</div>';
-            suggestionsBox.style.display = 'block';
-          }
+            suggestionsBox.appendChild(suggestionItem);
+          });
+          suggestionsBox.style.display = 'block'; // Show suggestions box
         } else {
-          console.error('Error fetching employees:', data.message);
+          suggestionsBox.innerHTML = '<div class="suggestion-item">No employees found</div>';
+          suggestionsBox.style.display = 'block';
         }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  }
+      } else {
+        console.error('Error fetching employees:', data.message);
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
+
+
 </script>
 
 </body>

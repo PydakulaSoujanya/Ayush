@@ -21,19 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $doj = $_POST['doj'];
     $aadhar = $_POST['aadhar'];
     $police_verification = $_POST['police_verification'];
-    // $status = $_POST['status'];
+    $status = $_POST['status'];
     $daily_rate8 = $_POST['daily_rate8'];
     $daily_rate12 = $_POST['daily_rate12'];
     $daily_rate24 = $_POST['daily_rate24'];
-    $beneficiary_name = $_POST['beneficiary_name'];
     $bank_name = $_POST['bank_name'];
     $bank_account_no = $_POST['bank_account_no'];
     $ifsc_code = $_POST['ifsc_code'];
-    $address_line1 = $_POST['address_line1'];
-    $address_line2 = $_POST['address_line2'];
-    $landmark = $_POST['landmark'];
-    $city = $_POST['city'];
-    $state = $_POST['state'];
+    $address = $_POST['address'];
     $document = null;
 
     // Handle file upload (if provided)
@@ -49,10 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $query = "UPDATE emp_info 
               SET name = ?, dob = ?, gender = ?, phone = ?, email = ?, 
                   role = ?, qualification = ?, experience = ?, doj = ?, 
-                  aadhar = ?, police_verification = ?,  
-                  daily_rate8 = ?, daily_rate12 = ?, daily_rate24 = ?, beneficiary_name = ?,
+                  aadhar = ?, police_verification = ?, status = ?, 
+                  daily_rate8 = ?, daily_rate12 = ?, daily_rate24 = ?, 
                   bank_name = ?, bank_account_no = ?, ifsc_code = ?, 
-                  address_line1 = ?, address_line2 = ?, landmark = ?, city = ?, state = ?" . ($document ? ", document = ?" : "") . " 
+                  address = ?" . ($document ? ", document = ?" : "") . " 
               WHERE id = ?";
 
     // Prepare the statement
@@ -61,23 +56,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Bind parameters dynamically
     if ($document) {
         $stmt->bind_param(
-            'sssssssssssssssisssssisi',
+            'sssssssssssssssisssisi',
             $name, $dob, $gender, $phone, $email,
             $role, $qualification, $experience, $doj,
-            $aadhar, $police_verification, 
-            $daily_rate8, $daily_rate12, $daily_rate24, $beneficiary_name,
+            $aadhar, $police_verification, $status,
+            $daily_rate8, $daily_rate12, $daily_rate24,
             $bank_name, $bank_account_no, $ifsc_code,
-            $address_line1, $address_line2, $landmark, $city, $state, $document, $employee_id
+            $address, $document, $employee_id
         );
     } else {
         $stmt->bind_param(
-            'sssssssssssssssssssssssi',
+            'sssssssssssssssssssi',
             $name, $dob, $gender, $phone, $email,
             $role, $qualification, $experience, $doj,
-            $aadhar, $police_verification, 
-            $daily_rate8, $daily_rate12, $daily_rate24, $beneficiary_name,
+            $aadhar, $police_verification, $status,
+            $daily_rate8, $daily_rate12, $daily_rate24,
             $bank_name, $bank_account_no, $ifsc_code,
-            $address_line1, $address_line2, $landmark, $city, $state, $employee_id
+            $address, $employee_id
         );
     }
 
@@ -85,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($stmt->execute()) {
         echo "<script>
                 alert('Successfully updated record');
-                window.location.href = 'table.php';
+                window.location.href = 'manage_employee.php';
               </script>";
     } else {
         echo "Error: " . $stmt->error;

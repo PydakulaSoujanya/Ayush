@@ -95,12 +95,10 @@ $result = $conn->query($sql);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
   <title>Refund Management</title>
 </head>
 <!-- <style>
@@ -148,10 +146,10 @@ $result = $conn->query($sql);
   <?php include '../navbar.php'; ?>
 
   <div class="container mt-7">
-    <div class="dataTable_card card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0 table-title">Refunds</h5>
-    <?php
+        <div class="dataTable_card card">
+            <div class="card-header">Refunds</div>
+      <div class="card-body">
+        <?php
         if (isset($_SESSION['message'])) {
             echo "<div class='alert alert-{$_SESSION['message_type']} alert-dismissible fade show' role='alert'>
                     {$_SESSION['message']}
@@ -160,13 +158,11 @@ $result = $conn->query($sql);
             unset($_SESSION['message'], $_SESSION['message_type']);
         }
         ?>
-</div>
-  
 
         <form method="POST" action="">
-        <div class="table-responsive mt-3 p-4">
-                <table id="employeeTable" class="display table table-striped" style="width:100%">
-                    <thead class="thead-dark mt-4">
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <thead>
                 <tr>
                   <th>Employee Name</th>
                   <th>Customer Name</th>
@@ -186,10 +182,10 @@ $result = $conn->query($sql);
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
-                        echo "<td><input type='hidden' name='employee_id[{$row['allotment_id']}]' value='{$row['employee_id']}'></td>";
-                        echo "<td><input type='hidden' name='allotment_id[{$row['allotment_id']}]' value='{$row['allotment_id']}'></td>";
-                        echo "<td><input type='hidden' name='patient_name[{$row['allotment_id']}]' value='{$row['patient_name']}'></td>";
-                        echo "<td><input type='hidden' name='customer_name[{$row['allotment_id']}]' value='{$row['customer_name']}'></td>";
+                        echo "<input type='hidden' name='employee_id[{$row['allotment_id']}]' value='{$row['employee_id']}'>";
+                        echo "<input type='hidden' name='allotment_id[{$row['allotment_id']}]' value='{$row['allotment_id']}'>";
+                        echo "<input type='hidden' name='patient_name[{$row['allotment_id']}]' value='{$row['patient_name']}'>";
+                        echo "<input type='hidden' name='customer_name[{$row['allotment_id']}]' value='{$row['customer_name']}'>";
                         echo "<td>{$row['employee_name']}</td>";
                         echo "<td>{$row['customer_name']}</td>";
                         echo "<td>{$row['patient_name']}</td>";
@@ -220,7 +216,9 @@ echo "<td>
                               </td>";
                         echo "</tr>";
                     }
-                } 
+                } else {
+                    echo "<tr><td colspan='11'>No records found</td></tr>";
+                }
                 ?>
               </tbody>
             </table>
@@ -231,30 +229,5 @@ echo "<td>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-<script>
-      $(document).ready(function() {
-      // Initialize DataTable
-      const table = $('#employeeTable').DataTable({
-        paging: true, // Enable pagination
-        searching: true, // Enable global search
-        ordering: true, // Enable column-based ordering
-        lengthMenu: [5, 10, 20, 50], // Rows per page options
-        pageLength: 5, // Default rows per page
-        language: {
-          search: "Search Refunds:", // Customize the search label
-        },
-      });
-
-      // Global Search
-      $('#globalSearch').on('keyup', function() {
-        table.search(this.value).draw();
-      });
-      
-    });
-</script>
 </body>
 </html>

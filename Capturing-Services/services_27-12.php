@@ -36,7 +36,121 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
    <link rel="stylesheet" href="../assets/css/style.css">
-  
+  <!-- <style>
+    .input-field-container {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .input-label {
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      background-color: white;
+      padding: 0 5px;
+      font-size: 14px;
+      font-weight: bold; 
+      color: #A26D2B;
+    }
+
+    .styled-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 12px;
+      outline: none;
+      box-sizing: border-box;
+      border: 1px solid #A26D2B;
+      border-radius: 5px; 
+    }
+
+    .styled-input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    h1, h2, h3, h4 {
+      color: #A26D2B;
+    }
+    @media (max-width: 768px) {
+  .form-section {
+    padding: 15px;
+    margin: 10px;
+  }
+
+  .styled-input {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .input-label {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .form-section {
+    padding: 10px;
+    margin: 5px;
+  }
+
+  .styled-input {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .input-label {
+    font-size: 11px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+}
+
+/* Form Responsiveness */
+.row {
+  margin: 0 -10px;
+}
+
+.col-md-6, .col-md-12 {
+  padding: 0 10px;
+}
+
+.add-button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .add-button:hover {
+    background-color: #0056b3;
+  }
+
+  .bordered-field {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+  }
+
+  .input-field-container {
+    margin-bottom: 15px;
+  }
+
+  .input-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+  </style> -->
 </head>
 <body>
   <?php
@@ -50,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
         <!-- Customer Name -->
         <div class="col-md-6">
   <div class="input-field-container">
-    <label class="input-label">Customer Name</label>
+    <label class="input-label">Search Customer</label>
     <div style="display: flex; align-items: center;">
       <input
         id="customer-name"
@@ -118,97 +232,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
 
       <!-- Dynamic Fields for Service Details -->
       <div id="field-container">
-    <div class="row field-set bordered-field">
-        <div class="col-md-6">
-            <div class="input-field-container">
-                <label class="input-label">Start Date</label>
-                <input type="date" class="styled-input" name="from_date[]" id="fromDate" />
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="input-field-container">
-                <label class="input-label">End Date</label>
-                <input type="date" class="styled-input" name="end_date[]" id="endDate" />
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="input-field-container">
-                <label class="input-label">Service Type</label>
-                <select class="styled-input" name="service_type[]" id="service_type">
-                    <option value="" disabled selected>Select Service Type</option>
-                    <option value="care_taker">Care Taker</option>
-                    <option value="fully_trained_nurse">Fully Trained Nurse</option>
-                    <option value="semi_trained_nurse">Semi Trained Nurse</option>
-                    <option value="nannies">Nannies</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="input-field-container">
-                <label class="input-label">Service Duration (in Hours)</label>
-                <select class="styled-input" name="service_duration[]" id="service_duration">
-                    <option value="" disabled selected>Select Service Duration</option>
-                    <option value="8">8 Hours</option>
-                    <option value="12">12 Hours</option>
-                    <option value="24">24 Hours</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="input-field-container">
-                <label class="input-label">Total Days</label>
-                <input type="number" class="styled-input" name="total_days[]" id="total_days" placeholder="Total Days" readonly />
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="input-field-container">
-                <label class="input-label">Per Day Service Price</label>
-                <input type="text" class="styled-input" name="per_day_service_price[]" placeholder="Service Price" id="per_day_service_price" readonly />
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="input-field-container">
-                <label class="input-label">Total Service Price</label>
-                <input type="text" class="styled-input" name="service_price[]" id="service_price" placeholder="Service Price" readonly />
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="input-field-container">
-                <label class="input-label">Discount Price</label>
-                <input type="text" class="styled-input" name="discount_price[]" id="discount_price" placeholder="Discount Price" />
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="input-field-container">
-                <label class="input-label">Total Service Price (After Discount)</label>
-                <input type="text" class="styled-input total_service_price" id="total_service_price" name="total_service_price[]" placeholder="Total Price" readonly />
-            </div>
-        </div>
-        <div class="col-md-12 text-right">
-            <button id="add-field-set" type="button" class="btn btn-primary mt-3">+ Add Services</button>
-            <button type="button" class="btn btn-danger delete-service mt-3">Delete</button>
-        </div>
+  <div class="row field-set bordered-field">
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">Start Date</label>
+        <input type="date" class="styled-input" name="from_date[]" id="fromDate" />
+      </div>
     </div>
-</div>
-
-<!-- Highlighted Total Price Section -->
-<div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Total Price</label>
-    <input
-      type="text"
-      id="total_price"
-      class="styled-input highlighted-total-price"
-      name="total_price[]"
-      readonly
-      placeholder="Total Price"
-    />
- 
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">End Date</label>
+        <input type="date" class="styled-input" name="end_date[]" id="endDate"/>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">Service Type</label>
+        <select class="styled-input" name="service_type[]" id="service_type">
+          <option value="" disabled selected>Select Service Type</option>
+          <option value="care_taker">Care Taker</option>
+          <option value="fully_trained_nurse">Fully Trained Nurse</option>
+          <option value="semi_trained_nurse">Semi Trained Nurse</option>
+          <option value="nannies">Nannies</option>
+        </select>
+      </div>
+    </div>
+  
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">Service Duration (in Hours)</label>
+        <select class="styled-input" name="service_duration[]" id="service_duration">
+          <option value="" disabled selected>Select Service Duration</option>
+          <option value="8">8 Hours</option>
+          <option value="12">12 Hours</option>
+          <option value="24">24 Hours</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">Total Days</label>
+        <input type="number" class="styled-input" name="total_days[]"   id="total_days"  placeholder="Total Days" readonly />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">Per Day Service Price</label>
+        <input type="text" class="styled-input" name="per_day_service_price[]" placeholder="Service Price" id="per_day_service_price" readonly />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="input-field-container">
+        <label class="input-label">Total Service Price</label>
+        <input type="text" class="styled-input" onkeyup="updateTotalPrice()" name="service_price[]" placeholder="Service Price" id="service_price" readonly />
+        <div class="col-md-12 text-right">
+          <button id="add-field-set" type="button" class="btn btn-primary mt-3">+ Add Services</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-
-
-
+<div class="row">
+<div class="col-md-6">
+<div class="input-field-container">
+  <label class="input-label">Total Price</label>
+  <input type="text" id="total_price" class="styled-input" readonly placeholder="Total Price" />
+</div>
+</div>
+</div>
       <!-- Additional Inputs -->
       <div class="row">
         <div class="col-md-6">
@@ -289,7 +380,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
             <div class="col-md-6">
               <div class="input-field-container">
                 <label class="input-label">Are you a patient?</label>
-                <select class="styled-input" id="patientStatus" name="patient_status" >
+                <select class="styled-input" id="patientStatus" name="patient_status" required>
                   <option value="" disabled selected>Select an option</option>
                   <option value="yes">Yes</option>
                   <option value="no">No</option>
@@ -301,7 +392,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
             <div class="col-md-6 hidden" id="patientNameField">
               <div class="input-field-container">
                 <label class="input-label">Patient Name</label>
-                <input type="text" class="styled-input" name="patient_name" placeholder="Enter patient name" required/>
+                <input type="text" class="styled-input" name="patient_name" placeholder="Enter patient name" />
               </div>
             </div>
           </div>
@@ -329,7 +420,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
             <div class="col-md-6">
               <div class="input-field-container">
                 <label class="input-label">Customer Name</label>
-                <input type="text" class="styled-input" name="customer_name" placeholder="Enter your name"  required/>
+                <input type="text" class="styled-input" name="customer_name" placeholder="Enter your name" required />
               </div>
             </div>
           </div>
@@ -340,7 +431,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
             <div class="col-md-6">
               <div class="input-field-container">
                 <label class="input-label">Contact Number</label>
-                <input type="text" class="styled-input" name="emergency_contact_number" placeholder="Enter your emergency contact number"  required/>
+                <input type="text" class="styled-input" name="emergency_contact_number" placeholder="Enter your emergency contact number" required />
               </div>
             </div>
 
@@ -348,7 +439,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
             <div class="col-md-6">
               <div class="input-field-container">
                 <label class="input-label">Blood Group</label>
-                <select class="styled-input" name="blood_group" >
+                <select class="styled-input" name="blood_group" required>
                   <option value="" disabled selected>Select blood group</option>
                   <option value="A+">A+</option>
                   <option value="A-">A-</option>
@@ -369,7 +460,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
             <div class="col-md-6">
               <div class="input-field-container">
                 <label class="input-label">Known Medical Conditions</label>
-                <input type="text" class="styled-input" name="medical_conditions" placeholder="Enter known medical conditions"  />
+                <input type="text" class="styled-input" name="medical_conditions" placeholder="Enter known medical conditions" required />
               </div>
             </div>
 
@@ -412,7 +503,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
             <div class="col-md-6">
               <div class="input-field-container">
                 <label class="input-label">Mobility Status</label>
-                <select class="styled-input" name="mobility_status" >
+                <select class="styled-input" name="mobility_status" required>
                   <option value="" disabled selected>Select Mobility Status</option>
                   <option value="Walking">Walking</option>
                   <option value="Wheelchair">Wheelchair</option>
@@ -440,7 +531,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
         name="pincode" 
         class="styled-input" 
         placeholder="6 digits [0-9] PIN code" 
-         
+        required 
         pattern="\d{6}" 
         maxlength="6" />
     </div>
@@ -455,7 +546,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
         name="address_line1" 
         class="styled-input" 
         placeholder="Enter Flat, House No., Building, etc." 
-         />
+        required />
     </div>
   </div>
 </div>
@@ -496,7 +587,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
         name="city" 
         class="styled-input" 
         placeholder="Enter Town/City" 
-         required />
+        required />
     </div>
   </div>
 
@@ -507,7 +598,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_customer'])) {
       <select 
         name="state" 
         class="styled-input" 
-        >
+        required>
         <option value="" disabled selected>Choose a state</option>
         <option value="Andhra Pradesh">Andhra Pradesh</option>
         <option value="Arunachal Pradesh">Arunachal Pradesh</option>
@@ -645,31 +736,12 @@ setInterval(() => {
   });
 </script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
-      $(document).ready(function () {
-    // Function to add new field set
-    $('#add-field-set').on('click', function () {
-      
-      // var newFieldSet = $('#field-container .field-set').first().clone(); // Clone the first field set
-      newFieldSet.find('input').val(''); // Clear the input fields
-      newFieldSet.find('select').prop('selectedIndex', 0); // Reset the selects to default option
-      newFieldSet.find('#service_price').val(''); // Clear service price input
-      newFieldSet.find('.delete-service').show(); // Show delete button in the new set
-      $('#field-container').append(newFieldSet); // Append the new field set to the container
-    });
-
-    // Function to delete the field set
-    $(document).on('click', '.delete-service', function () {
-      $(this).closest('.field-set').remove(); // Remove the parent field set
-    });
-  });
-
-
     function handleAddCustomer() {
       const selectedValue = document.getElementById("customer-name").value;
       if (selectedValue === "add_customer") {
@@ -727,6 +799,8 @@ setInterval(() => {
     populateCustomerDetails(selectedValue);
   }
 }
+
+
 
 function searchCustomers(search) {
     const customerList = document.getElementById("customerList");
@@ -819,93 +893,19 @@ function selectPatient(checkbox) {
 }
 
 function updateTotalPrice() {
-  let totalPrice = 0;
+  console.log("inside update price")
+  const inputs = document.querySelectorAll("input[name='service_price[]']");
+  let total = 0;
 
-  // Loop through all service price and discount price fields
-  const servicePriceInputs = document.querySelectorAll("input[name='service_price[]']");
-  const discountPriceInputs = document.querySelectorAll("input[name='discount_price[]']");
-  const totalServicePriceFields = document.querySelectorAll(".total_service_price");
-
-  servicePriceInputs.forEach((servicePriceInput, index) => {
-    const servicePrice = parseFloat(servicePriceInput.value) || 0; // Get service price
-    const discountPrice = parseFloat(discountPriceInputs[index].value) || 0; // Get discount price
-
-    // If discount price is provided, apply it to the service price
-    const discountedPrice = servicePrice - discountPrice;
-
-    // Update the Total Service Price field for this service
-    totalServicePriceFields[index].value = discountedPrice < 0 ? 0 : discountedPrice.toFixed(2);
-
-    // Add the discounted service price to the overall total
-    totalPrice += discountedPrice < 0 ? 0 : discountedPrice;
+  inputs.forEach((input) => {
+    const value = parseFloat(input.value) || 0; // Default to 0 if the input is empty or invalid
+    total += value;
   });
 
-  // Update the total price field with the final total value
   const totalPriceInput = document.getElementById("total_price");
-  totalPriceInput.value = totalPrice.toFixed(2);
+  totalPriceInput.value = total.toFixed(2); // Display the total
 }
-
-// Attach event listeners to all input fields to update total price when any field changes
-function attachEventListeners() {
-  document.querySelectorAll("input[name='service_price[]']").forEach(input => {
-    input.addEventListener("input", updateTotalPrice);
-  });
-
-  document.querySelectorAll("input[name='discount_price[]']").forEach(input => {
-    input.addEventListener("input", updateTotalPrice);
-  });
-}
-
-// Function to add new service fields dynamically
-document.getElementById("add-field-set").addEventListener("click", function () {
-  const fieldSetContainer = document.getElementById("field-container");
-
-  // Find the first field set (we'll clone it)
-  const fieldSetTemplate = fieldSetContainer.querySelector(".field-set");
-  const newFieldSet = fieldSetTemplate.cloneNode(true); // Clone the first field set
-
-  // Append the new field set
-  fieldSetContainer.appendChild(newFieldSet);
-
-  // Show the delete button for new field sets (but hide it for the first field set)
-  const deleteButton = newFieldSet.querySelector(".delete-service");
-  deleteButton.style.display = 'inline-block'; // Show delete button for new field sets
-
-  // Reset the input fields in the new service set
-  const inputs = newFieldSet.querySelectorAll("input");
-  inputs.forEach(input => {
-    input.value = ''; // Clear the input fields
-  });
-
-  // Re-attach event listeners to newly added fields
-  attachEventListeners();
-});
-
-// Function to delete a service field
-document.addEventListener("click", function (e) {
-  if (e.target && e.target.classList.contains("delete-service")) {
-    const fieldSet = e.target.closest(".field-set");
-    if (fieldSet) {
-      fieldSet.remove();
-      updateTotalPrice(); // Recalculate total when a service is deleted
-    }
-  }
-});
-
-// Initialize event listeners for existing services
-attachEventListeners();
-
-// Hide the delete button for the first field set
-document.addEventListener("DOMContentLoaded", function () {
-  const firstFieldSet = document.querySelector(".field-set");
-  const deleteButton = firstFieldSet.querySelector(".delete-service");
-  if (deleteButton) {
-    deleteButton.style.display = 'none'; // Hide delete button in the first field set
-  }
-});
-
-// Example: Use this to set initial prices fetched from the backend
-// initializeServicePrices([100, 200, 300]); // Replace with your fetched prices
+updateTotalPrice();
 
  // Function to set current date and time
  function setCurrentDateTime() {
@@ -939,9 +939,9 @@ document.addEventListener("DOMContentLoaded", function () {
     setCurrentDateTime();
 
     // Handle the "+" button to add new field sets
-    // document.getElementById("add-field-set").addEventListener("click", function () {
-    //     addFieldSet();
-    // });
+    document.getElementById("add-field-set").addEventListener("click", function () {
+        addFieldSet();
+    });
 
     // Delegate input events to the container for dynamic field sets
     fieldContainer.addEventListener("input", handleInputEvent);
@@ -1109,26 +1109,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
-    function applyDiscount() {
-      const servicePriceInput = document.getElementById("service_price");
-      const discountPriceInput = document.getElementById("discount_price");
-      const totalServicePriceInput = document.getElementById("total_service_price");
-
-      // Get the values
-      const servicePrice = parseFloat(servicePriceInput.value) || 0;
-      const discountPrice = parseFloat(discountPriceInput.value) || 0;
-
-      // Apply discount to service price
-      const discountedPrice = servicePrice - discountPrice;
-
-      // Ensure the total price doesn't go below zero
-      totalServicePriceInput.value = (discountedPrice < 0 ? 0 : discountedPrice).toFixed(2);
-    }
-
-    // Attach event listeners to update the total service price whenever service price or discount price changes
-    document.getElementById("service_price").addEventListener("input", applyDiscount);
-    document.getElementById("discount_price").addEventListener("input", applyDiscount);
     function fetchServiceDetails(serviceType) {
         return new Promise((resolve, reject) => {
             fetch("get_service_details.php", {
@@ -1148,8 +1128,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-
-
 </script>
 
 </body>

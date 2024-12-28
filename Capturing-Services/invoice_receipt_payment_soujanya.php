@@ -5,10 +5,9 @@ require '../config.php'; // Database connection
 
 $input_data = json_decode(file_get_contents('php://input'), true);
 
-if (isset($input_data['invoice_id']) && isset($input_data['amount_paid']) && isset($input_data['receipt_date'])) {
+if (isset($input_data['invoice_id']) && isset($input_data['amount_paid'])) {
     $invoice_id = $input_data['invoice_id'];
     $amount_paid = $input_data['amount_paid'];
-    $receipt_date = $input_data['receipt_date']; // Fetch receipt_date from input
 
     // Generate the next receipt ID
     $receipt_id_query = $conn->prepare("SELECT receipt_id FROM invoice ORDER BY id DESC LIMIT 1");
@@ -50,25 +49,25 @@ if (isset($input_data['invoice_id']) && isset($input_data['amount_paid']) && iss
     $status = ($amount_paid >= $total_amount) ? 'Paid' : 'Pending';
     $new_due_amount = $total_amount - $amount_paid;
     $created_at = date('Y-m-d H:i:s');
-    $receipt_date = date('Y-m-d');
 
     // Insert a new row into the `invoice` table for the receipt
     $insert_query = $conn->prepare("
         INSERT INTO invoice (
             invoice_id, receipt_id, customer_id, service_id, 
             customer_name, mobile_number, customer_email, total_amount,
-            paid_amount, receipt_date, pdf_invoice_path, due_date, 
-            status, created_at, updated_at
+            paid_amount, pdf_invoice_path, due_date, status, created_at,
+            updated_at
         ) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
     $paid_amount = $amount_paid;
     $insert_query->bind_param(
-        'sssssssddssssss',
+        'sssssssddsssss',
         $invoice_id, $receipt_id, $customer_id, $service_id,
         $customer_name, $mobile_number, $customer_email,
-        $total_amount, $paid_amount, $receipt_date, 
-        $pdf_invoice_path, $due_date, $status, $created_at, $created_at
+        $total_amount, $paid_amount, 
+        $pdf_invoice_path,
+        $due_date, $status, $created_at, $created_at
     );
     $insert_success = $insert_query->execute();
 
@@ -78,9 +77,8 @@ if (isset($input_data['invoice_id']) && isset($input_data['amount_paid']) && iss
         echo json_encode(['success' => false, 'error' => 'Failed to insert new invoice row']);
     }
 } else {
-    echo json_encode(['success' => false, 'error' => 'Missing required fields']);
+    echo json_encode(['success' => false, 'error' => 'Missing invoice_id or amount_paid']);
 }
-
 
 $conn->close();
 ?>

@@ -1,83 +1,81 @@
 <?php
-// Include database connection file
-include '../config.php'; // Ensure you have this file for DB connection
+include '../config.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Collect form data
-    $patient_name = $_POST['patient_name'];
-    $customer_name = $_POST['customer_name'];
-    $email = $_POST['email'];
-    $emergency_contact_number = $_POST['emergency_contact_number'];
-    $status = $_POST['patient_status'];
-    $medical_conditions = $_POST['medical_conditions'];
-    $relationship = $_POST['relationship'];
-    $blood_group = $_POST['blood_group'];
-    $mobility_status = $_POST['mobility_status'];
-    $gender = $_POST['gender'];
-    $patient_age = $_POST['patient_age'];
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
-    // Address fields
-    $pincode = $_POST['pincode'];
-    $address_line1 = $_POST['address_line1'];
-    $address_line2 = $_POST['address_line2'];
-    $landmark = $_POST['landmark'];
-    $city = $_POST['city'];
-    $state = $_POST['state'];
+// Fetch form data (use null coalescing operator to handle empty fields)
+$patient_status = $_POST['patient_status'] ?? null;
+$patient_name = $_POST['patient_name'] ?? null;
+$relationship = $_POST['relationship'] ?? null;
+$customer_name = $_POST['customer_name'] ?? null;
+$emergency_contact_number = $_POST['emergency_contact_number'] ?? null;
+$blood_group = $_POST['blood_group'] ?? null;
+$medical_conditions = $_POST['medical_conditions'] ?? null;
+$email = $_POST['email'] ?? null;
+$patient_age = $_POST['patient_age'] ?? null;
+$gender = $_POST['gender'] ?? null;
+$mobility_status = $_POST['mobility_status'] ?? null;
+$pincode = $_POST['pincode'] ?? null;
+$address_line1 = $_POST['address_line1'] ?? null;
+$address_line2 = $_POST['address_line2'] ?? null;
+$landmark = $_POST['landmark'] ?? null;
+$city = $_POST['city'] ?? null;
+$state = $_POST['state'] ?? null;
 
-    // Validate inputs (optional, based on your needs)
-    if (empty($customer_name) || empty($email) || empty($emergency_contact_number) || empty($status) || empty($medical_conditions)) {
-        echo "All fields are required!";
-        exit;
+// Handle file upload (discharge file)
+$discharge_file = null;
+if (isset($_FILES['discharge']) && $_FILES['discharge']['error'] == 0) {
+    $target_dir = "uploads/";
+    $discharge_file = $target_dir . basename($_FILES['discharge']['name']);
+    if (!is_dir($target_dir)) {
+        mkdir($target_dir, 0777, true); // Create uploads directory if not exists
     }
+    move_uploaded_file($_FILES['discharge']['tmp_name'], $discharge_file);
+}
 
-    // Check if the email already exists
-    $check_email_query = "SELECT * FROM customer_master WHERE email = ?";
-    if ($stmt = $conn->prepare($check_email_query)) {
-        $stmt->bind_param('s', $email);
-        $stmt->execute();
-        $stmt->store_result();
-        
-        if ($stmt->num_rows > 0) {
-            // Email already exists
-            echo "The email address is already registered. Please use a different email.";
-            $stmt->close();
-            exit;
-        }
-        $stmt->close();
-    }
+// Insert into database
+$sql = "INSERT INTO customer_master (
+            patient_status, patient_name, relationship, customer_name, 
+            emergency_contact_number, blood_group, medical_conditions, 
+            email, patient_age, gender, mobility_status, 
+          pincode, address_line1, address_line2, 
+            landmark, city, state
+        ) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?)";
 
-    // Prepare SQL statement to insert customer data
-    $sql = "INSERT INTO customer_master (
-                patient_name, customer_name, email, emergency_contact_number, patient_status, medical_conditions, 
-                relationship, blood_group, mobility_status, gender, patient_age, pincode, address_line1, address_line2, 
-                landmark, city, state
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param(
+    "ssssssssissssssss",
+    $patient_status,
+    $patient_name,
+    $relationship,
+    $customer_name,
+    $emergency_contact_number,
+    $blood_group,
+    $medical_conditions,
+    $email,
+    $patient_age,
+    $gender,
+    $mobility_status,
+   
+    $pincode,
+    $address_line1,
+    $address_line2,
+    $landmark,
+    $city,
+    $state
+);
 
-    // Prepare the statement
-    if ($stmt = $conn->prepare($sql)) {
-        // Bind the parameters
-        $stmt->bind_param(
-            'sssssssssssssssss',  // data types for each field (17 placeholders)
-            $patient_name, $customer_name, $email, $emergency_contact_number, $status, $medical_conditions, 
-            $relationship, $blood_group, $mobility_status, $gender, $patient_age, $pincode, $address_line1, 
-            $address_line2, $landmark, $city, $state
-        );
+if ($stmt->execute()) {
+    echo "<script>alert('Form submitted successfully!'); window.location.href = 'services.php';</script>";
+} else {
+    echo "<script>alert('Error: " . $stmt->error . "'); window.location.href = 'services.php';</script>";
+}
 
-        // Execute the statement
-       
-    if ($stmt->execute()) {
-        echo "<script>alert('Customer added successfully'); window.location.href='services.php';</script>";
-    } else {
-        echo "<script>alert('Error: " . $stmt->error . "'); window.location.href='services.php';</script>";
-    }}
-
-        // Close the statement
-        $stmt->close();
-    } else {
-        echo "Error preparing the statement: " . $conn->error;
-    }
-
-    // Close the connection
-    $conn->close();
-
+// Close connections
+$stmt->close();
+$conn->close();
 ?>

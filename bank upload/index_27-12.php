@@ -40,77 +40,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['excel_file'])) {
             $deposit_amt = !empty($row['I']) ? floatval(str_replace(',', '', $row['I'])) : null;
             $balance = floatval(str_replace(',', '', $row['J']));
 
-
-
-
-//start
-  // Check if tran_id already exists in withdrawals or deposits table
-  $checkQuery = "SELECT COUNT(*) as count FROM withdrawals WHERE tran_id = ? UNION ALL SELECT COUNT(*) FROM deposits WHERE tran_id = ?";
-  $stmt = $conn->prepare($checkQuery);
-  $stmt->bind_param("ss", $tran_id, $tran_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-  $exists = 0;
-  while ($row = $result->fetch_assoc()) {
-      $exists += $row['count'];
-  }
-
-  if ($exists > 0) {
-      // Skip if tran_id already exists
-      continue;
-  }
-
-
-  //end
             if ($withdrawal_amt !== null) {
                 // Insert into withdrawals table
                 $stmt = $conn->prepare("INSERT INTO withdrawals (tran_id, value_date, transaction_date, transaction_posted_date, cheque_no_ref_no, transaction_remarks, withdrawal_amt, balance) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt->bind_param("ssssssdd", $tran_id, $value_date, $transaction_date, $transaction_posted_date, $cheque_no_ref_no, $transaction_remarks, $withdrawal_amt, $balance);
-                $stmt->execute();
-            
-                // Update status in withdrawals table
-                $query = "UPDATE withdrawals w
-                          INNER JOIN vouchers_new v ON w.transaction_date = v.voucher_date AND w.withdrawal_amt = v.paid_amount
-                          SET w.status = 'Matched'
-                          WHERE w.tran_id = ?";
-                $stmt = $conn->prepare($query);
-                $stmt->bind_param("s", $tran_id);
-                $stmt->execute();
-            
-                // Update cash_status in vouchers_new table
-                $query = "UPDATE vouchers_new
-                          SET cash_status = 'Matched'
-                          WHERE voucher_date = ? AND paid_amount = ? AND cash_status = 'Pending'
-                          LIMIT 1";
-                $stmt = $conn->prepare($query);
-                $stmt->bind_param("sd", $transaction_date, $withdrawal_amt);
                 $stmt->execute();
             } elseif ($deposit_amt !== null) {
                 // Insert into deposits table
                 $stmt = $conn->prepare("INSERT INTO deposits (tran_id, value_date, transaction_date, transaction_posted_date, cheque_no_ref_no, transaction_remarks, deposit_amt, balance) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt->bind_param("ssssssdd", $tran_id, $value_date, $transaction_date, $transaction_posted_date, $cheque_no_ref_no, $transaction_remarks, $deposit_amt, $balance);
                 $stmt->execute();
-            
-                // Update status in deposits table
-                $query = "UPDATE deposits d
-                          INNER JOIN invoice i ON d.transaction_date = i.receipt_date AND d.deposit_amt = i.paid_amount
-                          SET d.status = 'Matched'
-                          WHERE d.tran_id = ?";
-                $stmt = $conn->prepare($query);
-                $stmt->bind_param("s", $tran_id);
-                $stmt->execute();
-            
-                // Update cash_status in invoice table
-                $query = "UPDATE invoice
-                          SET cash_status = 'Matched'
-                          WHERE receipt_date = ? AND paid_amount = ? AND cash_status = 'Pending'
-                          LIMIT 1";
-                $stmt = $conn->prepare($query);
-                $stmt->bind_param("sd", $transaction_date, $deposit_amt);
-                $stmt->execute();
             }
-            
         }
 
         $conn->close();
@@ -121,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['excel_file'])) {
     exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

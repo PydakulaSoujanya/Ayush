@@ -24,20 +24,14 @@ if (isset($_GET['id'])) {
         $gstin = $_POST['gstin'];
         $phone_number = $_POST['phone_number'];
         $email = $_POST['email'];
-       
+        $address = $_POST['address'];
         $vendor_type = $_POST['vendor_type'];
         $services_provided = $_POST['services_provided'];
-        $vendor_groups = $_POST['vendor_groups'];
-        $address_line1 = $_POST['address_line1'];
-        $address_line2 = $_POST['address_line2'];
-        $city = $_POST['city'];
-        $state = $_POST['state'];
-        $landmark = $_POST['landmark'];
-        $pincode = $_POST['pincode'];
+        $additional_notes = $_POST['additional_notes'];
         $bank_name = $_POST['bank_name'];
         $account_number = $_POST['account_number'];
         $ifsc = $_POST['ifsc'];
-        $branch = $_POST['branch'];
+        $atatus = $_POST['status'];
 
         // Update vendor data in the database
         $update_sql = "UPDATE vendors SET 
@@ -45,42 +39,30 @@ if (isset($_GET['id'])) {
                             gstin = ?, 
                             phone_number = ?, 
                             email = ?, 
-                           
+                            address = ?, 
                             vendor_type = ?, 
                             services_provided = ?, 
-                            vendor_groups = ?,
-                            address_line1 = ?,
-                            address_line2 = ?,
-                            city = ?,
-                            state = ?,
-                            landmark = ?,
-                            pincode = ?, 
+                            additional_notes = ?, 
                             bank_name = ?, 
                             account_number = ?, 
                             ifsc = ?, 
-                            branch = ? 
+                            status = ? 
                         WHERE id = ?";
         $update_stmt = $conn->prepare($update_sql);
         $update_stmt->bind_param(
-            "sssssssssssssssssi",
+            "ssssssssssssi",
             $vendor_name,
             $gstin,
             $phone_number,
             $email,
-       
+            $address,
             $vendor_type,
             $services_provided,
-            $vendor_groups,
-            $address_line1,
-            $address_line2,
-            $city,
-            $state,
-            $landmark,
-            $pincode,
+            $additional_notes,
             $bank_name,
             $account_number,
             $ifsc,
-            $branch,
+            $status,
             $id
         );
 
@@ -113,7 +95,8 @@ if (isset($_GET['id'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Update Vendor</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <!-- <style>
     .input-field-container {
       position: relative;
       margin-bottom: 15px;
@@ -148,9 +131,12 @@ if (isset($_GET['id'])) {
     h1, h2, h3, h4 {
       color: #A26D2B;
     }
-  </style>
+  </style> -->
 </head>
 <body>
+  <?php
+include '../navbar.php';
+?>
   <div class="container mt-5">
     <h3 class="mb-4">Update Vendor</h3>
     <form action="update_vendor.php?id=<?php echo $id; ?>" method="POST">
@@ -199,135 +185,18 @@ if (isset($_GET['id'])) {
             </select>
           </div>
         </div>
-  </div>
-        <div class="row">
-        <div class="col-md-6">
-  <div class="input-field-container">
-    <label class="input-label">Vendor Groups</label>
-    <select id="vendor_groups" name="vendor_groups" class="styled-input">
-      <option value="Nursing Services" <?php echo isset($vendor['vendor_groups']) && $vendor['vendor_groups'] == 'Nursing Services' ? 'selected' : ''; ?>>Nursing Services</option>
-      <option value="Electricity Services" <?php echo isset($vendor['vendor_groups']) && $vendor['vendor_groups'] == 'Electricity Services' ? 'selected' : ''; ?>>Electricity Services</option>
-      <option value="Others" <?php echo isset($vendor['vendor_groups']) && $vendor['vendor_groups'] == 'Others' ? 'selected' : ''; ?>>Others</option>
-    </select>
-  </div>
-</div>
-
-      <div class="col-md-6">
-          <div class="input-field-container">
-            <label class="input-label">Pincode</label>
-            <input 
-              type="text" 
-              name="pincode" 
-              class="styled-input" 
-              placeholder="6 digits [0-9] PIN code" 
-              value="<?php echo htmlspecialchars($vendor['pincode']); ?>" 
-              required 
-              pattern="\d{6}" 
-              maxlength="6" />
-          </div>
-        </div>
-      <div class="col-md-6">
-          <div class="input-field-container">
-            <label class="input-label">Flat, House No., Building, Company, Apartment</label>
-            <input 
-              type="text" 
-              name="address_line1" 
-              class="styled-input" 
-              value="<?php echo htmlspecialchars($vendor['address_line1']); ?>" 
-              placeholder="Enter Flat, House No., Building, etc." 
-              required />
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="input-field-container">
-            <label class="input-label">Area, Street, Sector, Village</label>
-            <input 
-              type="text" 
-              name="address_line2" 
-              class="styled-input" 
-              value="<?php echo htmlspecialchars($vendor['address_line2']); ?>" 
-              placeholder="Enter Area, Street, Sector, Village" />
-          </div>
-        </div>
       </div>
-
       <div class="row">
-      
-
         <div class="col-md-6">
           <div class="input-field-container">
-            <label class="input-label">Landmark</label>
-            <input 
-              type="text" 
-              name="landmark" 
-              class="styled-input" 
-              value="<?php echo htmlspecialchars($vendor['landmark']); ?>" 
-              placeholder="E.g. near Apollo Hospital" />
+            <label class="input-label">Address</label>
+            <textarea class="styled-input" name="address" id="address"><?php echo htmlspecialchars($vendor['address']); ?></textarea>
           </div>
         </div>
         <div class="col-md-6">
           <div class="input-field-container">
-            <label class="input-label">Town/City</label>
-            <input 
-              type="text" 
-              name="city" 
-              class="styled-input" 
-              placeholder="Enter Town/City" 
-              value="<?php echo htmlspecialchars($vendor['city']); ?>" 
-              required />
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-       
-
-        <div class="col-md-6">
-          <div class="input-field-container">
-            <label class="input-label">State</label>
-            <select 
-              name="state" 
-              class="styled-input"
-              value="<?php echo htmlspecialchars($vendor['state']); ?>"  
-              required>
-              <option value="" disabled selected>Choose a state</option>
-              <option value="Andhra Pradesh">Andhra Pradesh</option>
-              <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-              <option value="Assam">Assam</option>
-              <option value="Bihar">Bihar</option>
-              <option value="Chhattisgarh">Chhattisgarh</option>
-              <option value="Goa">Goa</option>
-              <option value="Gujarat">Gujarat</option>
-              <option value="Haryana">Haryana</option>
-              <option value="Himachal Pradesh">Himachal Pradesh</option>
-              <option value="Jharkhand">Jharkhand</option>
-              <option value="Karnataka">Karnataka</option>
-              <option value="Kerala">Kerala</option>
-              <option value="Madhya Pradesh">Madhya Pradesh</option>
-              <option value="Maharashtra">Maharashtra</option>
-              <option value="Manipur">Manipur</option>
-              <option value="Meghalaya">Meghalaya</option>
-              <option value="Mizoram">Mizoram</option>
-              <option value="Nagaland">Nagaland</option>
-              <option value="Odisha">Odisha</option>
-              <option value="Punjab">Punjab</option>
-              <option value="Rajasthan">Rajasthan</option>
-              <option value="Sikkim">Sikkim</option>
-              <option value="Tamil Nadu">Tamil Nadu</option>
-              <option value="Telangana">Telangana</option>
-              <option value="Tripura">Tripura</option>
-              <option value="Uttar Pradesh">Uttar Pradesh</option>
-              <option value="Uttarakhand">Uttarakhand</option>
-              <option value="West Bengal">West Bengal</option>
-              <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
-              <option value="Chandigarh">Chandigarh</option>
-              <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
-              <option value="Delhi">Delhi</option>
-              <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-              <option value="Ladakh">Ladakh</option>
-              <option value="Lakshadweep">Lakshadweep</option>
-              <option value="Puducherry">Puducherry</option>
-            </select>
+            <label class="input-label">Additional Notes</label>
+            <textarea class="styled-input" name="additional_notes" id="additional_notes"><?php echo htmlspecialchars($vendor['additional_notes']); ?></textarea>
           </div>
         </div>
       </div>
@@ -354,11 +223,14 @@ if (isset($_GET['id'])) {
           </div>
         </div>
         <div class="col-md-6">
-          <div class="input-field-container">
-            <label class="input-label">Branch</label>
-            <input type="text" id="branch" name="branch" class="styled-input" placeholder="Enter Branch" value="<?php echo htmlspecialchars($vendor['branch']); ?>"  />
-          </div>
-        </div>
+        <div class="input-field-container">
+  <label class="input-label">Status</label>
+  <select id="status" name="status" class="styled-input">
+    <option value="Active" <?php echo ($vendor['status'] == 'Active') ? 'selected' : ''; ?>>Active</option>
+    <option value="In Active" <?php echo ($vendor['status'] == 'In Active') ? 'selected' : ''; ?>>In Active</option>
+  </select>
+</div>
+</div>
         
       </div>
       <button type="submit" class="btn btn-primary">Update Vendor</button>

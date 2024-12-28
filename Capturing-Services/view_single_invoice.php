@@ -1,9 +1,9 @@
 <?php
 
 
-error_reporting(E_ALL); // Report all PHP errors
-ini_set('display_errors', 1); // Display errors on the screen
-ini_set('display_startup_errors', 1); // Display errors during PHP's startup sequence
+// error_reporting(E_ALL); // Report all PHP errors
+// ini_set('display_errors', 1); // Display errors on the screen
+// ini_set('display_startup_errors', 1); // Display errors during PHP's startup sequence
 
 include '../config.php';
 
@@ -181,35 +181,42 @@ $button_visibility = ($status === 'Paid') ? 'style="display:none;"' : '';
                 </button>
             </div>
             <form id="paymentForm">
-                <div class="modal-body">
-                    <!-- Display total and paid amounts -->
-                     <div style="padding: 5px;">
-                        <strong>Total Amount:</strong> <span id="modalTotalAmount"></span>
-                    </div>
-                    <div style="padding: 5px;">
-                        <strong>Paid Amount:</strong> <span id="modalPaidAmount"></span>
-                    </div>
-                    <div style="padding: 5px;">
-                        <strong>Due Amount:</strong> <span id="modalDueAmount"></span>
-                    </div>
+    <div class="modal-body">
+        <!-- Display total and paid amounts -->
+        <div style="padding: 5px;">
+            <strong>Total Amount:</strong> <span id="modalTotalAmount"></span>
+        </div>
+        <div style="padding: 5px;">
+            <strong>Paid Amount:</strong> <span id="modalPaidAmount"></span>
+        </div>
+        <div style="padding: 5px;">
+            <strong>Due Amount:</strong> <span id="modalDueAmount"></span>
+        </div>
 
-                    <!-- Form for entering amount to pay -->
-                     <div style="padding: 5px;">
-                        <label for="amountToPay">Amount to Pay:</label>
-                        <input type="number" id="amountToPay" name="amountToPay" />
-                    </div>
+        <!-- Form for entering amount to pay -->
+        <div style="padding: 5px;">
+            <label for="amountToPay">Amount to Pay:</label>
+            <input type="number" id="amountToPay" name="amountToPay" />
+        </div>
 
-                    <!-- Hidden input for invoice_id -->
-                    <input type="hidden" id="modalinvoiceId" name="modalinvoiceId">
-                    <input type="hidden" id="currentDate" name="currentDate">
-                </div>
-                <div class="modal-footer">
-                   <button type="button" class="btn btn-secondary" id="closeModalBtn">Close</button>
+        <!-- Receipt Date -->
+        <div style="padding: 5px;">
+            <label for="receipt_date">Receipt Date:</label>
+            <input type="date" id="receipt_date" name="receipt_date" required />
+        </div>
 
-                    <!-- Submit Button -->
-                    <button id="submitPaymentBtn" type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </form>
+        <!-- Hidden input for invoice_id -->
+        <input type="hidden" id="modalinvoiceId" name="modalinvoiceId">
+        <input type="hidden" id="currentDate" name="currentDate">
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="closeModalBtn">Close</button>
+
+        <!-- Submit Button -->
+        <button id="submitPaymentBtn" type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+
         </div>
     </div>
 </div>
@@ -256,52 +263,53 @@ document.getElementById('paymentBtn').addEventListener('click', function() {
 
     // Handle the form submission via AJAX
     document.getElementById('paymentForm').addEventListener('submit', function (e) {
-        e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault(); // Prevent default form submission behavior
 
-        // Get form data
-        var invoiceId = document.getElementById('modalinvoiceId').value;
-        var amountToPay = document.getElementById('amountToPay').value;
-       
+    // Get form data
+    var invoiceId = document.getElementById('modalinvoiceId').value;
+    var amountToPay = document.getElementById('amountToPay').value;
+    var receiptDate = document.getElementById('receipt_date').value;
 
-        // Validate input
-        if (!amountToPay || amountToPay <= 0) {
-            alert('Please enter a valid payment amount.');
-            return;
-        }
+    // Validate input
+    if (!amountToPay || amountToPay <= 0) {
+        alert('Please enter a valid payment amount.');
+        return;
+    }
+    if (!receiptDate) {
+        alert('Please select a receipt date.');
+        return;
+    }
 
-        // Prepare the data to send to the PHP backend
-        var data = {
-            invoice_id: invoiceId,
-            amount_paid: parseFloat(amountToPay),
-            
-          
-        };
+    // Prepare the data to send to the PHP backend
+    var data = {
+        invoice_id: invoiceId,
+        amount_paid: parseFloat(amountToPay),
+        receipt_date: receiptDate, // Include receipt date
+    };
 
-        // Send the AJAX request
-        $.ajax({
-            url: 'invoice_receipt_payment.php', // PHP file handling the payment
-            type: 'POST',
-            contentType: 'application/json', // Sending JSON data
-            data: JSON.stringify(data),
-            success: function (response) {
-                console.log(response);
-                // Parse the response
-                //var res = JSON.parse(response);
-                  var res = response;
+    // Send the AJAX request
+    $.ajax({
+        url: 'invoice_receipt_payment.php', // PHP file handling the payment
+        type: 'POST',
+        contentType: 'application/json', // Sending JSON data
+        data: JSON.stringify(data),
+        success: function (response) {
+            console.log(response);
 
-                if (res.success) {
-                    alert('Payment processed successfully!');
-                    location.reload(); // Reload the page to update values (optional)
-                } else {
-                    alert('Error: ' + (res.error || 'Failed to process the payment.'));
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('AJAX Error:', error);
-                alert('Failed to send the payment request. Please try again.');
+            if (response.success) {
+                alert('Payment processed successfully!');
+                location.reload(); // Reload the page to update values (optional)
+            } else {
+                alert('Error: ' + (response.error || 'Failed to process the payment.'));
             }
-        });
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX Error:', error);
+            alert('Failed to send the payment request. Please try again.');
+        }
     });
+});
+
 </script>
 
 
@@ -322,7 +330,7 @@ document.getElementById('paymentBtn').addEventListener('click', function() {
             <th>Paid Amount</th>
             <!--<th>Due Date</th>-->
             <!--<th>Status</th>-->
-            <th>Created At</th>
+            <th>Reciept Date</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -331,7 +339,7 @@ document.getElementById('paymentBtn').addEventListener('click', function() {
   <?php              
                  $onlyInvoiceSql = "SELECT `id`, `invoice_id`, `receipt_id`, `pdf_invoice_path`, `service_id`, 
                                 `customer_name`, `mobile_number`, `total_amount`, `paid_amount`, 
-                                `due_date`, `status`, `created_at`, `updated_at` 
+                                `due_date`, `status`, `created_at`, `updated_at`, `receipt_date`
                          FROM `invoice` 
                          WHERE `invoice_id` = ?";
     $stmt = $conn->prepare($onlyInvoiceSql);
@@ -367,7 +375,7 @@ document.getElementById('paymentBtn').addEventListener('click', function() {
                         <td>{$row['paid_amount']}</td>
                       
                         
-                        <td>{$row['created_at']}</td>
+                        <td> ". date('d-m-Y', strtotime($row['receipt_date'])) ." </td>
                         
                         <td class='action-icons'>
                             <i class='fas fa-eye' style='cursor: pointer;' data-bs-toggle='modal' data-bs-target='#viewModal' onclick='viewDetails(".json_encode($row).")'></i>

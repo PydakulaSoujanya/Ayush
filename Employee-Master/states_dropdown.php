@@ -1,4 +1,18 @@
-<div class="col-md-12">
+
+<?php
+// Array of states
+$states = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
+    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", 
+    "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", 
+    "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
+    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", 
+    "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", 
+    "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", 
+    "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+];
+?>
+<!-- <div class="col-md-12">
     <div class="input-field-container">
         <label class="input-label">State</label>
         <select name="state[]" class="styled-input" required>
@@ -41,4 +55,4 @@
             <option value="Puducherry">Puducherry</option>
         </select>
     </div>
-</div>
+</div> -->
