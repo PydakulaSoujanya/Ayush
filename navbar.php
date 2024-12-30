@@ -29,43 +29,63 @@
         <nav class="navbar-links">
             <!-- Dashboard Dropdown -->
             <div class="navbar-dropdown" onmouseover="toggleDropdown('dashboard')" onmouseout="toggleDropdown('dashboard')">
-                <span class="navbar-dropdown-title">
-                    DASHBOARD <span class="dropdown-arrow-icon"><i class="fas fa-chevron-down"></i></span>
-                </span>
-                <div class="navbar-dropdown-content" id="dashboard">
-                    <a href="../dashboard.php">Dashboard</a>
-                </div>
+                <!-- <span class="navbar-dropdown-title">
+                    DASHBOARD 
+                </span> -->
+                <a href="../Dashboard/dashboard.php" class="navbar-dropdown-title">
+                DASHBOARD 
+    </a>
             </div>
 
+           
+
             <!-- Customers Dropdown -->
-            <div class="navbar-dropdown" onmouseover="toggleDropdown('customers')" onmouseout="toggleDropdown('customers')">
+            <!-- <div class="navbar-dropdown" onmouseover="toggleDropdown('customers')" onmouseout="toggleDropdown('customers')">
                 <span class="navbar-dropdown-title">
-                    CUSTOMERS <span class="dropdown-arrow-icon"><i class="fas fa-chevron-down"></i></span>
+                    CUSTOMERS 
                 </span>
                 <div class="navbar-dropdown-content" id="customers">
                     <a href="../Customer-Master/customer_table.php">Customers</a>
                 </div>
-            </div>
+            </div> -->
+            <div class="navbar-dropdown">
+    <a href="../Customer-Master/customer_table.php" class="navbar-dropdown-title">
+        CUSTOMERS
+    </a>
+</div>
+
 
             <!-- Vendors Dropdown -->
-            <div class="navbar-dropdown" onmouseover="toggleDropdown('vendor')" onmouseout="toggleDropdown('vendor')">
+            <!-- <div class="navbar-dropdown" onmouseover="toggleDropdown('vendor')" onmouseout="toggleDropdown('vendor')">
                 <span class="navbar-dropdown-title">
                     VENDORS <span class="dropdown-arrow-icon"><i class="fas fa-chevron-down"></i></span>
                 </span>
                 <div class="navbar-dropdown-content" id="vendor">
                     <a href="../Vendor-Master/vendors.php">Vendors</a>
                 </div>
-            </div>
+            </div> -->
+            <div class="navbar-dropdown">
+    <a href="../Vendor-Master/vendors.php" class="navbar-dropdown-title">
+        VENDORS
+    </a>
+</div>
+
 
             <!-- Employees Dropdown -->
-            <div class="navbar-dropdown" onmouseover="toggleDropdown('employee')" onmouseout="toggleDropdown('employee')">
+            <!-- <div class="navbar-dropdown" onmouseover="toggleDropdown('employee')" onmouseout="toggleDropdown('employee')">
                 <span class="navbar-dropdown-title">
                     EMPLOYEES <span class="dropdown-arrow-icon"><i class="fas fa-chevron-down"></i></span>
                 </span>
                 <div class="navbar-dropdown-content" id="employee">
-                    <a href="../Employee-Master/table.php">Employee</a>
+                    <a href="../Employee-Master/manage_employee.php">Employee</a>
                 </div>
-            </div>
+            </div> -->
+            <div class="navbar-dropdown">
+    <a href="../Employee-Master/table.php" class="navbar-dropdown-title">
+        EMPLOYEES
+    </a>
+</div>
+
 
             <!-- Services Dropdown -->
             <div class="navbar-dropdown" onmouseover="toggleDropdown('service')" onmouseout="toggleDropdown('service')">
@@ -79,14 +99,21 @@
             </div>
 
             <!-- Sales Dropdown -->
-            <div class="navbar-dropdown" onmouseover="toggleDropdown('sales')" onmouseout="toggleDropdown('sales')">
+            <!-- <div class="navbar-dropdown" onmouseover="toggleDropdown('sales')" onmouseout="toggleDropdown('sales')">
                 <span class="navbar-dropdown-title">
                     SALES <span class="dropdown-arrow-icon"><i class="fas fa-chevron-down"></i></span>
                 </span>
                 <div class="navbar-dropdown-content" id="sales">
                     <a href="../Sales/view_invoice.php">Invoice</a>
                 </div>
-            </div>
+            </div> -->
+
+            <div class="navbar-dropdown">
+    <a href="../Sales/view_invoice.php" class="navbar-dropdown-title">
+        SALES
+    </a>
+</div>
+
 
             <!-- Expenses Dropdown -->
             <div class="navbar-dropdown" onmouseover="toggleDropdown('expenses')" onmouseout="toggleDropdown('expenses')">
@@ -140,7 +167,7 @@
             </span>
             <div class="navbar-dropdown-content" id="reports" style="display: none;">
                 <a href="../Reports/account_payables.php" onclick="toggleDropdown('account-payables')">Account Payables</a>
-                
+            
                 <a href="../Reports/account_recievables.php" onclick="toggleDropdown('account-recievables')">Account Recievables</a>
                 
             </div>
@@ -148,7 +175,7 @@
     </div>
         </nav>
 
-        <div class="text-center mb-4 d-flex justify-content-center align-items-center gap-3">
+        <div class="text-center mb-4 d-flex justify-content-left align-items-left gap-3">
             <img src="../assets/images/payfiller_logo.jpg" alt="Payfiller App Logo" class="navbar-logo-img mt-3" />
         </div>
 
@@ -178,24 +205,7 @@
         }
     </script>
 
-    <script>
-        // Show loader on navigation
-        // document.addEventListener('DOMContentLoaded', function () {
-        //     const links = document.querySelectorAll('a[href]');
-        //     links.forEach(link => {
-        //         link.addEventListener('click', function (e) {
-        //             const href = link.getAttribute('href');
-        //             if (href && href !== 'javascript:void(0);') {
-        //                 e.preventDefault();
-        //                 document.getElementById('page-loader').style.display = 'flex';
-        //                 setTimeout(() => {
-        //                     window.location.href = href;
-        //                 }, 500);
-        //             }
-        //         });
-        //     });
-        // });
-    </script>
+
 </body>
 
 </html>

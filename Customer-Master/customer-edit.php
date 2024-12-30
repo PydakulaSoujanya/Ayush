@@ -1,80 +1,136 @@
 <?php
-// Include database connection
+// Include database configuration
 include('../config.php');
 
-// Check if we are editing an existing record
-$editMode = isset($_GET['id']); // or use $_POST if you're passing data in another way
-$customerId = $editMode ? $_GET['id'] : null; // Retrieve ID if editing
+// Check if we are in edit mode
+$editMode = isset($_GET['id']);
+$customerId = $editMode ? intval($_GET['id']) : null;
 
-// Initialize form variables with empty strings
+// Initialize form variables for customer and address
 $customerData = [
     'id' => '',
     'patient_status' => '',
     'patient_name' => '',
     'relationship' => '',
-    'full_name' => '',
+    'customer_name' => '',
     'emergency_contact_number' => '',
-    'date_of_joining' => '',
     'blood_group' => '',
     'medical_conditions' => '',
     'email' => '',
     'patient_age' => '',
     'gender' => '',
-    'care_requirements' => '',
-    'care_aadhar' => '',
     'mobility_status' => '',
-    'discharge' => '',
-    'address' => ''
+    'discharge_summary_sheet' => '',
 ];
 
-// Fetch existing data for edit if customer ID is provided
+$addressData = [
+    'pincode' => '',
+    'address_line1' => '',
+    'address_line2' => '',
+    'landmark' => '',
+    'city' => '',
+    'state' => '',
+];
+
+// Fetch data for edit
 if ($editMode) {
-    $query = "SELECT * FROM customer_master WHERE id = $customerId";
-    $result = mysqli_query($conn, $query);
-    if ($result && mysqli_num_rows($result) > 0) {
-        $customerData = mysqli_fetch_assoc($result);
+    $query = "SELECT cm.*, ca.pincode, ca.address_line1, ca.address_line2, ca.landmark, ca.city, ca.state
+              FROM customer_master_new cm
+              LEFT JOIN customer_addresses ca ON cm.id = ca.customer_id
+              WHERE cm.id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $customerId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $data = $result->fetch_assoc();
+        $customerData = array_merge($customerData, $data);
+        $addressData = array_merge($addressData, $data);
     } else {
-        echo "Customer not found!";
+        echo "<script>alert('Customer not found!'); window.location.href = 'customer_table.php';</script>";
         exit;
     }
+    $stmt->close();
 }
-?>
-<?php
-// Handle the form submission
+
+// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = $_POST['id'];
-    $patientStatus = $_POST['patient_status'];
-    $patientName = $_POST['patient_name'];
-    $relationship = $_POST['relationship'];
-    $fullName = $_POST['full_name'];
-    $emergencyContactNumber = $_POST['emergency_contact_number'];
+    // Fetch customer and address values from POST request
+    $id = intval($_POST['id']);
+    $patientName = $_POST['patient_name'] ?? '';
+    $relationship = $_POST['relationship'] ?? '';
+    $customerName = $_POST['customer_name'] ?? '';
+    $emergencyContactNumber = $_POST['emergency_contact_number'] ?? '';
+    $bloodGroup = $_POST['blood_group'] ?? '';
+    $medicalConditions = $_POST['medical_conditions'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $patientAge = intval($_POST['patient_age'] ?? 0);
+    $gender = $_POST['gender'] ?? '';
+    $mobilityStatus = $_POST['mobility_status'] ?? '';
+    $pincode = $_POST['pincode'] ?? '';
+    $addressLine1 = $_POST['address_line1'] ?? '';
+    $addressLine2 = $_POST['address_line2'] ?? '';
+    $landmark = $_POST['landmark'] ?? '';
+    $city = $_POST['city'] ?? '';
+    $state = $_POST['state'] ?? '';
 
-    // Additional fields here...
+    // Handle file upload
+    $dischargeSummarySheet = $_FILES['discharge_summary_sheet']['name'] ?? '';
+    if (!empty($dischargeSummarySheet)) {
+        $targetDir = "../uploads/";
+        $targetFile = $targetDir . basename($dischargeSummarySheet);
+        move_uploaded_file($_FILES["discharge_summary_sheet"]["tmp_name"], $targetFile);
+    } else {
+        $dischargeSummarySheet = $customerData['discharge_summary_sheet'];
+    }
 
-    // Update query
-    $updateQuery = "UPDATE customer_master SET 
-                    patient_status = '$patientStatus',
-                    patient_name = '$patientName',
-                    relationship = '$relationship',
-                    full_name = '$fullName',
-                    emergency_contact_number = '$emergencyContactNumber'
-                    WHERE id = $id";
+    // Call stored procedure to update customer data
+    $updateCustomerQuery = "CALL update_customer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($updateCustomerQuery);
+    $stmt->bind_param(
+        'ssssssssssis',
+        $id,
+        $patientName,
+        $relationship,
+        $customerName,
+        $emergencyContactNumber,
+        $bloodGroup,
+        $medicalConditions,
+        $email,
+        $patientAge,
+        $gender,
+        $mobilityStatus,
+        $dischargeSummarySheet
+    );
 
-if (mysqli_query($conn, $updateQuery)) {
-    // Display alert and redirect
-    echo "<script>
-            alert('Customer details updated successfully!');
-            window.location.href = 'customer_table.php'; // Redirect to the customer_table.php
-          </script>";
-} else {
-    // Display error alert and redirect
-    echo "<script>
-            alert('Error updating customer details: " . mysqli_error($conn) . "');
-            window.location.href = 'customer_table.php'; // Redirect to the customer_table.php
-          </script>";
-}
+    if ($stmt->execute()) {
+        // Call stored procedure to update address data
+        $updateAddressQuery = "CALL update_address(?, ?, ?, ?, ?, ?, ?)";
+        $addressStmt = $conn->prepare($updateAddressQuery);
+        $addressStmt->bind_param(
+            'issssss',
+            $id,
+            $pincode,
+            $addressLine1,
+            $addressLine2,
+            $landmark,
+            $city,
+            $state
+        );
+        $addressStmt->execute();
+        $addressStmt->close();
+
+        echo "<script>alert('Customer details updated successfully!'); window.location.href = 'customer_table.php';</script>";
+    } else {
+        echo "<script>alert('Error updating customer details: " . $stmt->error . "');</script>";
+    }
+    $stmt->close();
 }
 ?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -83,51 +139,7 @@ if (mysqli_query($conn, $updateQuery)) {
   <title>Customer Details Form</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <!-- <style>
-    .input-field-container {
-      position: relative;
-      margin-bottom: 15px;
-    }
-
-    .input-label {
-      position: absolute;
-      top: -10px;
-      left: 10px;
-      background-color: white;
-      padding: 0 5px;
-      font-size: 14px;
-      font-weight: bold; 
-      color: #A26D2B;
-    }
-
-    .styled-input {
-      width: 100%;
-      padding: 10px;
-      font-size: 12px;
-      outline: none;
-      box-sizing: border-box;
-      border: 1px solid #A26D2B;
-      border-radius: 5px; 
-    }
-
-    .styled-input:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    h3 {
-      color: #A26D2B;
-    }
-
-    .dropdowncolmns {
-      margin-left: 0px;
-      width: 163%;
-    }
-  </style> -->
+  
 </head>
 <body>
 
@@ -135,162 +147,126 @@ if (mysqli_query($conn, $updateQuery)) {
 
 
 <div class="container mt-7">
-  <h3 class="mb-4"> Edit Customer Details Form</h3>
+  <h3 class="mb-4">Customer Details Form</h3>
   
-  <form action="customer_db.php" method="POST" enctype="multipart/form-data">
-  <!-- <div class="row"> -->
-  <div class="row equal-width">
-  <!-- Are you a patient? -->
-  <div class="col-md-4">
-    <div class="input-field-container">
-      <label class="input-label">Are you a patient?</label>
-      <select class="styled-input" id="patientStatus" name="patient_status" required>
-        <option value="" disabled selected>Select an option</option>
-        <option value="yes">Yes</option>
-        <option value="no">No</option>
-      </select>
+  <form action="" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="id" value="<?= htmlspecialchars($customerData['id']); ?>" />
+
+    <!-- First Row -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Are you a patient?</label>
+          <select class="styled-input" name="patient_status" required>
+            <option value="" disabled>Select an option</option>
+            <option value="yes" <?= $customerData['patient_status'] === 'yes' ? 'selected' : ''; ?>>Yes</option>
+            <option value="no" <?= $customerData['patient_status'] === 'no' ? 'selected' : ''; ?>>No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Patient Name</label>
+          <input type="text" class="styled-input" name="patient_name" placeholder="Enter patient name" value="<?= htmlspecialchars($customerData['patient_name']); ?>" />
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Relationship with Patient</label>
+          <select class="styled-input" name="relationship">
+            <option value="" disabled>Select relationship</option>
+            <option value="parent" <?= $customerData['relationship'] === 'parent' ? 'selected' : ''; ?>>Parent</option>
+            <option value="sibling" <?= $customerData['relationship'] === 'sibling' ? 'selected' : ''; ?>>Sibling</option>
+            <option value="spouse" <?= $customerData['relationship'] === 'spouse' ? 'selected' : ''; ?>>Spouse</option>
+            <option value="child" <?= $customerData['relationship'] === 'child' ? 'selected' : ''; ?>>Child</option>
+            <option value="friend" <?= $customerData['relationship'] === 'friend' ? 'selected' : ''; ?>>Friend</option>
+            <option value="guardian" <?= $customerData['relationship'] === 'guardian' ? 'selected' : ''; ?>>Guardian</option>
+          </select>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Patient Name -->
-  <div class="col-md-4 hidden" id="patientNameField">
-    <div class="input-field-container">
-      <label class="input-label">Patient Name</label>
-      <input type="text" class="styled-input" name="patient_name" placeholder="Enter patient name" />
-    </div>
-  </div>
-
-  <!-- Relationship with Patient -->
-  <div class="col-md-4 hidden" id="relationshipField">
-    <div class="input-field-container">
-      <label class="input-label" for="relationship">Relationship with Patient</label>
-      <select class="styled-input" id="relationship" name="relationship">
-        <option value="" disabled selected>Select relationship</option>
-        <option value="parent">Parent</option>
-        <option value="sibling">Sibling</option>
-        <option value="spouse">Spouse</option>
-        <option value="child">Child</option>
-        <option value="friend">Friend</option>
-        <option value="guardian">Guardian</option>
-        <option value="grandchild">Grand child</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-  </div>
-</div>
-
-<!-- </div> -->
-
+    <!-- Second Row -->
     <div class="row">
       <div class="col-md-4">
         <div class="input-field-container">
           <label class="input-label">Customer Name</label>
-          <input type="text" class="styled-input" name="full_name" placeholder="Enter your name" required />
+          <input type="text" class="styled-input" name="customer_name" placeholder="Enter customer name" value="<?= htmlspecialchars($customerData['customer_name']); ?>" required />
         </div>
       </div>
 
       <div class="col-md-4">
         <div class="input-field-container">
           <label class="input-label">Contact Number</label>
-          <input type="text" class="styled-input" name="emergency_contact_number" placeholder="Enter your emergency contact number" required />
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="input-field-container">
-          <label class="input-label">Blood Group</label>
-          <select class="styled-input" name="blood_group" required>
-            <option value="" disabled selected>Select blood group</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-     
-
-      <div class="col-md-4">
-        <div class="input-field-container">
-          <label class="input-label">Known Medical Conditions</label>
-          <input type="text" class="styled-input" name="medical_conditions" placeholder="Enter known medical conditions" required />
+          <input type="text" class="styled-input" name="emergency_contact_number" placeholder="Enter contact number" value="<?= htmlspecialchars($customerData['emergency_contact_number']); ?>" required />
         </div>
       </div>
 
       <div class="col-md-4">
         <div class="input-field-container">
           <label class="input-label">Email</label>
-          <input type="email" class="styled-input" name="email" placeholder="Enter your email" required />
+          <input type="email" class="styled-input" name="email" placeholder="Enter email" value="<?= htmlspecialchars($customerData['email']); ?>" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Third Row -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Blood Group</label>
+          <select class="styled-input" name="blood_group" required>
+            <option value="" disabled>Select blood group</option>
+            <option value="A+" <?= $customerData['blood_group'] === 'A+' ? 'selected' : ''; ?>>A+</option>
+            <option value="A-" <?= $customerData['blood_group'] === 'A-' ? 'selected' : ''; ?>>A-</option>
+            <option value="B+" <?= $customerData['blood_group'] === 'B+' ? 'selected' : ''; ?>>B+</option>
+            <option value="B-" <?= $customerData['blood_group'] === 'B+' ? 'selected' : ''; ?>>B-</option>
+            <option value="O+" <?= $customerData['blood_group'] === 'O+' ? 'selected' : ''; ?>>O+</option>
+            <option value="O-"  <?= $customerData['blood_group'] === 'O-' ? 'selected' : ''; ?>>O-</option>
+            <option value="AB+" <?= $customerData['blood_group'] === 'AB+' ? 'selected' : ''; ?>>AB+</option>
+            <option value="AB-"  <?= $customerData['blood_group'] === 'AB-' ? 'selected' : ''; ?>>AB-</option>
+          </select>
         </div>
       </div>
 
       <div class="col-md-4">
         <div class="input-field-container">
           <label class="input-label">Patient Age</label>
-          <input type="number" class="styled-input" name="patient_age" placeholder="Enter patient age" />
+          <input type="number" class="styled-input" name="patient_age" placeholder="Enter patient age" value="<?= htmlspecialchars($customerData['patient_age']); ?>" />
         </div>
       </div>
 
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Known Medical Conditions</label>
+          <input type="text" class="styled-input" name="medical_conditions" placeholder="Enter medical conditions" value="<?= htmlspecialchars($customerData['medical_conditions']); ?>" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Fourth Row -->
+    <div class="row">
       <div class="col-md-4">
         <div class="input-field-container">
           <label class="input-label">Gender</label>
-          <select class="styled-input" name="gender">
-            <option value="" disabled selected>Select gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
+          <select class="styled-input" name="gender" required>
+            <option value="" disabled>Select gender</option>
+            <option value="male" <?= $customerData['gender'] === 'male' ? 'selected' : ''; ?>>Male</option>
+            <option value="female" <?= $customerData['gender'] === 'female' ? 'selected' : ''; ?>>Female</option>
+            <option value="other" <?= $customerData['gender'] === 'other' ? 'selected' : ''; ?>>Other</option>
           </select>
         </div>
       </div>
-
-      <!-- <div class="col-md-4">
-        <div class="input-field-container">
-          <label class="input-label">Service Types</label>
-          <select class="styled-input" name="care_requirements" required>
-            <option value="" disabled selected>Select Service Type</option>
-            <option value="fully-trained-nurse">Fully Trained Nurse</option>
-            <option value="semi-trained-nurse">Semi-Trained Nurse</option>
-            <option value="caretaker">Caretaker</option>
-            <option value="caretaker">Nanees</option>
-          </select>
-        </div>
-      </div> -->
-<!-- 
-      <div class="col-md-4">
-        <div class="input-field-container">
-          <label class="input-label">Care Aadhar Upload</label>
-          <input type="file" class="styled-input" name="care_aadhar" accept=".pdf,.jpeg,.jpg,.png" required />
-        </div>
-      </div> -->
-
-      <!-- <div class="col-md-4">
-        <div class="input-field-container">
-          <label class="input-label">Created At</label>
-          <input type="date" class="styled-input" name="created_at" required />
-        </div>
-      </div> -->
-
-      <!-- <div class="col-md-4">
-        <div class="input-field-container">
-          <label class="input-label">Updated At</label>
-          <input type="date" class="styled-input" name="updated_at" required />
-        </div>
-      </div> -->
 
       <div class="col-md-4">
         <div class="input-field-container">
           <label class="input-label">Mobility Status</label>
-          <select class="styled-input" name="mobility_status" required>
-            <option value="" disabled selected>Select Mobility Status</option>
-            <option value="Walking">Walking</option>
-            <option value="Wheelchair">Wheelchair</option>
-            <option value="Other">Other</option>
+          <select class="styled-input" name="mobility_status">
+            <option value="" disabled>Select mobility status</option>
+            <option value="walking" <?= $customerData['mobility_status'] === 'walking' ? 'selected' : ''; ?>>Walking</option>
+            <option value="wheelchair" <?= $customerData['mobility_status'] === 'wheelchair' ? 'selected' : ''; ?>>Wheelchair</option>
           </select>
         </div>
       </div>
@@ -298,27 +274,63 @@ if (mysqli_query($conn, $updateQuery)) {
       <div class="col-md-4">
         <div class="input-field-container">
           <label class="input-label">Discharge Summary Sheet</label>
-          <input type="file" class="styled-input" name="discharge" accept=".pdf,.doc,.docx,.txt" />
+          <input type="file" class="styled-input" name="discharge_summary_sheet" />
+          <small>Current File: <?= htmlspecialchars($customerData['discharge_summary_sheet']); ?></small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address Row -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Pincode</label>
+          <input type="text" class="styled-input" name="pincode" placeholder="Enter Pincode" value="<?= htmlspecialchars($customerData['pincode']); ?>" />
         </div>
       </div>
 
-      <!-- <div class="col-md-4">
+      <div class="col-md-4">
         <div class="input-field-container">
-          <label class="input-label">Upload Form</label>
-          <input type="file" class="styled-input" name="upload_form" accept=".pdf,.doc,.docx,.txt" />
+          <label class="input-label">Area, Street, Sector</label>
+          <input type="text" class="styled-input" name="area" placeholder="Enter Area, Street, Sector" value="<?= htmlspecialchars($customerData['address_line1']); ?>" />
         </div>
-      </div> -->
+      </div>
 
       <div class="col-md-4">
-    <div class="input-field-container">
-        <label class="input-label">Address</label>
-        <textarea class="styled-input" name="address" placeholder="Enter address"></textarea>
-    </div>
-</div>
-
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary"><?= $editMode ? 'Update' : 'Submit' ?></button>
+        <div class="input-field-container">
+          <label class="input-label">Flat/House No./Apartment</label>
+          <input type="text" class="styled-input" name="flat_house_building_apartment" placeholder="Enter Flat/House No./Apartment" value="<?= htmlspecialchars($customerData['address_line2']); ?>" />
         </div>
+      </div>
+    </div>
+
+    <!-- Address Row Continued -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Landmark</label>
+          <input type="text" class="styled-input" name="landmark" placeholder="Enter Landmark" value="<?= htmlspecialchars($customerData['landmark']); ?>" />
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">Town/City</label>
+          <input type="text" class="styled-input" name="town_city" placeholder="Enter Town/City" value="<?= htmlspecialchars($customerData['city']); ?>" />
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="input-field-container">
+          <label class="input-label">State</label>
+          <input type="text" class="styled-input" name="state" placeholder="Enter State" value="<?= htmlspecialchars($customerData['state']); ?>" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-group mt-4">
+      <button type="submit" class="btn btn-primary"><?= $editMode ? 'Update' : 'Submit' ?></button>
     </div>
   </form>
 </div>

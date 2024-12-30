@@ -83,16 +83,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <title>Deposits Data</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="mb-4">Deposits Data</h1>
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
+<?php 
+include '../navbar.php';
+  ?>
+ <div class="container mt-7">
+    <div class="dataTable_card card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 table-title">Deposits Data</h5>
+    </div>
+    <div class="table-responsive mt-3 p-4">
+                <table id="employeeTable" class="display table table-striped" style="width:100%">
+                    <thead class="thead-dark mt-4">
             <tr>
                 <th>ID</th>
                 <th>Transaction ID</th>
@@ -239,7 +249,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+      $(document).ready(function() {
+      // Initialize DataTable
+      const table = $('#employeeTable').DataTable({
+        paging: true, // Enable pagination
+        searching: true, // Enable global search
+        ordering: true, // Enable column-based ordering
+        lengthMenu: [5, 10, 20, 50], // Rows per page options
+        pageLength: 5, // Default rows per page
+        language: {
+          search: "Search Deposits:", // Customize the search label
+        },
+      });
+
+      // Global Search
+      $('#globalSearch').on('keyup', function() {
+        table.search(this.value).draw();
+      });
+      
+    });
+</script>
 </body>
 </html>
 

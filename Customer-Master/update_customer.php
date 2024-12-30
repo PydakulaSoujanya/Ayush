@@ -10,10 +10,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $relationship = $_POST['relationship'];
     $address = $_POST['address'];
 
-    // Update the record in the database
-    $sql = "UPDATE customers SET patient_status = ?, patient_name = ?, relationship = ?, address = ? WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('ssssi', $patientStatus, $patientName, $relationship, $address, $customerId);
-    $stmt->execute();
+    // Call the stored procedure to update the record
+    $sql = "CALL UpdateCustomer(?, ?, ?, ?, ?)";
+
+    if ($stmt = $conn->prepare($sql)) {
+        $stmt->bind_param('ssssi', $patientStatus, $patientName, $relationship, $address, $customerId);
+
+        // Execute the stored procedure
+        if ($stmt->execute()) {
+            echo "Record updated successfully!";
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+
+        // Close the prepared statement
+        $stmt->close();
+    } else {
+        echo "Error: Could not prepare the SQL statement.";
+    }
 }
+
+// Close the connection
+$conn->close();
 ?>

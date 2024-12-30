@@ -6,7 +6,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST['id'];
 
     // Get form data
-   
     $patient_name = $_POST['patient_name'] ?? null;
     $relationship = $_POST['relationship'];
     $customer_name = $_POST['customer_name'];
@@ -26,17 +25,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         move_uploaded_file($_FILES['discharge_summary_sheet']['tmp_name'], "uploads/" . $discharge_summary_sheet);
     }
 
+    // Check if it's an update or insert
     if ($id > 0) {
-        // Update existing record
-        $sql = "UPDATE customer_master 
-                SET  patient_name=?, relationship=?, customer_name=?, 
-                    emergency_contact_number=?, blood_group=?, medical_conditions=?, email=?, 
-                    patient_age=?, gender=?, mobility_status=?, address=?, discharge_summary_sheet=? 
-                WHERE id=?";
+        // Update existing record using stored procedure
+        $sql = "CALL UpdateCustomerData(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
-            "ssssssississi",
-            
+            "issssssississ",
+            $id,
             $patient_name,
             $relationship,
             $customer_name,
@@ -48,18 +44,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $gender,
             $mobility_status,
             $address,
-            $discharge_summary_sheet,
-            $id
+            $discharge_summary_sheet
         );
     } else {
-        // Insert new record
-        $sql = "INSERT INTO customer_master 
-                (patient_name, relationship, customer_name, emergency_contact_number, 
-                 blood_group, medical_conditions, email, patient_age, gender, mobility_status, address, discharge_summary_sheet) 
-                VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // Insert new record using stored procedure
+        $sql = "CALL InsertCustomerData(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
-            "ssssssississ",
+            "ssssssssssss",
             $patient_name,
             $relationship,
             $customer_name,
@@ -75,16 +67,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         );
     }
 
+    // Execute the query
     if ($stmt->execute()) {
         // Success message
         echo "<script>
-                alert('Customer details updated successfully!');
+                alert('Customer details " . ($id > 0 ? 'updated' : 'added') . " successfully!');
                 window.location.href = 'customer_table.php';
               </script>";
     } else {
         // Error message
         echo "<script>
-                alert('Error updating customer details: " . $stmt->error . "');
+                alert('Error: " . $stmt->error . "');
                 window.location.href = 'customer_table.php';
               </script>";
     }

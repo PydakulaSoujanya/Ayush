@@ -35,15 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             move_uploaded_file($_FILES['discharge']['tmp_name'], $upload_path);
         }
 
-        // Insert into customer_master table
-        $sql = "INSERT INTO customer_master_new (
-            patient_name, relationship, customer_name, emergency_contact_number, 
-            blood_group, medical_conditions, email, patient_age, gender, 
-            mobility_status, discharge_summary_sheet, created_at, updated_at
-        ) VALUES (
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW()
-        )";
-
+        // Call stored procedure to insert customer data
+        $sql = "CALL insert_customer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
             "sssssssssss",
@@ -64,12 +57,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $cities = $_POST['city'] ?? [];
         $states = $_POST['state'] ?? [];
 
-        // Prepare address insertion statement
-        $addr_sql = "INSERT INTO customer_addresses (
-            customer_id, pincode, address_line1, address_line2, 
-            landmark, city, state, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
-        
+        // Call stored procedure to insert each address
+        $addr_sql = "CALL insert_customer_address(?, ?, ?, ?, ?, ?, ?)";
         $addr_stmt = $conn->prepare($addr_sql);
 
         // Insert each address

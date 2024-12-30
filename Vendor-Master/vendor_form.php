@@ -1,15 +1,4 @@
-<?php
-session_start(); // Start session
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    // User is not logged in, redirect to login page
-    header("Location: ../index.php");
-    exit;
-}
-
-// Your protected page content goes here
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +6,43 @@ if (!isset($_SESSION['user_id'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Styled Form</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
- <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <!-- <style>
+    .input-field-container {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .input-label {
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      background-color: white;
+      padding: 0 5px;
+      font-size: 14px;
+      font-weight: bold; /* Makes the label bold */
+      color: #A26D2B;
+    }
+
+    .styled-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 12px;
+      outline: none;
+      box-sizing: border-box;
+      border: 1px solid #A26D2B;
+      border-radius: 5px; /* Adds rounded corners to input fields */
+    }
+
+    .styled-input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    h1, h2, h3, h4 {
+      color: #A26D2B;
+    }
+  </style> -->
 </head>
 <body>
 <?php include('../navbar.php'); ?>

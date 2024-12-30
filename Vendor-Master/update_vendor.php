@@ -24,7 +24,7 @@ if (isset($_GET['id'])) {
         $gstin = $_POST['gstin'];
         $phone_number = $_POST['phone_number'];
         $email = $_POST['email'];
-       
+        
         $vendor_type = $_POST['vendor_type'];
         $services_provided = $_POST['services_provided'];
         $vendor_groups = $_POST['vendor_groups'];
@@ -39,35 +39,16 @@ if (isset($_GET['id'])) {
         $ifsc = $_POST['ifsc'];
         $branch = $_POST['branch'];
 
-        // Update vendor data in the database
-        $update_sql = "UPDATE vendors SET 
-                            vendor_name = ?, 
-                            gstin = ?, 
-                            phone_number = ?, 
-                            email = ?, 
-                           
-                            vendor_type = ?, 
-                            services_provided = ?, 
-                            vendor_groups = ?,
-                            address_line1 = ?,
-                            address_line2 = ?,
-                            city = ?,
-                            state = ?,
-                            landmark = ?,
-                            pincode = ?, 
-                            bank_name = ?, 
-                            account_number = ?, 
-                            ifsc = ?, 
-                            branch = ? 
-                        WHERE id = ?";
-        $update_stmt = $conn->prepare($update_sql);
+        // Call the stored procedure to update vendor data
+        $update_stmt = $conn->prepare("CALL UpdateVendor(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         $update_stmt->bind_param(
-            "sssssssssssssssssi",
+            "issssssssssssssssi",
+            $id,
             $vendor_name,
             $gstin,
             $phone_number,
             $email,
-       
+            
             $vendor_type,
             $services_provided,
             $vendor_groups,
@@ -80,11 +61,9 @@ if (isset($_GET['id'])) {
             $bank_name,
             $account_number,
             $ifsc,
-            $branch,
-            $id
+            $branch
         );
 
-        // Execute the correct prepared statement
         if ($update_stmt->execute()) {
             // If the update is successful, use a script to show a popup and redirect
             echo "<script>

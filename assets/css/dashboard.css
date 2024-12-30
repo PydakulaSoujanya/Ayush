@@ -42,7 +42,7 @@ body {
     background-color: var(--title-bg-color);
     color: var(--title-text-color);
     padding: 10px;
-    font-size: 1.2rem;
+    font-size: 18px;
     font-weight: bold;
     text-align: center;
 }

@@ -365,13 +365,12 @@ if ($result1->num_rows > 0) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
- 
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Include Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
-
   <title>Services</title>
   
 </head>
@@ -379,8 +378,6 @@ if ($result1->num_rows > 0) {
  <?php
   include '../navbar.php';
   ?>   
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   
   <div class="container  mt-7">
@@ -388,24 +385,11 @@ if ($result1->num_rows > 0) {
     <div class="dataTable_card card">
       <!-- Card Header -->
       <div class="card-header">Account Recievable Details</div>
-
-      <!-- Card Body -->
-      <div class="card-body">
-        <!-- Search Input -->
-        <div class="dataTable_search mb-3 d-flex justify-content-between">
-        <form class="d-flex w-75">
-    <input type="text" class="form-control" id="globalSearch" placeholder="Search..." oninput="performSearch()">
-</form>
-
-    <!-- <a href="services.php" class="btn btn-success">+ Capture Service</a> -->
-</div>
-
-
         <!-- Table -->
-        <div class="table-responsive">
-        <table class="table table-striped">
-    <thead>
-        <tr class="dataTable_headerRow">
+        <div class="table-responsive  p-4">
+                <table id="employeeTable" class="display table table-striped" style="width:100%">
+                    <thead class="thead-dark mt-4">
+        <tr>
             <th>S.no</th>
             <th>Customer Info</th>
             <th>Invoice ID</th>
@@ -653,140 +637,37 @@ if ($result1->num_rows > 0) {
 
         <!-- Pagination Controls -->
          <!-- Pagination -->
-         <div class="d-flex justify-content-between align-items-center">
-          <div>
-            Showing <?= $start + 1 ?> to <?= min($start + $pageSize, $totalRecords) ?> of <?= $totalRecords ?> records
-          </div>
-          <div>
-            <a href="?pageIndex=<?= max(0, $pageIndex - 1) ?>&pageSize=<?= $pageSize ?>&search=<?= htmlspecialchars($searchTerm) ?>" class="btn btn-primary btn-sm <?= $pageIndex == 0 ? 'disabled' : '' ?>">Previous</a>
-            <a href="?pageIndex=<?= min($totalPages - 1, $pageIndex + 1) ?>&pageSize=<?= $pageSize ?>&search=<?= htmlspecialchars($searchTerm) ?>" class="btn btn-primary btn-sm <?= $pageIndex >= $totalPages - 1 ? 'disabled' : '' ?>">Next</a>
-          </div>
-          <div>
-            <select onchange="window.location.href='?pageIndex=0&pageSize=' + this.value + '&search=<?= htmlspecialchars($searchTerm) ?>'" class="form-select form-select-sm">
-              <option value="5" <?= $pageSize == 5 ? 'selected' : '' ?>>5</option>
-              <option value="10" <?= $pageSize == 10 ? 'selected' : '' ?>>10</option>
-              <option value="20" <?= $pageSize == 20 ? 'selected' : '' ?>>20</option>
-            </select>
-          </div>
-        </div>
+     
       </div>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-     function viewDetails(data) {
-      const modalContent = document.getElementById('modalContent');
-      modalContent.innerHTML = `
-        <table class="table table-bordered">
-          <tr><th>Customer Name</th><td>${data.customer_name}</td></tr>
-          <tr><th>Contact Number</th><td>${data.contact_no}</td></tr>
-          <tr><th>Email</th><td>${data.email}</td></tr>
-          <tr><th>Enquiry Date</th><td>${data.enquiry_date}</td></tr>
-          <tr><th>Enquiry Time</th><td>${data.enquiry_time}</td></tr>
-          <tr><th>Service Type</th><td>${data.service_type}</td></tr>
-          <tr><th>Enquiry Source</th><td>${data.enquiry_source}</td></tr>
-          <tr><th>Priority Level</th><td>${data.priority_level}</td></tr>
-           <tr><th>Status</th><td>${data.status}</td></tr>
-            <tr><th>Request Details</th><td>${data.request_details}</td></tr>
-             <tr><th>Resolution Notes</th><td>${data.resolution_notes}</td></tr>
-              <tr><th>Comments</th><td>${data.comments}</td></tr>
-          <tr><th>Created At</th><td>${data.created_at}</td></tr>
-        </table>
-      `;
-    }
+  
+  
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+      $(document).ready(function() {
+      // Initialize DataTable
+      const table = $('#employeeTable').DataTable({
+        paging: true, // Enable pagination
+        searching: true, // Enable global search
+        ordering: true, // Enable column-based ordering
+        lengthMenu: [5, 10, 20, 50], // Rows per page options
+        pageLength: 5, // Default rows per page
+        language: {
+          search: "Search Payouts:", // Customize the search label
+        },
+      });
+
+      // Global Search
+      $('#globalSearch').on('keyup', function() {
+        table.search(this.value).draw();
+      });
       
-    // Sample Data
-    const data = Array.from({ length: 50 }, (_, i) => ({
-      id: i + 1,
-      name: `Person ${i + 1}`,
-      age: Math.floor(Math.random() * 40) + 20,
-      city: `City ${Math.floor(Math.random() * 10) + 1}`,
-    }));
-
-    // Pagination Variables
-    let pageIndex = 0;
-    let pageSize = 5;
-
-    // Elements
-    const tableBody = document.getElementById("tableBody");
-    const pageInfo = document.getElementById("pageInfo");
-    const previousPage = document.getElementById("previousPage");
-    const nextPage = document.getElementById("nextPage");
-    const pageSizeSelect = document.getElementById("pageSize");
-    const globalSearch = document.getElementById("globalSearch");
-
-    // Functions to Render Table
-    function renderTable() {
-      const start = pageIndex * pageSize;
-      const filteredData = data.filter((item) =>
-        item.name.toLowerCase().includes(globalSearch.value.toLowerCase())
-      );
-      const pageData = filteredData.slice(start, start + pageSize);
-
-      tableBody.innerHTML = pageData
-        .map(
-          (row) =>
-            `<tr class="dataTable_row">
-              <td>${row.id}</td>
-              <td>${row.name}</td>
-              <td>${row.age}</td>
-              <td>${row.city}</td>
-            </tr>`
-        )
-        .join("");
-
-      pageInfo.textContent = `${pageIndex + 1} of ${Math.ceil(filteredData.length / pageSize)}`;
-      previousPage.disabled = pageIndex === 0;
-      nextPage.disabled = pageIndex >= Math.ceil(filteredData.length / pageSize) - 1;
-    }
-
-    // Event Listeners
-    previousPage.addEventListener("click", () => {
-      if (pageIndex > 0) {
-        pageIndex--;
-        renderTable();
-      }
     });
-
-    nextPage.addEventListener("click", () => {
-      pageIndex++;
-      renderTable();
-    });
-
-    pageSizeSelect.addEventListener("change", (e) => {
-      pageSize = Number(e.target.value);
-      pageIndex = 0;
-      renderTable();
-    });
-
-    globalSearch.addEventListener("input", () => {
-      pageIndex = 0;
-      renderTable();
-    });
-
-    // Initial Render
-    renderTable();
-    
-  </script>
-  <script>
-  function performSearch() {
-    const searchTerm = document.getElementById('globalSearch').value;
-
-    // Send AJAX request
-    fetch(`view_services.php?search=${encodeURIComponent(searchTerm)}`)
-      .then(response => response.text())
-      .then(data => {
-        // Update the table with the fetched data
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data, 'text/html');
-        const newTableBody = doc.querySelector('tbody');
-
-        if (newTableBody) {
-          document.querySelector('tbody').innerHTML = newTableBody.innerHTML;
-        }
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }
 </script>
 
 </body>

@@ -9,8 +9,8 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
     // Check if the ID is a valid number (you can add more validation if needed)
     if ($invoiceId > 0) {
-        // SQL query to delete the record
-        $deleteQuery = "DELETE FROM service_master WHERE id = ?";
+        // Call the stored procedure to delete the record
+        $deleteQuery = "CALL DeleteFromServiceMaster(?)";
 
         // Prepare the statement
         if ($stmt = $conn->prepare($deleteQuery)) {

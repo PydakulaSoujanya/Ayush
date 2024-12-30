@@ -1,56 +1,50 @@
 <?php
-include("../config.php");
+// Include database connection
+include('../config.php');
 
-// Get pagination and search parameters
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$size = isset($_GET['size']) ? (int)$_GET['size'] : 10;
-$search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : "";
+// Retrieve request parameters sent by DataTables
+$draw = intval($_POST['draw']);
+$start = intval($_POST['start']);
+$length = intval($_POST['length']);
+$searchValue = $_POST['search']['value']; // Search value
 
-// Calculate offset
-$offset = ($page - 1) * $size;
+// Query to count total records
+$totalRecordsQuery = "SELECT COUNT(*) AS total FROM vendors";
+$totalRecordsResult = $conn->query($totalRecordsQuery);
+$totalRecords = $totalRecordsResult->fetch_assoc()['total'];
 
-// Prepare the SQL query with ordering and search functionality
-$sql = "
-    SELECT * FROM vendors 
-    WHERE vendor_name LIKE ? 
-    ORDER BY created_at DESC, id DESC 
-    LIMIT ? OFFSET ?
-";
-
-$stmt = $conn->prepare($sql);
-if (!$stmt) {
-    echo json_encode(['error' => 'Failed to prepare SQL statement.']);
-    exit;
+// Query to filter records based on search
+$searchQuery = "";
+if (!empty($searchValue)) {
+    $searchQuery = "WHERE vendor_name LIKE '%$searchValue%' 
+                    OR phone_number LIKE '%$searchValue%' 
+                    OR email LIKE '%$searchValue%' 
+                    OR vendor_type LIKE '%$searchValue%'";
 }
 
-$searchParam = "%$search%";
-$stmt->bind_param("sii", $searchParam, $size, $offset);
-$stmt->execute();
-$result = $stmt->get_result();
+// Query to fetch filtered data with pagination
+$vendorQuery = "SELECT * FROM vendors $searchQuery ORDER BY created_at DESC LIMIT $start, $length";
+$vendorResult = $conn->query($vendorQuery);
 
-// Fetch data
-$rows = [];
-while ($row = $result->fetch_assoc()) {
-    $rows[] = $row;
+$vendors = [];
+while ($row = $vendorResult->fetch_assoc()) {
+    $vendors[] = $row;
 }
 
-// Get total row count for pagination
-$totalCountSql = "SELECT COUNT(*) AS total FROM vendors WHERE vendor_name LIKE ?";
-$totalStmt = $conn->prepare($totalCountSql);
-$totalStmt->bind_param("s", $searchParam);
-$totalStmt->execute();
-$totalResult = $totalStmt->get_result();
-$totalCount = $totalResult->fetch_assoc()['total'];
+// Count filtered records
+$filteredRecordsQuery = "SELECT COUNT(*) AS total FROM vendors $searchQuery";
+$filteredRecordsResult = $conn->query($filteredRecordsQuery);
+$filteredRecords = $filteredRecordsResult->fetch_assoc()['total'];
 
-$totalPages = ceil($totalCount / $size);
+// Prepare response
+$response = [
+    'draw' => $draw,
+    'recordsTotal' => $totalRecords,
+    'recordsFiltered' => $filteredRecords,
+    'data' => $vendors
+];
 
-// Return JSON response
-echo json_encode([
-    'rows' => $rows,
-    'totalPages' => $totalPages,
-    'totalCount' => $totalCount,
-]);
-
-$stmt->close();
-$conn->close();
+// Send JSON response
+header('Content-Type: application/json');
+echo json_encode($response);
 ?>

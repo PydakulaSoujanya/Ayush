@@ -6,16 +6,16 @@ include '../config.php';
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $customerId = intval($_GET['id']);  // Sanitize the input to prevent SQL injection
 
-    // Prepare the DELETE query
-    $sql = "DELETE FROM customer_master_new WHERE id = ?";
+    // Prepare the stored procedure call
+    $sql = "CALL DeleteCustomer(?)";
     
     if ($stmt = $conn->prepare($sql)) {
         $stmt->bind_param("i", $customerId);
         
-        // Execute the query
+        // Execute the stored procedure
         if ($stmt->execute()) {
             // Redirect to the main page with a success message
-            header("Location: customer_table.php.?message=Record deleted successfully");
+            header("Location: customer_table.php?message=Record deleted successfully");
             exit();
         } else {
             echo "Error: " . $stmt->error;

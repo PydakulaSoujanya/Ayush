@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_email'] = $user['email'];
             // Redirect to target page
-            header("Location: Employee-Master/table.php");
+            header("Location: Dashboard/dashboard.php");
             exit; // Ensure no further code is executed
         } else {
             // Incorrect password

@@ -4,22 +4,36 @@ include '../config.php'; // Database connection
 
 // Fetching the service details using the ID from the URL
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $serviceId = $_GET['id'];
+    $serviceId = intval($_GET['id']); // Sanitize input
 
-    // Query to fetch the service data by ID
-    $sql = "SELECT `id`, `service_name`, `status`, `daily_rate_8_hours`, `daily_rate_12_hours`, `daily_rate_24_hours`, `description` FROM `service_master` WHERE `id` = ?";
+    // Query to call the stored procedure
+    $sql = "CALL GetServiceMasterById(?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $serviceId);
-    $stmt->execute();
-    $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        $service = $result->fetch_assoc();
+    if ($stmt) {
+        $stmt->bind_param("i", $serviceId); // Bind the ID parameter
+        $stmt->execute();
+        $result = $stmt->get_result(); // Get the result of the query
+
+        if ($result->num_rows > 0) {
+            $service = $result->fetch_assoc(); // Fetch the service details
+        } else {
+            echo "Service not found!";
+            exit;
+        }
+
+        $stmt->close(); // Close the statement
     } else {
-        echo "Service not found!";
+        echo "Error preparing the query: " . $conn->error;
         exit;
     }
+} else {
+    echo "Invalid or missing service ID!";
+    exit;
 }
+
+// Close the database connection
+$conn->close();
 ?>
 
 <!DOCTYPE html>

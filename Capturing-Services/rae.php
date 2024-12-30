@@ -270,13 +270,13 @@ $pdf_path_stmt = $conn->prepare($pdf_path_query);
 $pdf_path_stmt->bind_param("ss", $pdfFileName, $serviceId);
 
 
-if ($pdf_path_stmt->execute()) {
-    echo "Invoice path updated successfully.";
-    echo "PDF Path: " . $pdfFileName . "<br>";
-echo "Service ID: " . $serviceId . "<br>";
-} else {
-    echo "Error updating invoice path: " . $pdf_path_stmt->error;
-}
+// if ($pdf_path_stmt->execute()) {
+//     echo "Invoice path updated successfully.";
+//     echo "PDF Path: " . $pdfFileName . "<br>";
+// echo "Service ID: " . $serviceId . "<br>";
+// } else {
+//     echo "Error updating invoice path: " . $pdf_path_stmt->error;
+// }
 
 // Close the statement
 $pdf_path_stmt->close();
@@ -364,6 +364,16 @@ $pdf_path_stmt->close();
       cursor: pointer;
       margin-right: 10px;
     }
+
+ 
+        /* Add color to icons */
+        .fa-user {
+            color: #007bff; /* Blue color for the user icon */
+        }
+        .fa-phone {
+            color: #28a745; /* Green color for the phone icon */
+        }
+
   </style>
 </head>
 <body>
@@ -392,20 +402,21 @@ $pdf_path_stmt->close();
 
 
         <!-- Table -->
-        <div class="table-responsive" style="width:max-content">
+        <div class="table-responsive" style="width: 100%;">
         <table class="table table-striped">
     <thead>
         <tr class="dataTable_headerRow">
             <th>S.no</th>
             <th>Customer Info</th>
-            <th>Details</th>
+            <th>Details Date</th>
             <th>Total Days & Service Type</th> 
             <th>Payment Details</th>
             <th>Total Price</th>
             <th>Status</th>
             <th>Invoice ID</th>
-            <th>Action</th>
+            
             <th>Assign Employee</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -437,18 +448,20 @@ if ($result1->num_rows > 0) {
     }
         echo "<tr class='dataTable_row'>
                 <td>{$serial}</td>
+                
+                   <td>
+                            <i class='fas fa-user' title='Name' style='margin-right: 5px;'></i>" . htmlspecialchars($row['customer_name']) . "<br>
+                            <i class='fas fa-phone' title='Phone' style='margin-right: 5px;'></i>" . htmlspecialchars($row['contact_no']) . "
+                        </td>
+              
                 <td>
-                  <strong>Name:</strong> " . htmlspecialchars($row['customer_name']) . "<br>
-                  <strong>Phone:</strong> " . htmlspecialchars($row['contact_no']) . "
-                </td>
-                <td>
-                  <strong>Start Date:</strong> " . htmlspecialchars($row['from_date']) . "<br>
-                  <strong>End Date:</strong> " . htmlspecialchars($row['end_date']) . "
+                  <strong>Start:</strong> " . htmlspecialchars($row['from_date']) . "<br>
+                  <strong>End:</strong> " . htmlspecialchars($row['end_date']) . "
                 </td>
                 <!-- Merged Total Days and Service Type column -->
                 <td>
                   <strong>Total Days:</strong> {$row['total_days']}<br>
-                  <strong>Service Type:</strong> {$row['service_type']}
+                  <strong>Type:</strong> {$row['service_type']}
                 </td>
                <td>
                   <strong>Status:</strong> Fully paid<br>
@@ -471,23 +484,25 @@ if ($result1->num_rows > 0) {
 
         // Check if the employee is assigned
         if (!empty($row['assigned_employee'])) {
-            // Show the assigned employee's name
-            echo "<span class='text-success' id='assigned_employee'>" . htmlspecialchars($row['assigned_employee']) . "</span>";
+          // Show the assigned employee's name
+          echo '<span class="text-success d-block" id="assigned_employee">'
+              . htmlspecialchars($row['assigned_employee'], ENT_QUOTES, 'UTF-8') .
+              '</span>';
+      
             ?>
 <button 
-    id="reassignEmployee" 
-    class="btn btn-warning btn-sm" 
-    data-bs-toggle="modal" 
-    data-bs-target="#reassignEmployeePopupModal"
-    data-employee-id="<?= htmlspecialchars($row['emp_id'], ENT_QUOTES, 'UTF-8'); ?>" 
-    data-employee-name="<?= htmlspecialchars($row['assigned_employee'], ENT_QUOTES, 'UTF-8'); ?>"
-    data-role="<?= htmlspecialchars($row['service_type'], ENT_QUOTES, 'UTF-8'); ?>" 
-    data-from-date="<?= htmlspecialchars($row['from_date'], ENT_QUOTES, 'UTF-8'); ?>" 
-    data-end-date="<?= htmlspecialchars($row['end_date'], ENT_QUOTES, 'UTF-8'); ?>"
-    data-service-id="<?= htmlspecialchars($row['id'], ENT_QUOTES, 'UTF-8'); ?>" >
-    
-    Reassign Employee
-</button>
+                id="reassignEmployee" 
+                class="btn btn-warning btn-sm mt-1" 
+                data-bs-toggle="modal" 
+                data-bs-target="#reassignEmployeePopupModal"
+                data-employee-id="<?= htmlspecialchars($row['emp_id'], ENT_QUOTES, 'UTF-8'); ?>" 
+                data-employee-name="<?= htmlspecialchars($row['assigned_employee'], ENT_QUOTES, 'UTF-8'); ?>"
+                data-role="<?= htmlspecialchars($row['service_type'], ENT_QUOTES, 'UTF-8'); ?>" 
+                data-from-date="<?= htmlspecialchars($row['from_date'], ENT_QUOTES, 'UTF-8'); ?>" 
+                data-end-date="<?= htmlspecialchars($row['end_date'], ENT_QUOTES, 'UTF-8'); ?>"
+                data-service-id="<?= htmlspecialchars($row['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                Reassign
+            </button>
 
 <?php
         } 
@@ -526,25 +541,38 @@ if ($result1->num_rows > 0) {
     $result = $stmt->get_result();
 
     // Dropdown for assigning an employee
-    echo "<form method='POST' action=''>
-            <select name='emp_id' required>
-                <option value=''>Select Employee</option>";
+     echo "<form method='POST' action=''>
+    <select name='emp_id' class='select2-employee' style='width: 50%;' required>
+        <option value=''>Select Employee</option>";
+
+                    while ($employee = $result->fetch_assoc()) {
+                      // Display the full employee name
+                      echo "<option value='" . htmlspecialchars($employee['id']) . "'>" . htmlspecialchars($employee['name']) . "</option>";
+                    }
+
+                    echo "  </select>
+    <input type='hidden' name='service_id' value='" . htmlspecialchars($row['id']) . "'>
+    <button type='submit' name='assign_employee' class='btn btn-primary' style='border: black; cursor: pointer;' title='Allocate'>
+        Assign Employee
+    </button>
     
-    // Populate the dropdown with unassigned employees
-    while ($employee = $result->fetch_assoc()) {
-        echo "<option value='" . $employee['id'] . "'>" . htmlspecialchars($employee['name']) . "</option>";
-    }
 
-    echo "    </select>
-            <input type='hidden' name='service_id' value='{$row['id']}'>
-            <button type='submit' name='assign_employee' style='border: black; cursor: pointer;' title='Allocate'>
-                Assign Employee
-            </button>
-          </form>";
-}
-
-       echo "
+  </form>";
+                  }
+                  echo "
     </td>
+
+
+
+
+
+
+
+
+
+
+
+
     <td class='action-icons'>
         <form method='POST' action='' onsubmit='return confirm(\"Are you sure you want to cancel this service?\")'>
             <input type='hidden' name='service_id' value='" . $row['id'] . "'>
@@ -704,6 +732,15 @@ modal.querySelector('#modalEndDate').value = endDate;
                         <label for="reason">Reason for Reassignment</label>
                         <textarea id="reason" name="reason" class="form-control" rows="3" placeholder="Enter the reason for changing the employee" required></textarea>
                     </div>
+                    <div class="form-group mb-3">
+                        <label for="from_date">From Date</label>
+                        <input type="date" id="from_date" name="from_date" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="end_date">End Date</label>
+                        <input type="date" id="end_date" name="end_date" class="form-control" required>
+                    </div>
+
 
                     <!-- Dropdown for selecting new employee -->
                     <div class="form-group mb-3">
@@ -747,13 +784,16 @@ const newEmployeeId = selectedOption.value; // The ID from the 'value' attribute
 const newEmployeeName = selectedOption.text; // The name from the text of the option
 
 
-
-// Assuming 'reason' and 'serviceId' are already defined
+// Assuming 'reason', 'serviceId', 'fromDate', and 'endDate' are already defined
 const formData = new FormData();
 formData.append('employee_id', newEmployeeId);  // Use 'newEmployeeId' here
 formData.append('new_employee', newEmployeeName);  // Use 'newEmployeeName' here
 formData.append('reason', reason);
 formData.append('service_id', serviceId);
+formData.append('from_date', document.getElementById('from_date').value);  // Add 'from_date' by ID
+formData.append('end_date', document.getElementById('end_date').value);  // Add 'end_date' by ID
+
+
 
 // Now you can send 'formData' to the server via AJAX or a form submission
 
@@ -769,6 +809,7 @@ formData.append('service_id', serviceId);
                 const modal = document.getElementById('reassignEmployeePopupModal');
                 const bootstrapModal = bootstrap.Modal.getInstance(modal);
                 bootstrapModal.hide(); // Hide modal after successful submission
+                window.location.href = 'view_services.php';
             } else {
                 alert('There was an issue with the reassignment. Please try again.');
             }
